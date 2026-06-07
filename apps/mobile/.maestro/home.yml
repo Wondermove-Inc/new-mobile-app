@@ -1,0 +1,9 @@
+appId: {{ANDROID_PACKAGE}}
+---
+- launchApp
+- assertVisible:
+    id: title
+- assertVisible: "Count: 0"
+- tapOn:
+    id: increment
+- assertVisible: "Count: 1"

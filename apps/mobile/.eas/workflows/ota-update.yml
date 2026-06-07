@@ -1,0 +1,11 @@
+name: OTA update (preview)
+on:
+  push:
+    branches: ['preview']
+jobs:
+  publish_update:
+    type: update
+    params:
+      channel: preview
+      platform: all
+      message: ${{ github.sha }}

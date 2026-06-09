@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-09T03:27:22.071Z",
+  "fetchedAt": "2026-06-09T03:41:15.000Z",
   "homePageId": "1373012374",
   "baseUrl": "https://wondermove-official.atlassian.net/wiki",
   "nodes": [
@@ -11,7 +11,7 @@
       "depth": 0,
       "version": "3",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373012374",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374.md"
     },
     {
       "id": "1372356612",
@@ -20,7 +20,7 @@
       "parentId": "1373012374",
       "depth": 1,
       "url": null,
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/readme.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612"
     },
     {
       "id": "1374453866",
@@ -30,7 +30,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453866",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-soul-md-감사-완료-및-후속-진행-가이드-1374453866/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-soul-md-감사-완료-및-후속-진행-가이드-1374453866.md"
     },
     {
       "id": "1374290184",
@@ -40,7 +40,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290184",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-local-harness-완료-및-운영-가이드-1374290184/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-local-harness-완료-및-운영-가이드-1374290184.md"
     },
     {
       "id": "1373110273",
@@ -49,7 +49,7 @@
       "parentId": "1373012374",
       "depth": 1,
       "url": null,
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/조사자료-1373110273/readme.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/조사자료-1373110273"
     },
     {
       "id": "1372815381",
@@ -59,7 +59,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1372815381",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/조사자료-1373110273/clawpod용-expo-eas-통합-스타터-보일러플레이트-조사-보고서-1372815381/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/조사자료-1373110273/clawpod용-expo-eas-통합-스타터-보일러플레이트-조사-보고서-1372815381.md"
     },
     {
       "id": "1373667330",
@@ -69,7 +69,7 @@
       "depth": 1,
       "version": "3",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667330",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330.md"
     },
     {
       "id": "1373601794",
@@ -79,7 +79,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373601794",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-1-원칙과-제약-1373601794/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-1-원칙과-제약-1373601794.md"
     },
     {
       "id": "1373601815",
@@ -89,7 +89,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373601815",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-2-조직-설계-절차-1373601815/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-2-조직-설계-절차-1373601815.md"
     },
     {
       "id": "1373765641",
@@ -99,7 +99,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765641",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-3-산출물-표준-1373765641/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-3-산출물-표준-1373765641.md"
     },
     {
       "id": "1373798401",
@@ -109,7 +109,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798401",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-4-가설-결정-레지스트리-1373798401/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-4-가설-결정-레지스트리-1373798401.md"
     },
     {
       "id": "1373700097",
@@ -119,7 +119,7 @@
       "depth": 1,
       "version": "1",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700097",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097.md"
     },
     {
       "id": "1373700117",
@@ -129,7 +129,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700117",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-1-방향과-제약-1373700117/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-1-방향과-제약-1373700117.md"
     },
     {
       "id": "1373765682",
@@ -139,7 +139,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765682",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-2-조직-구성과-역할-1373765682/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-2-조직-구성과-역할-1373765682.md"
     },
     {
       "id": "1373667425",
@@ -149,7 +149,7 @@
       "depth": 2,
       "version": "2",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667425",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-3-workflows-case-a-h-1373667425/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-3-workflows-case-a-h-1373667425.md"
     },
     {
       "id": "1373667362",
@@ -159,7 +159,7 @@
       "depth": 2,
       "version": "4",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667362",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362.md"
     },
     {
       "id": "1373634562",
@@ -169,7 +169,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373634562",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-prd-to-execution-1373634562/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-prd-to-execution-1373634562.md"
     },
     {
       "id": "1373765661",
@@ -179,7 +179,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765661",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-design-handoff-1373765661/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-design-handoff-1373765661.md"
     },
     {
       "id": "1373765723",
@@ -189,7 +189,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765723",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-api-contract-1373765723/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-api-contract-1373765723.md"
     },
     {
       "id": "1373667404",
@@ -199,7 +199,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667404",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-qa-release-1373667404/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-qa-release-1373667404.md"
     },
     {
       "id": "1373798443",
@@ -209,7 +209,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798443",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-gatekeeper-1373798443/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-gatekeeper-1373798443.md"
     },
     {
       "id": "1374289964",
@@ -219,7 +219,7 @@
       "depth": 3,
       "version": "3",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374289964",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964.md"
     },
     {
       "id": "1374289985",
@@ -229,7 +229,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374289985",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-path-decision-1374289985/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-path-decision-1374289985.md"
     },
     {
       "id": "1374290005",
@@ -239,7 +239,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290005",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/skills-1374290005/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/skills-1374290005.md"
     },
     {
       "id": "1374290025",
@@ -249,7 +249,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290025",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/agents-1374290025/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/agents-1374290025.md"
     },
     {
       "id": "1374060648",
@@ -259,7 +259,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374060648",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/hooks-1374060648/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/hooks-1374060648.md"
     },
     {
       "id": "1374355541",
@@ -269,7 +269,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355541",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-evaluation-and-ci-gate-1374355541/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-evaluation-and-ci-gate-1374355541.md"
     },
     {
       "id": "1374290066",
@@ -279,7 +279,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290066",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/optional-subagents-and-lazycodex-pattern-reuse-1374290066/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/optional-subagents-and-lazycodex-pattern-reuse-1374290066.md"
     },
     {
       "id": "1374355583",
@@ -289,7 +289,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355583",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-blocker-and-resume-conditions-1374355583/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-blocker-and-resume-conditions-1374355583.md"
     },
     {
       "id": "1374355605",
@@ -299,7 +299,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355605",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-pr-evidence-1374355605/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-pr-evidence-1374355605.md"
     },
     {
       "id": "1374355758",
@@ -309,7 +309,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355758",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/01-4-외부-skill-생태계-조사-검증-근거-16후보-1374355758/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/01-4-외부-skill-생태계-조사-검증-근거-16후보-1374355758.md"
     },
     {
       "id": "1373700138",
@@ -319,7 +319,7 @@
       "depth": 2,
       "version": "4",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700138",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138.md"
     },
     {
       "id": "1373798422",
@@ -329,7 +329,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798422",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422.md"
     },
     {
       "id": "1374519364",
@@ -339,7 +339,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519364",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-requirement-office-hours-1374519364/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-requirement-office-hours-1374519364.md"
     },
     {
       "id": "1374519387",
@@ -349,7 +349,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519387",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md"
     },
     {
       "id": "1374421079",
@@ -359,7 +359,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421079",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-operational-skills-summary-1374421079/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-operational-skills-summary-1374421079.md"
     },
     {
       "id": "1374355705",
@@ -369,7 +369,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355705",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-codex-cli-실무-지침-1374355705/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-codex-cli-실무-지침-1374355705.md"
     },
     {
       "id": "1374650456",
@@ -379,7 +379,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650456",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md"
     },
     {
       "id": "1373765702",
@@ -389,7 +389,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765702",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md"
     },
     {
       "id": "1374290207",
@@ -399,7 +399,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290207",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702/design-codex-cli-실무-지침-1374290207/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702/design-codex-cli-실무-지침-1374290207.md"
     },
     {
       "id": "1373667383",
@@ -409,7 +409,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667383",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383.md"
     },
     {
       "id": "1374519454",
@@ -419,7 +419,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519454",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454.md"
     },
     {
       "id": "1373700159",
@@ -429,7 +429,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700159",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159.md"
     },
     {
       "id": "1374421154",
@@ -439,7 +439,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421154",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159/mobile-app-dev-codex-cli-실무-지침-1374421154/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159/mobile-app-dev-codex-cli-실무-지침-1374421154.md"
     },
     {
       "id": "1373700180",
@@ -449,7 +449,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700180",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180.md"
     },
     {
       "id": "1374355727",
@@ -459,7 +459,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355727",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180/backend-api-integrator-codex-cli-실무-지침-1374355727/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180/backend-api-integrator-codex-cli-실무-지침-1374355727.md"
     },
     {
       "id": "1373700201",
@@ -469,7 +469,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700201",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201.md"
     },
     {
       "id": "1374453910",
@@ -479,7 +479,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453910",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201/qa-release-codex-cli-실무-지침-1374453910/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201/qa-release-codex-cli-실무-지침-1374453910.md"
     },
     {
       "id": "1374519410",
@@ -489,7 +489,7 @@
       "depth": 3,
       "version": "3",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519410",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/mobile-codex-cli-실무-지침서-practitioner-guide-1374519410/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/mobile-codex-cli-실무-지침서-practitioner-guide-1374519410.md"
     },
     {
       "id": "1373634583",
@@ -499,7 +499,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373634583",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-6-개발-지침-root-agents-md-확장안-1373634583/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-6-개발-지침-root-agents-md-확장안-1373634583.md"
     },
     {
       "id": "1373700222",
@@ -509,7 +509,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700222",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-7-진행-계획과-상태-1373700222/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-7-진행-계획과-상태-1373700222.md"
     },
     {
       "id": "1371963427",
@@ -519,7 +519,7 @@
       "depth": 2,
       "version": "20",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1371963427",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427.md"
     },
     {
       "id": "1372422154",
@@ -529,7 +529,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1372422154",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427/clawpod-agent-모바일-템플릿-온라인-서비스-사전-등록-가이드-1372422154/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427/clawpod-agent-모바일-템플릿-온라인-서비스-사전-등록-가이드-1372422154.md"
     },
     {
       "id": "1373667446",
@@ -539,7 +539,7 @@
       "depth": 2,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667446",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446.md"
     },
     {
       "id": "1374060594",
@@ -549,7 +549,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374060594",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-3-정합성-조사-검증-근거-2026-06-06-1374060594/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-3-정합성-조사-검증-근거-2026-06-06-1374060594.md"
     },
     {
       "id": "1374355642",
@@ -559,7 +559,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355642",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-8-템플릿-repo-구현-검증-근거-2026-06-07-1374355642/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-8-템플릿-repo-구현-검증-근거-2026-06-07-1374355642.md"
     },
     {
       "id": "1374453802",
@@ -569,7 +569,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453802",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-1-confluence-corpus-and-sot-map-1374453802/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-1-confluence-corpus-and-sot-map-1374453802.md"
     },
     {
       "id": "1374552097",
@@ -579,7 +579,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374552097",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-2-cross-role-collaboration-contract-1374552097/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-2-cross-role-collaboration-contract-1374552097.md"
     },
     {
       "id": "1374650371",
@@ -589,7 +589,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650371",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-per-role-soul-md-gap-audit-rollup-1374650371/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-per-role-soul-md-gap-audit-rollup-1374650371.md"
     },
     {
       "id": "1374552118",
@@ -599,7 +599,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374552118",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-product-planning-1374552118/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-product-planning-1374552118.md"
     },
     {
       "id": "1374650392",
@@ -609,7 +609,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650392",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-design-1374650392/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-design-1374650392.md"
     },
     {
       "id": "1374453823",
@@ -619,7 +619,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453823",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-architect-1374453823/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-architect-1374453823.md"
     },
     {
       "id": "1374290141",
@@ -629,7 +629,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290141",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-app-dev-1374290141/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-app-dev-1374290141.md"
     },
     {
       "id": "1374650413",
@@ -639,7 +639,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650413",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-backend-api-integrator-1374650413/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-backend-api-integrator-1374650413.md"
     },
     {
       "id": "1374421058",
@@ -649,7 +649,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421058",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-qa-release-1374421058/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-qa-release-1374421058.md"
     },
     {
       "id": "1374650433",
@@ -659,7 +659,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650433",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-4-event-to-owner-coverage-matrix-1374650433/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-4-event-to-owner-coverage-matrix-1374650433.md"
     },
     {
       "id": "1374290163",
@@ -669,7 +669,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290163",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-5-required-update-skill-audit-1374290163/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-5-required-update-skill-audit-1374290163.md"
     },
     {
       "id": "1374453844",
@@ -679,7 +679,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453844",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-6-runtime-and-local-harness-validation-fit-1374453844/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-6-runtime-and-local-harness-validation-fit-1374453844.md"
     },
     {
       "id": "1374519340",
@@ -689,7 +689,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519340",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-7-final-minimal-change-proposal-1374519340/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-7-final-minimal-change-proposal-1374519340.md"
     },
     {
       "id": "1374912522",
@@ -699,7 +699,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374912522",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522.md"
     },
     {
       "id": "1375830055",
@@ -709,7 +709,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1375830055",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/first-agent-runtime-e2e-canary-reproducible-guide-2026-06-08-1375830055/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/first-agent-runtime-e2e-canary-reproducible-guide-2026-06-08-1375830055.md"
     },
     {
       "id": "1375305752",
@@ -719,7 +719,7 @@
       "depth": 4,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1375305752",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/skill-설치-경로-sot-검증-보고-01-8-vs-01-4-2026-06-08-1375305752/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/skill-설치-경로-sot-검증-보고-01-8-vs-01-4-2026-06-08-1375305752.md"
     },
     {
       "id": "1376813059",
@@ -729,7 +729,7 @@
       "depth": 3,
       "version": "unknown",
       "url": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1376813059",
-      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-codex-hook-source-basis-update-evidence-1376813059/page.md"
+      "sourcePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-codex-hook-source-basis-update-evidence-1376813059.md"
     }
   ]
 }

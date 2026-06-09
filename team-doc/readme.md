@@ -10,4 +10,8 @@ Local documentation corpus for the WonderMove mobile-app-dev-team Confluence spa
 
 ## Sync Status
 
-This corpus is metadata-complete for the descendant tree captured from Confluence. Full body refresh is pending because Atlassian MCP page fetches timed out during generation; see [_meta/fetch-report.md](./_meta/fetch-report.md).
+Body-synced. All 71 source pages mirror the exact current Confluence markdown (fetched 2026-06-09 via Atlassian MCP), and the 32 structured docs are re-derived from them. See [_meta/fetch-report.md](./_meta/fetch-report.md).
+
+## Source Layout
+
+Each Confluence page is a flat `<page-slug>-<id>.md` file. Pages that have children keep a sibling `<page-slug>-<id>/` directory holding those child pages (recursively), so the Confluence parent/child tree is preserved without redundant `page.md` wrapper folders.

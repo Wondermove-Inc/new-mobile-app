@@ -17,6 +17,7 @@ apps/mobile/test-results/
 .evidence/tmp/
 .evidence/**/*.log
 .evidence/**/raw/
+.serena/
 apps/api/deploy/
 *.log
 npm-debug.log*

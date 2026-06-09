@@ -27,7 +27,7 @@ Build screen/UX work only — no backend or API contract changes are involved.
 2. Mobile Architect confirms the route/state impact is small.
 3. Mobile App Dev implements the change and adds appropriate component/unit tests.
 4. QA/Release adds a Maestro smoke or targeted flow and records the EAS Workflows run results (workflow run id, build id, Maestro outcome) in `.evidence/<task-id>.json`.
-5. Run the `mobile-gatekeeper` self-check, then open the PR.
+5. Run the deterministic PR/evidence gate check, then open the PR.
 6. The GitHub required check blocks or allows the merge.
 
 ## Completion criteria

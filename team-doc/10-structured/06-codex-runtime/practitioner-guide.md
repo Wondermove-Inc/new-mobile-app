@@ -14,7 +14,7 @@ The team's Codex CLI usage rests on five workflow pillars that govern when plann
 - **Execution**: Do not improvise. Reach for the relevant skill first, and limit subagents to bounded exploration, review, or ownership separation.
 - **Review**: Follow phase reviewer gates. Escalate decisions that affect SoT or risk posture to reviewer(xhigh).
 - **Verified completion**: Before reporting Done, check `git diff` against the approved plan, confirm tests/build/evidence, and map the checklist to the diff.
-- **Hook and gate respect**: Hooks and `mobile-gatekeeper` run deterministically across PR/CI and local guardrails; never override GitHub required checks or gate results with LLM judgment.
+- **Hook and gate respect**: Hooks and deterministic required checks run across PR/CI and local guardrails; never override GitHub required checks or gate results with LLM judgment.
 
 ## Source
 

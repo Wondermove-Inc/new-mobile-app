@@ -13,8 +13,7 @@ selective-install criteria for officially distributed skills, not for new in-hou
 
 ## Scope and gate
 
-- Install decisions are reviewed against this table during the human-gated skill-install
-  step of Case A bootstrap (`mobile-project-bootstrap-workflow`).
+- Install decisions are reviewed against this table during the human-gated bootstrap or runtime-update step.
 - Arbitrary installation of any external skill not listed here is prohibited.
 - Installing all 16 skills from `expo/skills` wholesale is prohibited.
 - Basis: the 2026-06-08 external skill ecosystem survey (16 candidates; verdict of zero new
@@ -23,7 +22,7 @@ selective-install criteria for officially distributed skills, not for new in-hou
 ## Approved external skills
 
 Source: `github.com/expo/skills` (MIT licensed; README declares Claude Code / Cursor / Codex
-support). Install location for all approved skills: `new-mobile-app/.agents/skills/`.
+support). Current project usage is through the installed `expo@expo-plugins` Codex plugin; repo-local skills remain authoritative for contracts, role boundaries, evidence, and QA gates.
 
 | External skill | Primary owning role |
 | --- | --- |

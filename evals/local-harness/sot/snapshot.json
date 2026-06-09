@@ -223,7 +223,9 @@
       "po-prd-to-execution",
       "po-planning-completeness-review",
       "design-mobile-design-handoff",
-      "design-stitch-mcp-operating-rules"
+      "design-stitch-mcp-operating-rules",
+      "e2e-test",
+      "qa-railway-workflow"
     ],
     "forbiddenRoleWrapperSkills": [
       "mobile-product-planning-workflow",

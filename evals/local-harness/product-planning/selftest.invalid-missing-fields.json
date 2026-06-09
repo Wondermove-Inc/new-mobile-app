@@ -42,6 +42,10 @@
       "PII or privacy-sensitive behavior",
       "external messaging or email/SMS push",
       "legal/terms/contracts",
+      "business approval",
+      "compliance/policy decision",
+      "Human Owner budget/business decision",
+      "irreversible scope tradeoff",
       "accepting risk after a gate failure"
     ],
     "forbidden": {

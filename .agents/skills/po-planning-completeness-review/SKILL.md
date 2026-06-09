@@ -30,9 +30,10 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 4. Use A2A/NATS only with runtime support and evidence; otherwise use feature room notes, Confluence comments, or Jira comments.
 5. Record reviewer, channel, timestamp, response, gaps, and owner. Silence is not approval unless a SoT defines a timeout rule.
 6. Classify gaps as missing requirement, conflict, technical dependency, design dependency, release dependency, human decision, or runtime capability blocker.
-7. Update planning artifacts only within approved scope.
-8. Verify every execution task has owner, input artifact, output artifact, acceptance criteria, evidence requirement, dependency, open decisions, next responsible role, platform scope, and release/rollback note when relevant.
-9. Return exactly one readiness state: `READY_FOR_EXECUTION`, `NEEDS_REWORK`, `HUMAN_DECISION_REQUIRED`, or `BLOCKED_BY_RUNTIME_CAPABILITY`.
+7. Route scope-changing uncertainty back to `po-requirement-office-hours` or a human decision before execution readiness.
+8. Update planning artifacts only within approved scope.
+9. Verify every execution task has owner, input artifact, output artifact, acceptance criteria, evidence requirement, dependency, open decisions, next responsible role, platform scope, and release/rollback note when relevant.
+10. Return exactly one readiness state: `READY_FOR_EXECUTION`, `NEEDS_REWORK`, `HUMAN_DECISION_REQUIRED`, or `BLOCKED_BY_RUNTIME_CAPABILITY`.
 
 ## Output
 

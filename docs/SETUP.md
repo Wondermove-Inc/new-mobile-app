@@ -168,6 +168,8 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
   - 참조: `apps/mobile/.eas/workflows/e2e-test-android.yml`
 - [ ] Maestro E2E live 실행 — EAS build 완료 후 emulator에서 `.maestro/home.yml` 실행 확인 (Human owner)
   - 참조: `apps/mobile/.maestro/home.yml`, `apps/mobile/.eas/workflows/e2e-test-android.yml`
+- [ ] Native 완료 방식 선택 — 기본은 Maestro/mobile-mcp 가능 시 실행, 사용자가 직접 local/manual로 진행하는 경우 HUMAN-GATE evidence와 residual risk를 기록
+  - 참조: `PROJECT_ENVIRONMENT.md` Mobile Web E2E / EAS And Maestro 섹션
 - [ ] EAS build (preview profile) 트리거 및 OTA update 확인 (Human owner)
   - 참조: `apps/mobile/.eas/workflows/ota-update.yml`
 - [ ] `apps/api` 포함 시 — Docker 이미지 빌드 및 프로덕션 환경 배포 검증 (Human owner — ops)
@@ -206,6 +208,7 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 | `eas init` → EAS_PROJECT_ID 확정 | Human owner | Expo 계정 + 구독 | `eas.json`, `app.config.ts extra.eas` 설정 완료 |
 | Robot user EXPO_TOKEN k8s Secret 적용 | Human owner (ops) | Expo org Robot user 생성 | `infra/clawpod/secret.example.yaml` 제공 |
 | Maestro E2E live 실행 | Human owner | EAS build 완료 + emulator | `.maestro/home.yml`, `e2e-test-android.yml` 배선 완료 |
+| Native local/manual 완료 evidence | Human owner | 사용자 선택 + local simulator/device/QR 실행 환경 | Maestro/mobile-mcp를 대체하지 않는 HUMAN-GATE 보조 evidence로 기록 |
 | EAS build (preview/production) | Human owner | EXPO_TOKEN Secret 주입 | `eas.json` profiles + `.eas/workflows/` 배선 완료 |
 | EAS Submit (store 제출) | Human owner | Store 계정 + credentials | `build-and-submit.yml` 배선 완료 |
 | Android 최초 수동 업로드 (1회) | Human owner | Google Play 개발자 계정 | 수동 업로드 후 이후 제출은 EAS Submit 자동화 가능 |
@@ -225,6 +228,7 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 | pnpm workspace + Turborepo 동작, `packages/contracts`가 `apps/mobile`에서 해석됨 | §2 | PASS | `pnpm-workspace.yaml` + `turbo.json` 존재. `pnpm install` EXIT 0, `pnpm turbo run lint test` 4 tasks all successful |
 | 홈 화면 카운터 샘플이 공유 상수 import하여 렌더링·동작 | §2 | PASS | `apps/mobile/src/app/index.tsx`가 `COUNTER_INCREMENT`(@template/contracts) import. mobile Jest 2 suites / 5 tests PASS |
 | Jest 유닛 테스트(`home.test.tsx`) 통과 + `jest.setup.ts`가 테스트 env 주입 | §2 | PASS | `home.test.tsx`, `app-config.test.ts`, `jest.setup.ts` 존재. mobile Jest 2 suites / 5 tests PASS |
+| RN Web E2E(`home.spec.ts`)가 browser에서 기본 UI/상태 흐름 검증 | §2 | PASS | `pnpm --filter mobile exec playwright install chromium` 후 `apps/mobile/e2e-web/home.spec.ts` + `playwright.config.ts`가 `home-title`, `counter-value`, `counter-increment-button` 흐름을 검증 |
 | RNTL v13+ 고정 — built-in matcher import만으로 등록, `toHaveTextContent` 동작 | §2 | PASS | `@testing-library/react-native: ^13.0.0` 고정. `toHaveTextContent` 사용하며 PASS |
 | NativeWind 설정 (`global.css`, semantic token CSS var defaults, `withNativewind` Metro config) | §2 | PASS | NativeWind v5-preview/Tailwind CSS 4 설정 파일 존재. lint/Jest/`expo install --check` 통과. 실제 Metro/native smoke는 simulator/device 준비 시 별도 검증 |
 | Maestro E2E(`home.yml`)가 EAS Workflows maestro job으로 통과 | §2 | HUMAN-GATE | `home.yml` + `e2e-test-android.yml` 배선 완료. EAS Workflows 클라우드 실행은 Expo 계정·eas init 선행 필요 |
@@ -245,6 +249,6 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 | `GET /livez`·`GET /readyz` 무인증 200 응답 (readyz는 DB ping 포함) | §15.5 | PASS | GET /livez 200, GET /readyz 200 (DB 연결 시) / 503 (DB 중단 시) 분기 확인 |
 | `docker build -f apps/api/Dockerfile .` 성공 (컨테이너 이미지 산출) | §15.5 | PASS | turbo prune → tsc → pnpm deploy 전 스테이지 성공, 이미지 sha256 확인 |
 
-**요약: PASS 16 / HUMAN-GATE 1 / FAIL 0**
+**요약: PASS 17 / HUMAN-GATE 2 / FAIL 0**
 
-HUMAN-GATE 1건 사유: Maestro E2E 실제 통과는 EAS Workflows 클라우드 emulator 실행이 필요하며, 이는 Expo 계정·`eas init`·Robot token(사전 등록 가이드 §5 Day 1)이 선행되어야 검증 가능합니다. 동일 클래스의 EAS Build/Submit/Update·Store 제출도 클라우드 실행 시점에 검증되는 HUMAN-GATE 영역이나, DoD 항목 자체(profile 정의·workflow 배선·문서화·init 코드)는 산출물로 충족되어 PASS입니다.
+HUMAN-GATE 사유: Maestro E2E 실제 통과는 EAS Workflows 클라우드 emulator 실행이 필요하며, 이는 Expo 계정·`eas init`·Robot token(사전 등록 가이드 §5 Day 1)이 선행되어야 검증 가능합니다. 사용자가 local/manual native 완료 방식을 선택하는 경우에도 자동화 대체 PASS가 아니라 HUMAN-GATE evidence와 residual risk로 기록합니다. 동일 클래스의 EAS Build/Submit/Update·Store 제출도 클라우드 실행 시점에 검증되는 HUMAN-GATE 영역이나, DoD 항목 자체(profile 정의·workflow 배선·문서화·init 코드)는 산출물로 충족되어 PASS입니다.

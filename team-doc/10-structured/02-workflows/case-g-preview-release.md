@@ -30,7 +30,7 @@ Completion criteria:
 - Maestro passes.
 - Release note exists.
 - Install/test method is shared.
-- mobile-gatekeeper required check passes, with PR/SHA/EAS/Maestro/evidence consistency confirmed, author ≠ approver, and rework_count below cap.
+- The deterministic required check passes, with PR/SHA/EAS/Maestro/evidence consistency confirmed, author ≠ approver, and rework_count below cap.
 
 ## Source
 

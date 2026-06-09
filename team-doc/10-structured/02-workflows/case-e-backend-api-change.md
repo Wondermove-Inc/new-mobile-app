@@ -32,7 +32,7 @@ Safely deliver the backend/API changes that the mobile app depends on.
 - A backward-compatibility or migration note exists.
 - Auth/token/tenant/payment impact review is complete.
 - Mobile integration evidence exists.
-- The `mobile-gatekeeper` required check passes, author ≠ approver, and `rework_count` is below the cap.
+- The deterministic required check passes, author ≠ approver, and `rework_count` is below the cap.
 
 ## Source
 

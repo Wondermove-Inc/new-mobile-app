@@ -34,8 +34,7 @@ non-self-hostable cloud service) handles mobile cloud build, E2E, submit, and OT
 - `ota-update.yml` — triggers on push to the `preview` branch. An `update` job
   runs `eas update` to the `preview` channel for all platforms (`channel` must
   match the build profile's channel; `branch` and `channel` cannot be set
-  together). Sentry sourcemap upload is opt-in via
-  `params.upload_sentry_sourcemaps: true`.
+  together).
 - The `.eas` directory must sit at the same level as `eas.json`, and EAS commands
   run from `apps/mobile`.
 
@@ -57,8 +56,8 @@ non-self-hostable cloud service) handles mobile cloud build, E2E, submit, and OT
 - The PR gate proves static and unit correctness only; cloud build, E2E, submit,
   and OTA are all EAS responsibilities.
 - Operating these in practice requires the project owner's external setup — an
-  Expo subscription, GitHub integration, store accounts, and a Sentry project —
-  none of which the template can self-host.
+  Expo subscription, GitHub integration, and store accounts — none of which the
+  template can self-host.
 - Agents authenticate EAS CLI non-interactively via an `EXPO_TOKEN` (Expo Robot
   user token) injected only through a k8s Secret, never baked into images.
 

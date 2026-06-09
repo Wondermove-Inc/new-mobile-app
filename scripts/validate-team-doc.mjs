@@ -156,6 +156,46 @@ for (const file of structuredFiles) {
   }
 }
 
+const currentSkillMatrix = exists('10-structured/03-skills/mvp-skill-matrix.md')
+  ? read('10-structured/03-skills/mvp-skill-matrix.md')
+  : '';
+const repoSkillRoot = path.join(root, '.agents/skills');
+if (fs.existsSync(repoSkillRoot)) {
+  const repoSkillSlugs = fs.readdirSync(repoSkillRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+  for (const skillSlug of repoSkillSlugs) {
+    if (!currentSkillMatrix.includes(`\`${skillSlug}\``)) {
+      fail(`current skill matrix missing generated repo skill: ${skillSlug}`);
+    }
+  }
+}
+
+const obsoleteGeneratedSkillSlugs = [
+  'mobile-prd-to-execution',
+  'mobile-design-handoff',
+  'mobile-api-contract',
+  'mobile-qa-release',
+  'mobile-gatekeeper',
+  'mobile-project-bootstrap-workflow',
+];
+
+for (const file of structuredFiles) {
+  const body = read(file);
+  if (/Sentry|@sentry|SENTRY/.test(body)) {
+    fail(`structured doc must not describe Sentry as current/default template scope: team-doc/${file}`);
+  }
+  if (/`title`, `counter`, `increment`/.test(body)) {
+    fail(`structured doc has obsolete mobile testID set: team-doc/${file}`);
+  }
+  for (const slug of obsoleteGeneratedSkillSlugs) {
+    if (body.includes(`\`${slug}\``)) {
+      fail(`structured doc references obsolete generated skill slug ${slug}: team-doc/${file}`);
+    }
+  }
+}
+
 if (pageMap && splitMap) {
   if (!Array.isArray(splitMap.entries)) fail('split-map.json entries must be an array');
   const entries = Array.isArray(splitMap.entries) ? splitMap.entries : [];
@@ -199,6 +239,114 @@ for (const file of generatedFiles) {
     if (pattern.test(body)) fail(`probable secret or concrete credential in team-doc/${file}`);
   }
 }
+
+const soulMdRoot =
+  '00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138';
+
+function requireDocTerms(relativePath, terms) {
+  if (!exists(relativePath)) {
+    fail(`missing required role document: team-doc/${relativePath}`);
+    return;
+  }
+  const body = read(relativePath);
+  for (const term of terms) {
+    if (!body.includes(term)) {
+      fail(`team-doc/${relativePath} missing required role-boundary term: ${term}`);
+    }
+  }
+}
+
+requireDocTerms(`${soulMdRoot}/soul-md-backend-api-integrator-1373700180.md`, [
+  'Backend/API Service Owner',
+  'backend implementation',
+  'DB schema/migration',
+  'deployment config',
+  'runtime smoke',
+  'rollback note',
+  'service evidence',
+]);
+
+requireDocTerms(`${soulMdRoot}/soul-md-qa-release-1373700201.md`, [
+  'backend smoke',
+  'release-readiness evidence',
+  'does not implement backend service',
+  'does not own DB migrations',
+  'does not operate deployment runtime',
+]);
+
+requireDocTerms(
+  `${soulMdRoot}/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md`,
+  [
+    'Security/Privacy is a conditional reviewer/gate',
+    'not a standing implementation agent',
+  ],
+);
+
+requireDocTerms(
+  `${soulMdRoot}/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md`,
+  [
+    'Security/Privacy is a conditional reviewer/gate',
+    'not a standing implementation agent',
+  ],
+);
+
+requireDocTerms(
+  `${soulMdRoot}/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454.md`,
+  ['trigger-based'],
+);
+
+requireDocTerms(`${soulMdRoot}/soul-md-mobile-architect-1373667383.md`, [
+  'working architecture owner',
+  'code standards review',
+  'TDD red-first',
+  'clean architecture layer/import boundaries',
+  'app-side code vulnerability review',
+  'Security/Privacy gate',
+  "Mobile App Dev's implementation responsibility",
+  "Backend/API Integrator's service/security contract responsibility",
+  'QA/Release evidence gates',
+  'Product/Planning scope ownership',
+]);
+
+const managedTeamDocRoot = 'mobile-app-dev-team';
+
+for (const relativePath of [
+  `${managedTeamDocRoot}/README.md`,
+  `${managedTeamDocRoot}/00-sot-and-principles.md`,
+  `${managedTeamDocRoot}/01-team-composition.md`,
+  `${managedTeamDocRoot}/02-role-souls/product-planning-soul.md`,
+  `${managedTeamDocRoot}/02-role-souls/design-soul.md`,
+  `${managedTeamDocRoot}/02-role-souls/mobile-architect-soul.md`,
+  `${managedTeamDocRoot}/02-role-souls/mobile-app-dev-soul.md`,
+  `${managedTeamDocRoot}/02-role-souls/backend-api-integrator-soul.md`,
+  `${managedTeamDocRoot}/02-role-souls/qa-release-soul.md`,
+  `${managedTeamDocRoot}/03-role-capability-matrix.md`,
+  `${managedTeamDocRoot}/04-skills-and-agents-matrix.md`,
+  `${managedTeamDocRoot}/05-work-processes.md`,
+  `${managedTeamDocRoot}/06-gates-and-evidence.md`,
+  `${managedTeamDocRoot}/07-new-team-template-guide.md`,
+  `${managedTeamDocRoot}/99-source-map.md`,
+]) {
+  if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: team-doc/${relativePath}`);
+}
+
+requireDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
+  '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
+  'No Gatekeeper SOUL.md',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
+  'Active repo-local skills',
+  '$wm routing',
+  'legacy mobile-* agents',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
+  'active-vs-historical skill crosswalk',
+  'mobile-api-contract',
+  'mobile-qa-release',
+  'qa-railway-workflow',
+]);
 
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join('\n'));

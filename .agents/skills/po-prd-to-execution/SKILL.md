@@ -5,7 +5,7 @@ description: Use when Product/Planning has a ready PRD or bounded work unit and 
 
 # PO PRD To Execution
 
-Use this Product/Planning adapter only after the request is ready for decomposition.
+Use this Product/Planning adapter only after the request has bounded readiness for decomposition.
 
 ## Source Crosswalk
 
@@ -18,20 +18,21 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 
 ## Required Inputs
 
-- Ready PRD, clarified requirement brief, or bounded work-unit decision.
+- Ready PRD, clarified requirement brief, or bounded work-unit decision with `READY_FOR_MOBILE_PRD_TO_EXECUTION` or equivalent bounded readiness.
 - Target platform, release scope, non-goals, external API/backend notes, and human-gate flags.
 - Known design, architecture, backend/API, QA/release, and evidence constraints.
 
 ## Workflow
 
-1. Confirm the PRD is ready; route unclear requirements back to `po-requirement-office-hours`.
-2. Separate user goals, screens, data, integration, release, and evidence requirements.
-3. Create or draft Jira Epic and Story structure tied to acceptance criteria.
-4. Break Stories into role-scoped Tasks for relevant roles.
-5. Attach owner role, input artifact, output artifact, expected output, Done-when acceptance criteria, evidence requirement, dependencies, open decisions, and next responsible role to every Task.
-6. Mark API contract needs and human-gate categories explicitly.
-7. Include QA/Release work; do not omit evidence and release-readiness tasks.
-8. Produce feature-room or coordination-log instructions without treating chat as final SoT.
+1. Confirm the PRD is ready and bounded; route unclear requirements back to `po-requirement-office-hours`.
+2. Route oversized PRDs, full-product plans, or unbounded MVP scope back to `po-work-unit-planning-and-agent-sprint` before decomposition.
+3. Separate user goals, screens, data, integration, release, and evidence requirements.
+4. Create or draft Jira Epic and Story structure tied to acceptance criteria.
+5. Break Stories into role-scoped Tasks for relevant roles.
+6. Attach owner role, input artifact, output artifact, expected output, Done-when acceptance criteria, evidence requirement, dependencies, open decisions, and next responsible role to every Task.
+7. Mark API contract needs and human-gate categories explicitly.
+8. Include QA/Release work; do not omit evidence and release-readiness tasks.
+9. Produce feature-room or coordination-log instructions without treating chat as final SoT.
 
 ## Output
 
@@ -43,6 +44,7 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 ## Forbidden
 
 - Do not decompose unclear requests into execution work.
+- Do not decompose oversized PRDs or unbounded work units.
 - Do not implement mobile UI, backend APIs, migrations, or release operations.
 - Do not approve production submit or failed-gate risk.
 - Do not create ad-hoc API contracts outside `packages/contracts`.

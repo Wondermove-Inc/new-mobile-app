@@ -6,21 +6,27 @@ sourceVersion: "4"
 sourceHeading: "MVP skill matrix"
 ---
 
-# MVP skill matrix
+# Current repo skill matrix
 
-The five MVP skills are the standing source of truth; case-coverage skills and modes never replace them. Each skill is deployed to one of two locations: the organization-runtime skill pack (installed in the generated agents' workspace or user skill location, for org operations and PRD/task decomposition) or the new-mobile-app repo skill pack (committed to `new-mobile-app/.agents/skills` for in-repo implementation, verification, and release).
+This matrix records the repo-local Codex skills currently generated under `new-mobile-app/.agents/skills`. These are the active skill slugs for this repository. Historical source-skill names from Confluence are not treated as generated repo skills unless a matching `.agents/skills/<slug>/SKILL.md` directory exists.
 
 ## Deployment matrix
 
 | Skill | Location | Target SOUL.md role(s) | Default case coverage |
 | --- | --- | --- | --- |
-| `mobile-prd-to-execution` | organization-runtime skill pack | Product/Planning | Case B |
-| `mobile-design-handoff` | organization-runtime skill pack | Design; Mobile Architect and Mobile App Dev act as reviewers | Case B review premise, Case C, Case D |
-| `mobile-api-contract` | new-mobile-app repo skill pack | Mobile Architect, Backend/API Integrator, Mobile App Dev | Case D, Case E |
-| `mobile-qa-release` | new-mobile-app repo skill pack | QA/Release | Case C, D, E, F, G, H |
-| `mobile-gatekeeper` | new-mobile-app repo skill pack | Gatekeeper (non-LLM); all LLM roles comply with gate results | Cross-cutting required check |
+| `wm` | `.agents/skills` | WonderMove repo workflow entrypoint | Scoped planning, TDD implementation routing, reviewer evidence, and branch/PR readiness |
+| `mobile-app-dev-workflow` | `.agents/skills` | Mobile App Dev | Repo-scoped Expo React Native implementation after design/API readiness |
+| `mobile-backend-api-integrator-workflow` | `.agents/skills` | Backend/API Integrator | Mobile-facing API contracts, schemas, mocks, fixtures, auth/session, and error mapping |
+| `po-requirement-office-hours` | `.agents/skills` | Product/Planning | Ambiguous requirement clarification before PRD decomposition |
+| `po-work-unit-planning-and-agent-sprint` | `.agents/skills` | Product/Planning | Bounded MVP slice, story, task, sprint, or triage shaping |
+| `po-prd-to-execution` | `.agents/skills` | Product/Planning | PRD/work-unit conversion into role-scoped execution tasks |
+| `po-planning-completeness-review` | `.agents/skills` | Product/Planning | Completed planning package review before execution starts |
+| `design-mobile-design-handoff` | `.agents/skills` | Design | Stitch-backed mobile design handoff after Product/Planning readiness |
+| `design-stitch-mcp-operating-rules` | `.agents/skills` | Design | Stitch MCP execution rules, DESIGN.md handling, P0/P1 approvals, and handoff publication |
+| `e2e-test` | `.agents/skills` | QA evidence workflow | Planned RN Web Playwright, Maestro, mobile-mcp, or manual HUMAN-GATE evidence capture |
+| `qa-railway-workflow` | `.agents/skills` | QA/Release | Railway CLI install/login/project/service/database/variables/domain/deploy/status/logs/health evidence, RN Web API URL handoff, and PROJECT_ENVIRONMENT.md synchronization |
 
-Note: `mobile-gatekeeper` is a deterministic hard gate — no LLM skill, hook, or reviewer may substitute or reinterpret its pass/fail outcome.
+No additional generated repo skill is missing from the current `.agents/skills` directory. Case A bootstrap remains a human/operator and Product/Planning coordination flow rather than a generated repo-local skill in the current configuration. The deterministic gatekeeper remains a required-check concept, not a generated LLM skill.
 
 ## Source
 

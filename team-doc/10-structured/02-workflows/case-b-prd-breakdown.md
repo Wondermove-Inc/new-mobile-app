@@ -21,7 +21,7 @@ Convert a user-provided PRD into an agent-executable backlog.
 
 ## Procedure
 
-1. Run the `mobile-prd-to-execution` skill.
+1. Run the repo-local `po-prd-to-execution` Product/Planning adapter.
 2. Create the Confluence PRD or document SoT.
 3. Create Jira Epic/Story.
 4. Create Tasks.

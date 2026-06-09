@@ -17,7 +17,6 @@ Official and project source references that ground the template design decisions
 - **Expo monorepo guide**: SDK 52+ provides automatic Metro configuration; watch for pnpm isolated-dependency issues.
 - **NativeWind v5 + Tailwind v4 installation**: requires `global.css` (CSS-first `@theme`), `postcss.config.mjs` (`@tailwindcss/postcss`), `babel.config.js`, the `withNativewind` Metro wrapper, and a type declaration. A JS `tailwind.config.js` is not needed.
 - **React Native Testing Library matchers**: v13+ built-in matchers auto-register on importing the main package (no setup file). A subpath `extend-expect` setup is only needed when downgrading to v12.x.
-- **Expo Sentry guide**: EAS Build uses `SENTRY_AUTH_TOKEN`; EAS Update requires an explicit sourcemap upload afterward.
 - **Expo Programmatic Access**: a Robot user token is consumed via the `EXPO_TOKEN` env var.
 
 ## Design and backend references

@@ -127,6 +127,8 @@ The preferred collaboration mode is targeted 1:1 review with each responsible ag
 | Security/Privacy | PII, payment, auth, permissions, policy-sensitive behavior | Confirm no extra gate is needed or require human/security decision. |
 | Human Owner | Business, policy, irreversible scope, budget, production release decision | Approve, reject, or request rework. |
 
+Security/Privacy is a conditional reviewer/gate for work that touches auth, PII, payment, permissions, policy-sensitive behavior, or a human security/privacy decision. It is not a standing implementation agent, and it must not be added to every plan when the selected scope has no security/privacy-sensitive surface.
+
 ## Decision States
 
 | State | Meaning | Next action |

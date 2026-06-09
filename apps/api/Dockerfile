@@ -10,6 +10,7 @@ WORKDIR /app
 COPY --from=prune /app/out/json/ ./
 RUN pnpm install --frozen-lockfile
 COPY --from=prune /app/out/full/ ./
+RUN pnpm --filter @template/contracts build
 RUN pnpm --filter @template/api build
 RUN pnpm --filter @template/api deploy --prod /app/deploy
 

@@ -21,7 +21,7 @@ Workflow for features that need both a mobile screen and a backend/API contract.
 ## Procedure
 
 1. Design defines the screen and its states.
-2. Freeze the contract with `mobile-api-contract`.
+2. Freeze the shared contract in `packages/contracts`; use `mobile-backend-api-integrator-workflow` when the mobile-facing API schema, mock, fixture, auth/session, or error mapping must change.
 3. Backend/API Integrator decides whether a backend change is required.
 4. If a backend change is needed, split it into a separate backend task/PR.
 5. Mobile App Dev implements against the mock or the finalized API.

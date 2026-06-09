@@ -22,9 +22,6 @@ Every project-specific identifier is a template variable injected at generation 
 - `API_URL` — API base URL the app calls.
 - `EAS_PROJECT_ID` — EAS project UUID, finalized after `eas init`.
 - `EXPO_OWNER` — Expo account/org (customer or ClawPod-managed org).
-- `SENTRY_DSN` — client DSN.
-- `SENTRY_ORG` / `SENTRY_PROJECT` — sourcemap upload target.
-- `SENTRY_AUTH_TOKEN` — EAS Build/Update sourcemap upload token (Secret-injected).
 - `EXPO_TOKEN_SECRET_NAME` — k8s Secret name the agent runner references (e.g. `clawpod-eas-{{agent}}-{{project}}`).
 - `DATABASE_URL` — PostgreSQL connection string (only when `apps/api` is included; Secret-injected).
 - `API_PORT` — api listen port (only when `apps/api` is included; e.g. `3000`).

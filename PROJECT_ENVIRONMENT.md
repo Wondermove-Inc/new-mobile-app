@@ -23,9 +23,11 @@ This file is the root source for the current project environment and runtime set
   - `react`: `19.2.3`
   - `react-dom`: `19.2.3`
   - `react-native`: `0.85.3`
+  - `react-native-web`: `^0.21.2`
   - `expo-router`: `~56.2.9`
   - `expo-dev-client`: `~56.0.19`
   - `expo-doctor`: `^1.19.9` as the `doctor` script dependency.
+  - `@playwright/test`: `^1.60.0` as the browser E2E test runner.
 - Expo config: `apps/mobile/app.config.ts`.
   - Dynamic values come from environment variables.
   - Neutral template fallback values exist only so local config evaluation can run without customer values.
@@ -43,9 +45,39 @@ This file is the root source for the current project environment and runtime set
   - `pnpm --filter mobile lint`
   - `pnpm --filter mobile test`
   - `pnpm --filter mobile e2e`
+  - `pnpm --filter mobile e2e:web`
+  - `pnpm --filter mobile web`
 - Node baseline:
   - CI uses Node 22.
   - Mobile TypeScript uses `@types/node` 22.x so code cannot type-check against newer Node-only APIs by accident.
+
+## Mobile Web E2E
+
+- Browser E2E path: `apps/mobile/e2e-web`.
+- Browser E2E config: `apps/mobile/playwright.config.ts`.
+- Browser install command: `pnpm --filter mobile exec playwright install chromium`.
+- Browser E2E command: `pnpm --filter mobile e2e:web`.
+- Repo QA skill: `$e2e-test` plans, resets, executes, and records E2E evidence. It is a Codex skill, not the EAS build profile or workflow label named `e2e-test`.
+- RN Web E2E validates only RN Web/browser-reproducible UI, navigation, state, and business logic flows.
+- RN Web E2E does not validate native modules, OS permissions, native lifecycle behavior, push delivery, biometrics, camera, GPS, or other device/hardware features.
+- RN Web release E2E requires a deployed backend API URL through public client config:
+  - `EXPO_PUBLIC_API_URL=<deployed-api-url> pnpm --filter mobile e2e:web`
+  - `EXPO_PUBLIC_API_URL` is compiled into the client app and is not private; never put bearer tokens, signing keys, passwords, or private endpoints in it.
+  - The current Railway QA API URL verified for this workspace is `https://api-production-3d74.up.railway.app`.
+  - Evidence: `.evidence/e2e-test/20260609-233244-rn-web-railway-api/`.
+- Playwright launches Expo Web with deterministic public test config plus the caller-provided backend API URL:
+  - `EAS_BUILD=false`
+  - `EXPO_PUBLIC_APP_ENV=development`
+  - `EXPO_PUBLIC_APP_DISPLAY_NAME=Mobile App Template`
+  - `EXPO_PUBLIC_APP_SLUG=mobile-app-template`
+  - `EXPO_PUBLIC_APP_SCHEME=mobileapptemplate`
+  - `EXPO_PUBLIC_API_URL` from the command environment
+  - `EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER=com.template.mobile`
+  - `EXPO_PUBLIC_ANDROID_PACKAGE=com.template.mobile`
+- `EXPO_PUBLIC_*` values are public client configuration and must not contain tokens, bearer credentials, signing keys, passwords, or private service endpoints.
+- Native completion remains separate:
+  - Run Maestro and `mobile-mcp` visual QA when the required EAS account, simulator, emulator, or device is available.
+  - If the user chooses direct local/manual native verification instead, record it as HUMAN-GATE evidence with residual risk; do not remove or mark the Maestro/mobile-mcp requirements as replaced.
 
 ## Mobile Styling
 
@@ -102,11 +134,13 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `preview`: internal distribution, `preview` channel, `preview` EAS environment.
   - `production`: `production` channel with auto increment and `production` EAS environment.
   - `e2e-test`: Android APK and iOS simulator settings without credentials, using the `preview` EAS environment.
+- The EAS profile/workflow label `e2e-test` is distinct from the repo Codex skill `$e2e-test`.
 - EAS workflows:
   - `apps/mobile/.eas/workflows/build-and-submit.yml`: production build jobs use the `production` EAS environment and set `EXPO_PUBLIC_APP_ENV=production`.
   - `apps/mobile/.eas/workflows/e2e-test-android.yml`: E2E build job uses the `preview` EAS environment and sets `EXPO_PUBLIC_APP_ENV=preview`.
   - `apps/mobile/.eas/workflows/ota-update.yml`: preview update job uses the `preview` EAS environment and sets `EXPO_PUBLIC_APP_ENV=preview`.
 - Maestro flows: `apps/mobile/.maestro`.
+- Native E2E command: `pnpm --filter mobile e2e`.
 - Current stable testIDs:
   - `home-title`
   - `counter-value`
@@ -128,13 +162,27 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `API_BEARER_TOKEN`: required secret.
 - Import direction remains routes to services to db only.
 - Shared API/domain schemas must come from `packages/contracts`.
+- Current Railway QA deployment:
+  - Project: `new-mobile-app`.
+  - API service: `api`.
+  - Postgres service: `Postgres`.
+  - API URL: `https://api-production-3d74.up.railway.app`.
+  - Latest verified API deployment id: `4c701f22-3ce9-40ef-a4bd-560252b773f3`.
+  - `GET /livez` returns `{"status":"ok"}`.
+  - `GET /readyz` returns `{"status":"ok"}`.
+  - Railway runtime variables include `DATABASE_URL`, `API_BEARER_TOKEN`, `PORT=3000`, `API_PORT=3000`, `RAILWAY_DOCKERFILE_PATH=apps/api/Dockerfile`, and `RAILWAY_HEALTHCHECK_PATH=/readyz`.
+  - Do not print or commit Railway secret values. `API_BEARER_TOKEN` was rotated after setup output exposed an earlier generated value.
 
 ## Contracts Package
 
 - Package path: `packages/contracts`.
-- Export: `./src/index.ts`.
+- Source entry: `./src/index.ts`.
 - Peer dependency: `zod ^3.25.0 || ^4.0.0`.
 - This package is the single source of truth for API request/response types and shared domain schemas.
+- Runtime export: `./dist/index.js`, with TypeScript types sourced from `./src/index.ts`.
+- Build command: `pnpm --filter @template/contracts build`.
+- Test command: `pnpm --filter @template/contracts test`.
+- API Docker builds must build `@template/contracts` before `@template/api` so deployed Node runtimes do not import TypeScript source from `node_modules`.
 
 ## Codex Runtime
 
@@ -153,6 +201,8 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - Repo skills: `.agents/skills/<skill-name>/SKILL.md`.
   - `$wm` plans must be SoT-grounded: material planning decisions cite or name verified SoT inputs, and missing or ambiguous SoT must be reported as unknown/blocked instead of being filled by predictions, assumptions, or expected behavior.
   - `$wm` implementation runs require persisted read-only reviewer evidence for both the completed plan and the actual completed work, and final user reports must include material `git diff` change details.
+  - `$e2e-test` is the repo QA skill for E2E test planning, tested-instance reset, planned execution, and objective evidence capture across RN Web Playwright, Maestro, `mobile-mcp`, or manual HUMAN-GATE checks. It records evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` and does not implement fixes.
+  - `$qa-railway-workflow` is the repo QA skill for Railway CLI install/login/project/service/database/variable/domain/deploy/status/log/health workflows, redacted Railway evidence, RN Web E2E API URL handoff, and `PROJECT_ENVIRONMENT.md` synchronization. It does not implement app, backend, contract, migration, or mobile UI fixes.
   - Product/Planning repo-local Codex adapters use required `po-*` slugs:
     - `po-requirement-office-hours` maps source skill `mobile-requirement-office-hours` page `1374519364`.
     - `po-work-unit-planning-and-agent-sprint` maps source skill `mobile-work-unit-planning-and-agent-sprint` page `1374650456`.
@@ -162,7 +212,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - Design repo-local Codex adapters use required `design-*` slugs:
     - `design-mobile-design-handoff` maps source skill `mobile-design-handoff` page `1373765661`, Design SOUL page `1373765702`, and Design Codex practice page `1374290207`.
     - `design-stitch-mcp-operating-rules` defines reusable Stitch MCP execution rules for Design handoff work and maps the same Design source/practice pages.
-    - These adapters require objective UI/UX framing, DESIGN.md decision handling, exactly two Stitch design options, Option A/B HTML extraction via `code.html` or Stitch MCP fetch, Option A/B image extraction via Stitch MCP, dated `design-pub-html/<YYYY-MM-DD>/` publication, five-state matrix, UX acceptance criteria, and evidence.
+    - These adapters require objective UI/UX framing, DESIGN.md decision handling, Product/Planning P0 scope/evidence approval before Stitch generation, exactly two Stitch visual design directions, Product/Planning P1 scope/evidence approval before HTML extraction, Option A/B HTML extraction via `code.html` or Stitch MCP fetch only after P1, Option A/B image extraction via Stitch MCP, dated `design-pub-html/<YYYY-MM-DD>/` publication, five-state matrix, UX acceptance criteria, and evidence.
+    - P0/P1 Product/Planning approvals are scope/evidence approvals for PRD fit, non-goals, evidence readiness, and human-gate routing. They are not Design quality approvals and do not move selected-option ownership out of Design.
+    - Before P1 approval, Design must not call or persist `fetch_screen_code`, official ZIP `code.html`, SDK `getHtml`, `htmlCode.downloadUrl`, or equivalent HTML extraction metadata.
+    - Stitch prompt generation must use prompt enhancement and current `DESIGN.md`; Gemini 3.1 Pro, Pro, or Thinking mode is requested best-effort when the Stitch surface exposes model or mode selection, with actual capability and limitations recorded in `manifest.json`.
 - Custom agents: `.codex/agents/<agent-name>.toml`.
   - wm review routing uses dedicated read-only agents:
     - `wm-implementation-reviewer`

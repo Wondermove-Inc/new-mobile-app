@@ -24,7 +24,7 @@ Create a new mobile repo from the Confluence-designed monorepo template, then ad
 2. Mobile Architect approves the template defaults (pnpm + Turborepo + Expo Router + NativeWind + Jest + zod) and only decides changes where an exception is required.
 3. The new repo's operating layer ships `apps/mobile/eas.json`, `apps/mobile/.eas/workflows`, `apps/mobile/.maestro` (template-provided), plus the gatekeeper layer (repo-root GitHub workflow + script) and the `.evidence/` convention (including its README) — these are 01-7 Phase 3 outputs. QA/Release confirms EAS/Maestro workflows run and a smoke flow exists.
 4. Mobile App Dev verifies the initial app shell (template home-counter sample + `packages/contracts` import) runs.
-5. `mobile-gatekeeper` inspects the initial PR.
+5. Run the deterministic PR/evidence gate checks for the initial PR.
 
 ## Completion criteria
 

@@ -20,13 +20,13 @@ Each SOUL.md follows the format the admin-portal/admin-api Soul Builder actually
 
 ## Permission profiles
 
-The SoT defines two profiles: Supervisor = read/write/execute/communicate/delegate; IC = read/write/communicate. Supervisor (gate/approval) roles — Product/Planning, Mobile Architect, QA/Release (claude-opus-4-7) — use the full set. Implementation ICs (Mobile App Dev, Backend/API Integrator) add `execute` so they can run mobile-gatekeeper self-check, tests, and builds directly in their workspace — a documented deviation from the SoT IC profile, following the platform developer preset precedent. The non-executing IC (Design) keeps the plain IC profile.
+The SoT defines two profiles: Supervisor = read/write/execute/communicate/delegate; IC = read/write/communicate. Supervisor (gate/approval) roles — Product/Planning, Mobile Architect, QA/Release — use the full set. Implementation ICs (Mobile App Dev, Backend/API Integrator) add `execute` so they can run deterministic checks, tests, and builds directly in their workspace — a documented deviation from the SoT IC profile, following the platform developer preset precedent. The non-executing IC (Design) keeps the plain IC profile.
 
 ## Common required clauses (inherited unchanged)
 
 - Identity carries five fixed traits: Evidence-Driven, Scope-Disciplined, Gate-Respecting, Handoff-Ready, Secret-Hygienic. The operating surface is limited to assigned rooms, Tasks, the workspace, and the new mobile app repository.
 - Source-of-Truth routing: PRD/ADR/release → Confluence; backlog → Jira Epic/Story; agent execution → Tasks; code/review → GitHub PR; build/release evidence → EAS; E2E evidence → Maestro; minimum machine-readable evidence → `new-mobile-app/.evidence/<task-id>.json`. Room messages are coordination logs, not the final SoT.
-- Deterministic-Gate-First: mobile-gatekeeper runs before review; its pass/fail is deterministic and a failed required check cannot be overridden by LLM judgment; author must not equal approver; rework_count stays below its cap.
+- Deterministic-Gate-First: required checks run before review; pass/fail is deterministic and a failed required check cannot be overridden by LLM judgment; author must not equal approver; rework_count stays below its cap.
 - Human-gate escalation covers six categories: production submit; payment/money movement; PII/privacy-sensitive behavior; external messaging or email/SMS push; legal/terms/contracts; accepting risk after a gate failure.
 - Tooling is installed via a post-creation bootstrap task — never by modifying the openclaw-cloud platform, agent image, entrypoint, or runtime configuration.
 - Handoff Contract requires all seven elements: task id, owner role, input artifacts, output artifacts, evidence path/URL, open decisions, next responsible role.

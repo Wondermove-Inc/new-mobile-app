@@ -9,12 +9,10 @@ Owner role: Design agent for Stitch design workflow; Codex runtime owner for MCP
 This plan covers enabling Stitch MCP for the current repository workflow:
 
 1. Receive PRD and requirements.
-2. Generate a first mock or wireframe in Stitch.
-3. Get human approval for the wireframe direction.
-4. Send the approved direction plus `DESIGN.md` constraints to Stitch.
-5. Generate exactly two visual design options.
-6. Get human approval for the selected design.
-7. Export HTML and design evidence for implementation handoff.
+2. Prepare a P0 Product/Planning scope/evidence approval packet before Stitch generation.
+3. After P0 approval, generate exactly two visual design directions in Stitch.
+4. Prepare a P1 Product/Planning scope/evidence approval packet from the generated visuals.
+5. After P1 approval, export HTML and design evidence for implementation handoff.
 
 Runtime activation has been applied with the pinned stdio adapter. `$wm` required planning and review before activation, and the current worktree still contains unrelated pre-existing changes.
 
@@ -71,12 +69,12 @@ Recommended local test handling:
 
 ## Prompt Review
 
-Use a two-stage prompt flow so Stitch does not jump from requirements directly to final UI.
+Use a gated prompt flow so Stitch does not jump from requirements directly to HTML handoff.
 
-### Stage 1 Wireframe Prompt
+### Stage 0 P0 Approval Packet
 
 ```text
-Use Stitch to create a low-fidelity mobile wireframe only.
+Prepare the Product/Planning P0 scope/evidence approval packet before any Stitch generation.
 
 Input:
 - PRD:
@@ -85,27 +83,29 @@ Input:
   {{REQUIREMENTS_TEXT}}
 - Target platform: Expo React Native mobile app.
 - Device: MOBILE.
+- DESIGN.md decision:
+  {{KEEP_EXISTING_DESIGN_MD | UPDATE_DESIGN_MD_REQUIRED | BLOCKED_BY_DESIGN_SYSTEM_DECISION}}
 
 Constraints:
-- Produce structure, information hierarchy, screen flow, and interaction states only.
-- Do not finalize brand colors, illustration style, or polished visual treatment.
-- Use neutral template branding; do not invent customer names, bundle IDs, URLs, tokens, or credentials.
-- Include expected screens, primary actions, empty/loading/error states, and approval questions.
+- Explain why image/design artifacts are needed.
+- Define exactly two design directions to explore.
+- Include non-goals, expected artifact paths, requested date, and human-gate matrix.
+- Product/Planning approves scope, non-goals, evidence readiness, and human-gate routing only.
+- Product/Planning does not approve Design quality or own the selected option.
 
 Output:
-- One wireframe direction.
-- Screen list and rationale.
-- Open questions that block final design.
+- P0 packet.
+- Product/Planning decision: READY_FOR_EXECUTION, NEEDS_REWORK, HUMAN_DECISION_REQUIRED, or BLOCKED_BY_RUNTIME_CAPABILITY.
 ```
 
-### Stage 2 Design Options Prompt
+### Stage 1 Visual Options Prompt
 
 ```text
-Use Stitch to create exactly two polished mobile design options based on the approved wireframe.
+Use Stitch to create exactly two polished mobile visual design directions after P0 approval.
 
 Input:
-- Approved wireframe summary:
-  {{APPROVED_WIREFRAME_SUMMARY}}
+- P0 approval record:
+  {{P0_APPROVAL}}
 - DESIGN.md:
   {{DESIGN_MD_CONTENT}}
 - PRD acceptance criteria:
@@ -113,35 +113,66 @@ Input:
 
 Constraints:
 - Follow DESIGN.md as the design system source of truth.
-- Keep output suitable for Expo React Native implementation with NativeWind, React Native primitives, and semantic tokens.
-- Do not use web-only shadcn/ui assumptions for native screens.
-- Preserve stable testID planning for long-lived automated checks.
-- Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials.
-- Prefer accessible contrast, clear touch targets, and mobile-first layout density.
+- Apply prompt enhancement before calling Stitch.
+- Prefer Gemini 3.1 Pro, Pro, or Thinking mode when the Stitch surface exposes model/mode selection; record requested/actual/unsupported model mode in manifest.
+- Produce exactly two design directions: Option A and Option B.
+- Each option covers all approved screens and default/loading/empty/error/permission-denied states.
+- Generate or fetch visual/image evidence only.
+- Do not call fetch_screen_code, code.html, SDK getHtml, htmlCode.downloadUrl, or equivalent HTML extraction before P1.
+- Use neutral template branding; do not invent customer names, bundle IDs, URLs, tokens, or credentials.
 
 Output:
-- Exactly two design options.
-- Screenshot/export references per option.
-- HTML and image artifacts per option under `design-pub-html/<YYYY-MM-DD>/`.
-- Token changes needed in DESIGN.md and apps/mobile/global.css.
-- Implementation notes and risks.
+- Option A/B visual evidence.
+- Screen/state inventory.
+- Option comparison inputs for P1.
+```
+
+### Stage 2 P1 Approval Packet
+
+```text
+Prepare Product/Planning P1 scope/evidence approval before HTML extraction.
+
+Input:
+- Generated visual artifacts:
+  {{OPTION_A_IMAGE_REF}}
+  {{OPTION_B_IMAGE_REF}}
+- Option comparison:
+  {{OPTION_COMPARISON}}
+- Design-selected candidate:
+  {{SELECTED_OPTION}}
+- Design-selected candidate rationale:
+  {{SELECTED_OPTION_RATIONALE}}
+- Alternate rejection/defer reason:
+  {{ALTERNATE_REJECTION_OR_DEFER_REASON}}
+
+Constraints:
+- Explain the purpose and reason for each generated image/design artifact.
+- Map each option to PRD acceptance and non-goals.
+- Keep Product/Planning focused on scope/evidence readiness; Design owns selected-option quality.
+- Include the Design-selected candidate rationale and alternate rejection/defer reason so Product/Planning is not asked to judge visual quality.
+- Include risks, open decisions, and human-gate matrix.
+- Product/Planning approves scope/evidence readiness for HTML extraction only.
+
+Output:
+- P1 packet.
+- Product/Planning decision: READY_FOR_EXECUTION, NEEDS_REWORK, HUMAN_DECISION_REQUIRED, or BLOCKED_BY_RUNTIME_CAPABILITY.
 ```
 
 ### Stage 3 Export Prompt
 
 ```text
-Export the approved Stitch design for implementation handoff.
+Export the approved Stitch designs for implementation handoff after P1 approval.
 
 Input:
-- Approved design option:
-  {{APPROVED_OPTION_ID}}
+- P1 approval record:
+  {{P1_APPROVAL}}
 - Required artifacts: HTML, screenshot, and any available design metadata.
 
 Output:
-- HTML export download reference.
-- Screenshot download reference.
-- Figma export reference if available.
-- Summary of semantic tokens and screen states.
+- Option A/B HTML using fetch_screen_code or official ZIP code.html.
+- Option A/B images using fetch_screen_image when MCP access is available.
+- design-pub-html/<YYYY-MM-DD>/option-a.html, option-a.png, option-b.html, option-b.png, manifest.json, handoff.md.
+- Summary of semantic tokens, model/mode capability, and screen states.
 - Any implementation caveats for Expo React Native.
 ```
 

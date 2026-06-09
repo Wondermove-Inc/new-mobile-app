@@ -38,6 +38,8 @@ syncStatus: "synced"
 
 This skill gives Product/Planning a repeatable process for deciding what size and shape of work should be handed to agents. It prevents oversized assignments by converting broad product intent into bounded MVP increments, agent sprint goals, vertical slices, stories, execution tasks, and one-day-or-less work steps when appropriate. It also defines a safe intake path for practitioner agents to report improvement opportunities from scheduled or event-triggered self-inspection.
 
+Security/Privacy is a conditional reviewer/gate for work that touches auth, PII, payment, permissions, policy-sensitive behavior, or a human security/privacy decision. It is not a standing implementation agent, and Product/Planning must include it only when the selected work unit's scope and risk require it.
+
 ### Case Coverage
 
 | Case | Coverage |

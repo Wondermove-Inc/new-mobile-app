@@ -22,7 +22,7 @@ The template is a **monorepo** (pnpm workspace + Turborepo) holding the mobile a
 - **`apps/mobile/`** — the Expo app (template core):
   - `.eas/workflows/` — `e2e-test-android.yml` (build → maestro), `build-and-submit.yml` (build → submit), `ota-update.yml` (eas update on preview channel). The `.eas` dir must sit at the same level as `eas.json`.
   - `.maestro/home.yml` — home-screen counter E2E flow.
-  - `src/app/` — `_layout.tsx` (root layout + `global.css` + Sentry init), `index.tsx` (home screen importing the shared constant), `__tests__/home.test.tsx`.
+  - `src/app/` — `_layout.tsx` (root layout + `global.css` + Expo Router stack), `index.tsx` (home screen importing the shared constant), `__tests__/home.test.tsx`.
   - Config files: `app.config.ts` (template-variable-driven dynamic config), `babel.config.js`, `eas.json` (dev/preview/production + e2e-test), `env.ts` (Zod env validation), `global.css` (NativeWind input + token defaults), `jest.setup.ts`, `metro.config.js` (`withNativewind` wrapper), `nativewind-env.d.ts`, `postcss.config.mjs` (Tailwind v4 — no JS `tailwind.config.js`), `package.json`.
 - **`apps/console/`** — optional, only when the customer wants a web console.
 - **`apps/api/`** — optional, only when the project needs a new backend (§15): Hono app (`src/app.ts`, `index.ts`, `env.ts`, `routes/` with unauthenticated health endpoints + counter-events, `services/`, `db/` with Drizzle schema/migrate), plus `drizzle/`, `drizzle.config.ts`, `vitest.config.ts`, isolated `tsconfig.json`, multi-stage `Dockerfile`, optional `compose.yaml`, and `package.json`.

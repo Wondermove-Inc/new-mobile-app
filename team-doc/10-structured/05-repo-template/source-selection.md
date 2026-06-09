@@ -20,7 +20,6 @@ No single upstream satisfies all three requirements at once (Agent-oriented mono
 | **Expo official monorepo docs** | Monorepo resolution baseline | SDK 52+ automatic Metro config, pnpm workspace, pnpm isolated-dependency caveats | Manual Metro resolver is a fallback only |
 | **NativeWind official install docs** | RN semantic-token styling | `global.css`, Tailwind preset, Babel preset, `withNativeWind`, type declaration | Required when NativeWind is used |
 | **React Native Testing Library docs** | Jest matchers | Built-in matchers such as `toHaveTextContent` | Pin v13+ — auto-registers on import (no separate setup) |
-| **Expo/Sentry official docs** | Crash/sourcemap | `@sentry/react-native`, `SENTRY_AUTH_TOKEN`, EAS Build/Update sourcemap upload | EAS Update needs a separate sourcemap upload step |
 | **Expo Programmatic Access docs** | Agent authentication | Robot user, access token, `EXPO_TOKEN` env auth | Token injected via Secret only |
 | **VoltAgent/awesome-design-md** | `DESIGN.md` reference curation (vendored) | Per-brand `DESIGN.md` examples — copy lives in `docs/design-references/`, informs the root `DESIGN.md` | MIT — must retain upstream LICENSE and attribution notice (DEC-021) |
 | **infinitered/ignite** | Reference only | Generator, Reactotron, i18n concepts | Not merged directly |

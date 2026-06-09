@@ -34,7 +34,7 @@ Drive App Store / Play Store submission under a controlled human gate.
 
 ## Completion criteria
 
-- Advancement precondition: mobile-gatekeeper required check passing, evidence present, author ≠ approver, and `rework_count` below cap — production additionally requires a recorded human approval.
+- Advancement precondition: deterministic required check passing, evidence present, author ≠ approver, and `rework_count` below cap — production additionally requires a recorded human approval.
 - Human approval record exists (Product/Planning).
 - EAS submit id exists (QA/Release).
 - Store status recorded (QA/Release — manually track and record the store review status after submission).

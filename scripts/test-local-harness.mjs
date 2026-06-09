@@ -10,6 +10,18 @@ const GATEKEEPER_ROOT = 'evals/local-harness/gatekeeper';
 const SNAPSHOT_PATH = 'evals/local-harness/sot/snapshot.json';
 const PREFLIGHT_PATH = 'evals/local-harness/results/preflight.json';
 const RESULTS_DIR = 'evals/local-harness/results';
+const PRODUCT_HUMAN_GATE_CATEGORIES = [
+  'production submit',
+  'payment or money movement',
+  'PII or privacy-sensitive behavior',
+  'external messaging or email/SMS push',
+  'legal/terms/contracts',
+  'business approval',
+  'compliance/policy decision',
+  'Human Owner budget/business decision',
+  'irreversible scope tradeoff',
+  'accepting risk after a gate failure',
+];
 const ROLE_FIXTURE_FILES = [
   'product-planning.context.json',
   'design.context.json',
@@ -92,8 +104,22 @@ function validateProductPlanningFixtures(options = {}) {
   if (caseA.forbidden?.modelsGatekeeperAsLlm !== false) addFailure(failures, 'Gatekeeper must not be modeled as LLM');
 
   for (const [index, task] of (caseB.tasks || []).entries()) {
-    for (const field of ['ownerRole', 'inputArtifact', 'outputArtifact', 'evidencePath', 'humanGate', 'nextRole']) {
+    for (const field of ['ownerRole', 'inputArtifact', 'outputArtifact', 'doneWhen', 'evidencePath', 'acceptanceRefs', 'openDecisions', 'humanGate', 'nextRole']) {
       if (task[field] === undefined || task[field] === '') addFailure(failures, 'missing Case B task field', { index, field });
+    }
+    if (!Array.isArray(task.acceptanceRefs) || task.acceptanceRefs.length === 0) {
+      addFailure(failures, 'missing Case B task field', { index, field: 'acceptanceRefs' });
+    } else if (!task.acceptanceRefs.every((ref) => /^prd\.case-b\.fixture\.md:\d+$/.test(ref))) {
+      addFailure(failures, 'invalid Case B acceptance ref', { index, acceptanceRefs: task.acceptanceRefs });
+    }
+    if (
+      typeof task.evidencePath === 'string'
+      && !/^(?:(?:\.evidence|evals|docs)\/[A-Za-z0-9._/-]+\.(?:json|md|txt)|https?:\/\/\S+)$/.test(task.evidencePath)
+    ) {
+      addFailure(failures, 'invalid Case B evidence path', { index, evidencePath: task.evidencePath });
+    }
+    if (Array.isArray(task.openDecisions) && task.openDecisions.length === 0) {
+      addFailure(failures, 'missing Case B task field', { index, field: 'openDecisions' });
     }
   }
   if (!caseB.tasks?.some((task) => task.ownerRole === 'QA/Release')) addFailure(failures, 'missing QA/Release task');
@@ -101,14 +127,7 @@ function validateProductPlanningFixtures(options = {}) {
     addFailure(failures, 'missing API-needed marker');
   }
   const categories = new Set(caseB.requiredHumanGateCategories || []);
-  for (const category of [
-    'production submit',
-    'payment or money movement',
-    'PII or privacy-sensitive behavior',
-    'external messaging or email/SMS push',
-    'legal/terms/contracts',
-    'accepting risk after a gate failure',
-  ]) {
+  for (const category of PRODUCT_HUMAN_GATE_CATEGORIES) {
     if (!categories.has(category)) addFailure(failures, 'missing human gate category', { category });
   }
   if (caseB.forbidden?.implementsCode !== false) addFailure(failures, 'Case B fixture must not implement code');
@@ -310,9 +329,23 @@ function runProductPlanningSelfTest() {
   const valid = validateProductPlanningFixtures();
   const invalidFixture = readJson(path.join(PRODUCT_ROOT, 'selftest.invalid-missing-qa.json'));
   const missingFieldsFixture = readJson(path.join(PRODUCT_ROOT, 'selftest.invalid-missing-fields.json'));
+  const missingTaskReadinessFixture = readJson(path.join(PRODUCT_ROOT, 'selftest.invalid-missing-task-readiness.json'));
+  const missingAcceptanceEvidenceFixture = readJson(path.join(PRODUCT_ROOT, 'selftest.invalid-missing-acceptance-evidence.json'));
   const invalid = validateProductPlanningFixtures({
     caseA: readJson(path.join(PRODUCT_ROOT, 'expected.case-a-owner-matrix.json')),
     caseB: invalidFixture.caseB,
+    prdA: 'Do not implement code. Do not modify external platform/runtime repositories.',
+    prdB: 'Do not implement code. Do not modify external platform/runtime repositories.',
+  });
+  const missingTaskReadiness = validateProductPlanningFixtures({
+    caseA: readJson(path.join(PRODUCT_ROOT, 'expected.case-a-owner-matrix.json')),
+    caseB: missingTaskReadinessFixture.caseB,
+    prdA: 'Do not implement code. Do not modify external platform/runtime repositories.',
+    prdB: 'Do not implement code. Do not modify external platform/runtime repositories.',
+  });
+  const missingAcceptanceEvidence = validateProductPlanningFixtures({
+    caseA: readJson(path.join(PRODUCT_ROOT, 'expected.case-a-owner-matrix.json')),
+    caseB: missingAcceptanceEvidenceFixture.caseB,
     prdA: 'Do not implement code. Do not modify external platform/runtime repositories.',
     prdB: 'Do not implement code. Do not modify external platform/runtime repositories.',
   });
@@ -332,6 +365,17 @@ function runProductPlanningSelfTest() {
   if (missingFields.ok) addFailure(failures, 'missing-fields product-planning fixture passed');
   if (!missingFields.failures.some((failure) => failure.reason === missingFieldsFixture.expected.reason)) {
     addFailure(failures, 'missing-fields product-planning fixture failed for wrong reason', { failures: missingFields.failures });
+  }
+  if (missingTaskReadiness.ok) addFailure(failures, 'missing-task-readiness product-planning fixture passed');
+  for (const field of missingTaskReadinessFixture.expected.fields) {
+    if (!missingTaskReadiness.failures.some((failure) => failure.reason === missingTaskReadinessFixture.expected.reason && failure.field === field)) {
+      addFailure(failures, 'missing-task-readiness product-planning fixture failed for wrong field', { field, failures: missingTaskReadiness.failures });
+    }
+  }
+  for (const expected of missingAcceptanceEvidenceFixture.expected.failures) {
+    if (!missingAcceptanceEvidence.failures.some((failure) => failure.reason === expected.reason && (!expected.field || failure.field === expected.field))) {
+      addFailure(failures, 'missing-acceptance-evidence product-planning fixture failed for wrong reason', { expected, failures: missingAcceptanceEvidence.failures });
+    }
   }
 
   return {

@@ -1,0 +1,51 @@
+# Skills And Agents Matrix
+
+## Active repo-local skills
+
+Active repo-local skills are only the directories that currently exist under `.agents/skills/<slug>/SKILL.md`.
+
+| Skill | Primary Role | Use |
+| --- | --- | --- |
+| `wm` | Cross-role repo workflow | SoT-grounded planning, TDD routing, reviewer evidence, PR readiness |
+| `po-requirement-office-hours` | Product/Planning | Ambiguous request clarification |
+| `po-work-unit-planning-and-agent-sprint` | Product/Planning | Work-unit sizing and bounded sprint shaping |
+| `po-prd-to-execution` | Product/Planning | PRD/work-unit to role-scoped tasks |
+| `po-planning-completeness-review` | Product/Planning | Readiness review before execution |
+| `design-mobile-design-handoff` | Design | Stitch-backed mobile design handoff |
+| `design-stitch-mcp-operating-rules` | Design | Stitch execution, P0/P1 gates, publication rules |
+| `mobile-app-dev-workflow` | Mobile App Dev | Expo React Native implementation |
+| `mobile-backend-api-integrator-workflow` | Backend/API Integrator | Mobile-facing API contract/integration work |
+| `e2e-test` | QA/Release | E2E plan, reset, execution, evidence |
+| `qa-railway-workflow` | QA/Release | Railway API deploy/health/RN Web evidence; not full mobile release readiness |
+
+## Current custom agents
+
+`$wm routing` allows the dedicated `wm-*`, Product/Planning `po-*`, and Design `design-*` read-only agents listed by the workflow.
+
+| Agent | Type | Primary Use |
+| --- | --- | --- |
+| `wm-implementation-reviewer` | read-only reviewer | wm-scoped implementation, tests, evidence, contract drift |
+| `wm-contract-reviewer` | read-only reviewer | API contract, schemas, auth/session, mock-vs-real drift |
+| `wm-docs-researcher` | read-only researcher | Expo/EAS/Maestro/NativeWind/Codex/Serena uncertainty |
+| `wm-gate-fix-advisor` | read-only advisor | Failing gate/test/build/evidence triage |
+| `po-planning-reviewer` | read-only reviewer | Planning package, task completeness, P0/P1 scope/evidence gates |
+| `po-scope-gate-reviewer` | read-only reviewer | Scope containment, non-goals, human gates |
+| `po-docs-researcher` | read-only researcher | Product/Planning SoT uncertainty |
+| `design-reviewer` | read-only reviewer | Stitch handoff, P0/P1, five-state coverage, publication readiness |
+| `design-researcher` | read-only researcher | Design/Stitch/DESIGN.md uncertainty |
+
+## Legacy mobile-* agents
+
+The repo also contains legacy mobile-* agents:
+
+- `mobile-implementation-reviewer`
+- `mobile-contract-reviewer`
+- `mobile-docs-researcher`
+- `mobile-gate-fix-advisor`
+
+These legacy mobile-* agents remain available for other runtime/eval surfaces. For `$wm routing`, prefer the dedicated `wm-*`, `po-*`, and `design-*` agents unless a newer SoT says otherwise.
+
+## Deferred OpenClaw Skills
+
+OpenClaw skills are intentionally deferred. Do not invent OpenClaw skill names or package contracts in this document set. Add them only after a new SoT defines the runtime, install path, package format, and verification gate.
+

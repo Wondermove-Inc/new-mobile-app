@@ -5,7 +5,7 @@ description: Use when Product/Planning must shape a broad PRD or proactive pract
 
 # PO Work-Unit Planning And Agent Sprint
 
-Use this Product/Planning adapter to choose the safe size and shape of work before execution agents receive tasks.
+Use this Product/Planning adapter to choose the safe size and shape of work before execution agents receive tasks. Every user instruction enters Product/Planning intake first; this adapter may then size, triage, or hand off the request without bypassing readiness and gate checks.
 
 ## Source Crosswalk
 
@@ -18,7 +18,7 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 
 ## Required Inputs
 
-- Clarified requirement brief, PRD, existing backlog item, or practitioner improvement report.
+- Clarified requirement brief, PRD, existing backlog item, practitioner improvement report, modification request, issue report, or direct implementation request received through Product/Planning intake.
 - Acceptance lines, non-goals, constraints, human-gate flags, and known dependencies.
 - Design, architecture, backend/API, QA/release, security/privacy, and human owner inputs when relevant.
 
@@ -26,12 +26,17 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 
 1. Load the SoT and classify the planning problem.
 2. Reject oversized handoffs that lack a bounded owner, acceptance line, evidence, or non-goal.
-3. Shape unvalidated product work into the smallest usable MVP increment.
-4. Prefer a vertical slice over layer-only work unless enabling infrastructure is required by approved scope.
-5. Define a single coherent agent sprint goal when multiple roles must coordinate.
-6. Prepare a handoff with owner role, input artifacts, output artifacts, acceptance line, evidence, dependencies, open decisions, non-goals, human gates, and next responsible role.
-7. Triage proactive reports as `REJECT`, `NON_GOAL`, `BACKLOG_CANDIDATE`, `SPRINT_IMPROVEMENT`, `HUMAN_DECISION_REQUIRED`, or `RUNTIME_CAPABILITY_BLOCKED`.
-8. Publish the selected work-unit level and rationale in the accepted SoT location.
+3. For a broad detailed PRD or broad apparently usable PRD, run work-unit sizing before PRD-to-execution; route only selected-slice unknowns to `po-requirement-office-hours`, then re-check the work-unit decision.
+4. Shape unvalidated product work into the smallest usable MVP increment.
+5. For modification requests, classify the request as within-approved-scope, scope-change, human-gate, or non-goal before any update packet.
+6. For issue, bug, or failure requests, classify the request as bug-fix, failure/rework, release-evidence-gap, human-gate, or symptom-without-evidence before owner handoff.
+7. For direct implementation language, check whether an accepted task packet exists and planning completeness is `READY_FOR_EXECUTION`; if so, hand off to the downstream owner skill without new decomposition, otherwise route to sizing or clarification first.
+8. For proactive reports, preserve no-auto-execution: no Jira issue, code change, scope change, or SOUL change is created automatically.
+9. Prefer a vertical slice over layer-only work unless enabling infrastructure is required by approved scope.
+10. Define a single coherent agent sprint goal when multiple roles must coordinate.
+11. Prepare a handoff with owner role, input artifacts, output artifacts, acceptance line, evidence, dependencies, open decisions, non-goals, human gates, and next responsible role.
+12. Triage proactive reports as `REJECT`, `NON_GOAL`, `BACKLOG_CANDIDATE`, `SPRINT_IMPROVEMENT`, `HUMAN_DECISION_REQUIRED`, or `RUNTIME_CAPABILITY_BLOCKED`.
+13. Publish the selected work-unit level and rationale in the accepted SoT location.
 
 ## Output
 
@@ -39,6 +44,7 @@ The `po-*` slug is the repo-local Codex adapter name required for Product/Planni
 - Bounded handoff package and MVP-first approval plan when needed.
 - Agent sprint agenda when multi-role coordination is required.
 - Proactive report triage result.
+- Issue or release evidence-gap triage result with owner role, input artifact, output artifact, evidence path, readiness state, rework owner, and next Product/Planning return path when needed.
 
 ## Forbidden
 

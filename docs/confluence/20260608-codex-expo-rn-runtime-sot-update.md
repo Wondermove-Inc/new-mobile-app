@@ -81,6 +81,7 @@ Applied EAS environment routing:
   - `preview`: `preview` EAS environment
   - `production`: `production` EAS environment
   - `e2e-test`: `preview` EAS environment
+- The EAS profile/workflow label `e2e-test` is distinct from the repo Codex skill `$e2e-test`.
 - `apps/mobile/.eas/workflows/build-and-submit.yml`
   - production build jobs use `environment: production`
   - production build jobs set `EXPO_PUBLIC_APP_ENV=production`
@@ -220,6 +221,9 @@ Expected results include marketplace `expo-plugins`, plugin `expo@expo-plugins` 
 Runtime paths:
 
 - repo skills: `.agents/skills/<skill-name>/SKILL.md`
+  - `$e2e-test`: repo QA skill for E2E test planning, tested-instance reset, planned execution, and objective evidence capture across RN Web Playwright, Maestro, `mobile-mcp`, or manual HUMAN-GATE checks.
+  - `$e2e-test` records evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` and does not implement app, backend, contract, or runtime fixes.
+  - `$e2e-test` is a Codex skill and must not be confused with the EAS profile or workflow label named `e2e-test`.
 - custom agents: `.codex/agents/<agent-name>.toml`
   - wm dedicated read-only agents:
     - `wm-implementation-reviewer`
@@ -305,6 +309,27 @@ Current baseline selectors:
 
 App code, Jest tests, and Maestro flow were updated together.
 
+RN Web browser E2E path:
+
+- `apps/mobile/e2e-web`
+- `apps/mobile/playwright.config.ts`
+
+RN Web browser E2E command:
+
+```bash
+pnpm --filter mobile exec playwright install chromium
+pnpm --filter mobile e2e:web
+```
+
+Repo QA skill:
+
+- `$e2e-test`
+- plans, resets, executes, and records E2E evidence before reporting pass/fail.
+
+RN Web E2E validates browser-reproducible RN UI, navigation, state, and business logic flows only. It does not validate native modules, OS permissions, native lifecycle behavior, push delivery, biometrics, camera, GPS, or other hardware/device features.
+
+Native completion remains separate from RN Web E2E. Run Maestro and `mobile-mcp` visual QA when the required EAS account, simulator, emulator, or device is available. If the user chooses direct local/manual native verification, record HUMAN-GATE evidence and residual risk instead of treating manual execution as a replacement for Maestro/mobile-mcp requirements.
+
 ## Environment Variables
 
 Mobile runtime variables are defined in `apps/mobile/env.ts`; app identity variables are consumed by `apps/mobile/app.config.ts`.
@@ -344,9 +369,11 @@ Required local verification before PR:
 codex plugin marketplace list
 codex plugin list
 pnpm --filter mobile exec expo install --check
+pnpm --filter mobile exec playwright install chromium
 codex mcp list
 pnpm --filter mobile lint
 pnpm --filter mobile test
+pnpm --filter mobile e2e:web
 pnpm --filter mobile run doctor
 pnpm run test:runtime
 pnpm turbo run lint test

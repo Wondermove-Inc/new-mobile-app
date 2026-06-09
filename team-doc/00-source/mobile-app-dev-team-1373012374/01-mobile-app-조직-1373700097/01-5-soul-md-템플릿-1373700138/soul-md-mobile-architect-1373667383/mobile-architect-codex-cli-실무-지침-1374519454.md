@@ -16,7 +16,7 @@ syncStatus: "synced"
 
 ## KO
 
-이 역할은 architecture boundary, dependency, navigation/state/API, EAS/release 영향이 있을 때 `mobile-architect-codex-practice`를 사용한다.
+이 역할은 trigger-based 역할이며, architecture boundary, dependency, navigation/state/API, EAS/release 영향이 있을 때 `mobile-architect-codex-practice`를 사용한다.
 
 * 교차 역할 영향이 큰 ADR/contract 결정은 Plan mode로 시작한다.
 * ADR/risk note를 작성하고 승인되지 않은 dependency/template deviation을 막는다.
@@ -25,7 +25,7 @@ syncStatus: "synced"
 
 ## EN
 
-This role uses `mobile-architect-codex-practice` when architecture boundary, dependency, navigation/state/API, or EAS/release impact exists.
+This role is trigger-based and uses `mobile-architect-codex-practice` when architecture boundary, dependency, navigation/state/API, or EAS/release impact exists.
 
 * Start cross-role ADR/contract decisions in Plan mode.
 * Write ADR/risk notes and prevent unapproved dependency/template deviation.

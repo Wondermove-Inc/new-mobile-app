@@ -294,6 +294,9 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - repo-local only: it does not execute role work, human approval, pod execution, native behavior, EAS state, GitHub branch protection, Jira, Confluence, or other external platform state.
   - `scripts/clean-tree-guard.mjs`
   - `scripts/codex-preflight.mjs`
+    - default mode checks local Codex CLI candidates and writes `evals/local-harness/results/preflight.json`.
+    - `--pod` mode is repo-local pod readiness preflight: it checks role identity, Node 22, packageManager pnpm pin, Codex CLI candidate, git identity, GitHub auth status, Chromium/RN Web capability, `.codex/config.toml`, and `codex mcp list`.
+    - `--pod` reports auth/EAS/GitHub/MCP readiness as redacted status only, sets `native_e2e_local: false` for boram-like pods, exits non-zero on blockers, and does not prove actual OrbStack/OpenClaw execution or native device behavior.
   - `scripts/test-local-harness.mjs`
 - Manual provenance refresh:
   - `pnpm run sot:provenance-refresh:manual`

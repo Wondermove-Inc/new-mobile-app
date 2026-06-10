@@ -185,6 +185,7 @@ const managedTeamDocRoot = 'mobile-app-dev-team';
 const githubArtifactWorkflowDoc = `${managedTeamDocRoot}/10-github-artifact-workflow.md`;
 const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
+const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
 
 for (const relativePath of [
@@ -208,6 +209,9 @@ for (const relativePath of [
   `${codexCliAuthSetupSkillRoot}/SKILL.md`,
   `${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`,
   `${codexCliAuthSetupSkillRoot}/references/report-template.md`,
+  `${podRoleBootstrapSkillRoot}/SKILL.md`,
+  `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`,
+  `${podRoleBootstrapSkillRoot}/references/report-template.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: team-doc/${relativePath}`);
 }
@@ -224,6 +228,7 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
   'codex-cli-auth-setup',
+  'pod-role-bootstrap',
   'Do not place repo-local Codex CLI artifacts here',
 ]);
 
@@ -371,6 +376,80 @@ if (exists(`${codexCliAuthSetupSkillRoot}/SKILL.md`)) {
   }
 }
 
+requireDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
+  'name: pod-role-bootstrap',
+  'description:',
+  '# Pod Role Bootstrap',
+  '/workspace/skills/pod-role-bootstrap/SKILL.md',
+  'WM_ROLE',
+  '/workspace/IDENTITY',
+  'WM_EXPECTED_ROLE',
+  'pnpm@9.15.9',
+  'pnpm install --frozen-lockfile',
+  'node scripts/codex-preflight.mjs --pod --json',
+  '/workspace/state/',
+  'status only',
+  'Do not print auth token values',
+  'native Android E2E readiness',
+]);
+
+requireNoDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
+  'cat ~/.codex/auth.json',
+  'cat /root/.codex/auth.json',
+  'print(data)',
+  'json.dumps(data',
+  'OPENAI_API_KEY=',
+  'EXPO_TOKEN=',
+]);
+
+if (exists(`${podRoleBootstrapSkillRoot}/SKILL.md`)) {
+  const skillFrontmatter = parseFrontmatter(read(`${podRoleBootstrapSkillRoot}/SKILL.md`));
+  if (!skillFrontmatter) {
+    fail(`pod-role-bootstrap skill missing YAML frontmatter: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+  } else {
+    const keys = Object.keys(skillFrontmatter).sort();
+    const unexpectedKeys = keys.filter((key) => !['description', 'name'].includes(key));
+    if (skillFrontmatter.name !== 'pod-role-bootstrap') {
+      fail(`pod-role-bootstrap skill frontmatter name must be pod-role-bootstrap: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+    }
+    if (!skillFrontmatter.description) {
+      fail(`pod-role-bootstrap skill frontmatter missing description: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+    }
+    if (unexpectedKeys.length) {
+      fail(`pod-role-bootstrap skill frontmatter must only include name and description: ${unexpectedKeys.join(', ')}`);
+    }
+  }
+}
+
+requireDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
+  'set -euo pipefail',
+  'redact()',
+  'resolve_role()',
+  'REPORT_PATH',
+  '/workspace/state/pod-role-bootstrap-report.json',
+  'corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate',
+  'pnpm install --frozen-lockfile',
+  'node scripts/codex-preflight.mjs --pod --json',
+]);
+
+requireNoDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
+  'cat ~/.codex/auth.json',
+  'cat /root/.codex/auth.json',
+  'print(data)',
+  'json.dumps(data',
+  'OPENAI_API_KEY=',
+  'EXPO_TOKEN=',
+]);
+
+requireDocTerms(`${podRoleBootstrapSkillRoot}/references/report-template.md`, [
+  'Pod Role Bootstrap Report Template',
+  'pod-role-bootstrap/v1',
+  'pnpm@9.15.9',
+  'status-only blocker reason',
+  'native_e2e_local',
+  'auth token values',
+]);
+
 requireDocTerms(`${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`, [
   'set -euo pipefail',
   'redact()',
@@ -400,6 +479,14 @@ if (fs.existsSync(codexCliPrecheckPath)) {
   const syntax = spawnSync('bash', ['-n', codexCliPrecheckPath], { encoding: 'utf8' });
   if (syntax.status !== 0) {
     fail(`codex-cli-precheck.sh must pass bash -n: ${syntax.stderr || syntax.stdout}`);
+  }
+}
+
+const podBootstrapPath = path.join(docRoot, `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`);
+if (fs.existsSync(podBootstrapPath)) {
+  const syntax = spawnSync('bash', ['-n', podBootstrapPath], { encoding: 'utf8' });
+  if (syntax.status !== 0) {
+    fail(`pod-bootstrap.sh must pass bash -n: ${syntax.stderr || syntax.stdout}`);
   }
 }
 

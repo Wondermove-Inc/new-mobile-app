@@ -24,6 +24,7 @@
 
 - Done requires linked artifacts, not status-only claims.
 - Evidence should live under `.evidence/` or `evals/*/results/` when the workflow requires persisted proof.
+- `$wm` planning evidence should summarize planning sub-agent routing with agent, question, conclusion, source refs or evidence path, reflection/impact, and any skip reason for material planning decisions that were not routed.
 - E2E evidence uses `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/`.
 - Command output must include exit status.
 - Screenshots/logs are required for visual or runtime failures when available.

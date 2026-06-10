@@ -222,6 +222,9 @@ Runtime paths:
 
 - repo skills: `.agents/skills/<skill-name>/SKILL.md`
   - `$wm` plans must be SoT-grounded and must cite or name verified SoT inputs for material planning decisions.
+  - `$wm` material planning decisions must route to the relevant existing read-only `wm-*`, Product/Planning `po-*`, or Design `design-*` custom agent when practical; otherwise the plan or evidence records the skip reason.
+  - `$wm` planning sub-agent results record agent, question, conclusion, source refs or evidence path, and reflection/impact.
+  - `$wm` does not use write-capable executor agents such as `dev-executor` or `doc-executor`; implementation remains with the owning workflow after required read-only planning and review evidence exists.
   - `$wm` implementation runs must not proceed past planning until applicable local SoT has been read and cited or named in the plan.
   - `$wm` pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
   - The `$wm` headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.

@@ -200,7 +200,9 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - repo skills remain authoritative for contracts, role boundaries, evidence, and QA gates.
 - Repo skills: `.agents/skills/<skill-name>/SKILL.md`.
   - `$wm` plans must be SoT-grounded: material planning decisions cite or name verified SoT inputs, and missing or ambiguous SoT must be reported as unknown/blocked instead of being filled by predictions, assumptions, or expected behavior.
+  - `$wm` material planning decisions that affect scope, role ownership, architecture/API/runtime contracts, evidence gates, human gates, or downstream handoff must route to the appropriate read-only planning, reviewer, researcher, or gate-advisor custom agent when practical. The result must record agent, question, conclusion, source refs or evidence path, and reflection/impact; if routing is not practical, the plan or evidence must record the skip reason.
   - `$wm` implementation runs must not proceed past planning until applicable local SoT has been read and cited or named in the plan.
+  - `$wm` must not delegate implementation or fixes to a write-capable executor; write-capable executor delegation is forbidden. Execution remains in the current repo-scoped run after required read-only planning/review evidence exists.
   - `$wm` pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
   - `$wm` implementation runs require persisted read-only reviewer evidence for both the completed plan and the actual completed work, and final user reports must include material `git diff` change details.
   - The `$wm` headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.

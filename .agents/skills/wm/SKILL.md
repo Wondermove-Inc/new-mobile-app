@@ -13,8 +13,10 @@ Review-only requests MUST route to the read-only custom agents without triggerin
 
 - `$wm` / `/wm` MUST plan before non-trivial work: clarify scope, owner, affected paths, expected tests, evidence path, and gate impact before editing.
 - `$wm` / `/wm` plans MUST use SoT-grounded planning: cite or name the verified Source of Truth inputs used for each material decision. If a required SoT cannot be read or verified, mark that part unknown or blocked; do not fill gaps with predictions, assumptions, or expected behavior.
+- Material planning decisions MUST route to an appropriate read-only planning, reviewer, researcher, or gate-advisor custom agent when the decision affects scope, role ownership, architecture/API/runtime contracts, evidence gates, human gates, or downstream handoff. Record the structured planning sub-agent result fields as: agent, question, conclusion, source refs or evidence path, and reflection/impact. If planning sub-agent routing is not practical, record the skip reason in the plan or evidence.
 - Stay read-only until the initial plan is established; proceed only when the user request calls for execution and required human gates are not blocking.
 - Use Serena for symbolic navigation and bounded code lookup when it improves confidence. Use focused `rg` for repo search, and route review, research, or gate triage to the appropriate read-only custom agent.
+- Do not delegate implementation or fixes to a write-capable executor. Write-capable executor delegation is forbidden; execution stays in the current repo-scoped run after the required read-only planning/review evidence exists.
 - Follow TDD: write or update evals/tests/validator assertions before implementation changes.
 - Keep changes inside this repository. Do not modify external platform/runtime repositories.
 - Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials.
@@ -40,16 +42,26 @@ Review-only requests MUST route to the read-only custom agents without triggerin
    - Mobile-facing backend/API contract work: use `.agents/skills/mobile-backend-api-integrator-workflow/SKILL.md`.
    - Review, docs research, or gate triage: call the relevant read-only custom agent.
 4. Read the applicable local SoT before planning or editing: `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, and any relevant role `references/sot.md` file. Do not base plans on predictions, assumptions, or expected behavior when the SoT is missing or ambiguous.
-5. Add or update the narrowest failing test, eval fixture, harness assertion, or validator check first.
-6. Implement the smallest repo-scoped change that satisfies the test and respects ownership boundaries.
-7. Run the applicable verification:
+5. Route material planning decisions through the relevant existing read-only custom agent when practical, before treating the plan as complete:
+   - implementation scope, tests, evidence, PR readiness, or runtime boundaries: `wm-implementation-reviewer`;
+   - API contract, schema, auth/session, error mapping, mocks, or fixtures: `wm-contract-reviewer`;
+   - Expo, EAS, Maestro, NativeWind, Codex, Serena, React Native, zod, or runtime uncertainty: `wm-docs-researcher`;
+   - failing gate, test, build, lint, hook, local harness, mobile QA, or evidence triage: `wm-gate-fix-advisor`;
+   - Product/Planning package completeness: `po-planning-reviewer`;
+   - scope containment, non-goals, human gates, or risk acceptance: `po-scope-gate-reviewer`;
+   - Product/Planning SoT uncertainty: `po-docs-researcher`;
+   - Design handoff readiness, P0/P1, state coverage, accessibility, or implementation constraints: `design-reviewer`;
+   - Design or Stitch SoT uncertainty: `design-researcher`.
+6. Add or update the narrowest failing test, eval fixture, harness assertion, or validator check first.
+7. Implement the smallest repo-scoped change that satisfies the test and respects ownership boundaries.
+8. Run the applicable verification:
    - Runtime changes: `pnpm run test:runtime`.
    - Runtime path or harness changes: `pnpm run test:local-harness`.
    - Workspace code changes: `pnpm turbo run lint test`.
    - Mobile runtime changes: `pnpm --filter mobile exec expo install --check`, mobile lint/test/doctor, and local visual QA when a simulator or device is available.
-8. After implementation and tests, actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
-9. Record evidence under `.evidence/` or `evals/*/results/` for review, gate, harness, or QA proof. Persist plan-review and final-review evidence for every non-trivial implementation run.
-10. Before the final user completion report, run `git diff` for the changed paths, check full `git status --short`, and include the material diff/change details in the completion report.
+9. After implementation and tests, actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
+10. Record evidence under `.evidence/` or `evals/*/results/` for review, gate, harness, or QA proof. Persist plan-review and final-review evidence for every non-trivial implementation run.
+11. Before the final user completion report, run `git diff` for the changed paths, check full `git status --short`, and include the material diff/change details in the completion report.
 
 ## Symbolic Navigation
 
@@ -77,10 +89,13 @@ Verdict-producing reviewers (`wm-implementation-reviewer`, `wm-contract-reviewer
 
 Researcher/advisor agents remain advisory and must not be forced into the machine-readable reviewer verdict contract. Use `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>` when a headless review must validate the envelope.
 
+Write-capable executor agents such as `dev-executor` or `doc-executor` are not part of `$wm` routing. Planning-time routing must use the existing read-only agents above, and implementation remains with the owning workflow.
+
 ## Forbidden
 
 - Using this workflow for generic Expo/RN questions that do not depend on this repo's SoT.
 - Treating review-only prompts as write-side implementation work.
+- Delegating `$wm` planning or implementation to a write-capable executor agent.
 - Inventing API contracts outside `packages/contracts`.
 - Treating hook reminders as the hard pass/fail gate.
 - Accepting production, privacy, legal, payment, external messaging, or failed-gate risk without the required human gate.

@@ -226,6 +226,7 @@ for (const required of [
   'evals/skills/wm/positive.prompt.md',
   'evals/skills/wm/negative.prompt.md',
   'evals/skills/wm/review-only-negative.prompt.md',
+  'evals/skills/wm/write-executor-negative.prompt.md',
   ...poSkillNames.flatMap((skill) => [
     `evals/skills/${skill}/positive.prompt.md`,
     `evals/skills/${skill}/negative.prompt.md`,
@@ -325,6 +326,22 @@ for (const skill of skills) {
   }
 }
 
+const wmPositivePromptPath = 'evals/skills/wm/positive.prompt.md';
+if (exists(wmPositivePromptPath)) {
+  const wmPositive = read(wmPositivePromptPath);
+  assert(/material planning decision/i.test(wmPositive), `${wmPositivePromptPath} must require material planning decision routing`);
+  assert(/read-only sub-agent/i.test(wmPositive), `${wmPositivePromptPath} must require read-only planning sub-agent routing`);
+  assert(/agent, question, conclusion, source refs or evidence path, and reflection\/impact/i.test(wmPositive), `${wmPositivePromptPath} must require structured planning sub-agent result fields`);
+}
+
+const wmWriteExecutorNegativePath = 'evals/skills/wm/write-executor-negative.prompt.md';
+if (exists(wmWriteExecutorNegativePath)) {
+  const wmWriteExecutorNegative = read(wmWriteExecutorNegativePath);
+  assert(/write-capable/i.test(wmWriteExecutorNegative), `${wmWriteExecutorNegativePath} must cover write-capable executor delegation`);
+  assert(/dev-executor|doc-executor/i.test(wmWriteExecutorNegative), `${wmWriteExecutorNegativePath} must cover proposed executor agent names`);
+  assert(/skip planning-time read-only/i.test(wmWriteExecutorNegative), `${wmWriteExecutorNegativePath} must reject bypassing planning-time read-only routing`);
+}
+
 for (const skill of designSkillNames) {
   const p0Path = `evals/skills/${skill}/p0-product-planning-approval-positive.prompt.md`;
   const p1PositivePath = `evals/skills/${skill}/p1-product-planning-approval-positive.prompt.md`;
@@ -407,6 +424,10 @@ if (exists(wmSkillPath)) {
   assert(/MUST NOT proceed past planning until the applicable local SoT has been read and cited or named/i.test(wm), 'wm skill must block implementation until applicable SoT is read and cited or named');
   assert(/predictions, assumptions, or expected behavior/i.test(wm), 'wm skill must forbid prediction-based planning');
   assert(/completed implementation plan must be reviewed/i.test(wm), 'wm skill must require reviewer check for completed plans');
+  assert(/material planning decisions/i.test(wm), 'wm skill must define material planning decision routing');
+  assert(/agent, question, conclusion, source refs or evidence path, and reflection\/impact/i.test(wm), 'wm skill must require structured planning sub-agent result fields');
+  assert(/skip reason/i.test(wm), 'wm skill must require a skip reason when planning sub-agent routing is not practical');
+  assert(/write-capable executor/i.test(wm), 'wm skill must forbid write-capable executor delegation');
   assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(wm), 'wm skill must require mandatory plan and final review evidence');
   assert(/actual completed work must be reviewed/i.test(wm), 'wm skill must require reviewer check for actual completed work');
   assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(wm), 'wm skill must clarify helper choice is optional but review evidence is mandatory');
@@ -433,6 +454,8 @@ assert(exists(projectEnvironmentPath), 'missing PROJECT_ENVIRONMENT.md');
 if (exists(projectEnvironmentPath)) {
   const environment = read(projectEnvironmentPath);
   assert(/\$wm`? plans must be SoT-grounded/i.test(environment), 'PROJECT_ENVIRONMENT.md must require $wm SoT-grounded plans');
+  assert(/material planning decisions/i.test(environment), 'PROJECT_ENVIRONMENT.md must document $wm material planning decision routing');
+  assert(/write-capable executor/i.test(environment), 'PROJECT_ENVIRONMENT.md must forbid write-capable executor delegation');
   assert(/must not proceed past planning until applicable local SoT has been read and cited or named/i.test(environment), 'PROJECT_ENVIRONMENT.md must block $wm implementation until applicable SoT is read and cited or named');
   assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(environment), 'PROJECT_ENVIRONMENT.md must require mandatory $wm plan and final review evidence');
   assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(environment), 'PROJECT_ENVIRONMENT.md must clarify helper choice is optional but $wm review evidence is mandatory');

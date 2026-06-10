@@ -35,12 +35,14 @@
 ## 4. Implementation
 
 1. `$wm` establishes scope, owner, affected paths, tests, evidence path, gate impact, and SoT sources.
-2. Add or update the narrowest failing test/eval/validator/fixture first.
-3. Mobile App Developer or Backend/API Engineer implements the smallest scoped change through the relevant operating role.
-4. Run applicable local checks.
-5. Request read-only reviewer evidence.
-6. Prepare PR-ready diff and evidence summary.
-7. When another pod must consume the result, commit the role artifact and GitHub branch/PR link under `docs/plans/work-units/<work-unit-id>/`; do not rely on local workspace state as handoff.
+2. `$wm` routes material planning decisions to the relevant existing read-only custom agent when practical, or records the skip reason.
+3. `$wm` records planning sub-agent results with agent, question, conclusion, source refs or evidence path, and reflection/impact.
+4. Add or update the narrowest failing test/eval/validator/fixture first.
+5. Mobile App Developer or Backend/API Engineer implements the smallest scoped change through the relevant operating role; do not delegate implementation to a write-capable executor.
+6. Run applicable local checks.
+7. Request read-only reviewer evidence.
+8. Prepare PR-ready diff and evidence summary.
+9. When another pod must consume the result, commit the role artifact and GitHub branch/PR link under `docs/plans/work-units/<work-unit-id>/`; do not rely on local workspace state as handoff.
 
 ## 5. QA And Release Evidence
 

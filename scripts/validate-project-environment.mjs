@@ -91,6 +91,22 @@ function extractQualityGateRuntimePattern(qualityGate) {
   return match?.[1] || '';
 }
 
+function qualityGateSetsPnpmActionVersion(qualityGate) {
+  const lines = qualityGate.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/uses:\s*pnpm\/action-setup@v4\b/.test(lines[index])) continue;
+
+    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+      const line = lines[cursor];
+      if (/^\s*-\s+uses:/.test(line) || /^\s*-\s+run:/.test(line) || /^\s*-\s+id:/.test(line)) break;
+      if (/^\s*with:\s*\{[^}]*\bversion\s*:/.test(line) || /^\s*version\s*:/.test(line)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function validateSnapshot(errors, snapshot) {
   if (!snapshot) return;
   if (snapshot.snapshotVersion !== 1) {
@@ -136,6 +152,9 @@ export function validateProjectEnvironment(files = readFileMap()) {
     const declaredPackageManager = envBacktickValue(environment, 'Package manager:');
     requireEqual(errors, 'package.json packageManager', packageJson.packageManager, declaredPackageManager);
     requireEqual(errors, 'package.json pnpm.overrides.lightningcss', packageJson.pnpm?.overrides?.lightningcss, '1.30.1');
+    if (packageJson.packageManager?.startsWith('pnpm@') && qualityGateSetsPnpmActionVersion(qualityGate)) {
+      errors.push('quality-gate.yml must not set pnpm/action-setup version when package.json packageManager pins pnpm');
+    }
   }
 
   if (mobilePackageJson) {

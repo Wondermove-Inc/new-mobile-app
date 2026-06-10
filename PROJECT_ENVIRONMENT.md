@@ -338,6 +338,9 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 ## CI
 
 - GitHub quality gate: `.github/workflows/quality-gate.yml`.
+- The quality gate relies on root `package.json` `packageManager` as the single
+  pnpm version SoT; `pnpm/action-setup@v4` must not set a separate `version`
+  input.
 - Always runs:
   - `pnpm run test:runtime`
   - `pnpm turbo run lint test`

@@ -5,6 +5,7 @@
 | Source | Use |
 | --- | --- |
 | `AGENTS.md` | Required repo rules, runtime paths, gate expectations, constraints |
+| `REPO_OPERATIONS.md` | Root-owned repo-wide operating policy, policy ownership map, source/archive rules, validator responsibility model |
 | `PROJECT_ENVIRONMENT.md` | Current Expo/RN/API/Codex runtime facts |
 | `.agents/skills/<slug>/SKILL.md` | Active repo-local skill contracts |
 | `.codex/agents/<agent>.toml` | Active custom agent contracts |

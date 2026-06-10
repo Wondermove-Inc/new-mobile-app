@@ -1,6 +1,8 @@
 # Mobile App Dev Team
 
 이 폴더는 현재 `new-mobile-app` 프로젝트 기준의 관리용 팀 문서이다.
+이 폴더의 범위는 team/role/process/reference 문서이며, repo-wide operating
+policy의 소유자는 root의 `REPO_OPERATIONS.md`이다.
 
 `team-doc/00-source/`는 Confluence 원본 export와 감사 기록을 보존하는 historical source이고, 이 폴더는 실제 운영자가 읽고 유지할 current SoT이다. 기존 source export 파일은 여기서 직접 수정하지 않는다.
 
@@ -21,7 +23,7 @@
 
 ## 운영 원칙
 
-- 현재 repo 기준 사실은 `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, `.agents/skills`, `.codex/agents`를 우선한다.
+- 현재 repo 기준 사실은 `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, `.agents/skills`, `.codex/agents`를 우선한다.
 - `team-doc/10-structured/`는 정리된 참조 자료로 사용하되, 실제 repo와 다르면 current repo 파일을 우선한다.
 - OpenClaw pod-native skill source는 `09-pod-native-openclaw-skills/`에서 관리한다.
 - Pod-isolated role agent 산출물은 `10-github-artifact-workflow.md`에 따라 GitHub branch/commit/PR과 `docs/plans/work-units/<work-unit-id>/`로 handoff한다.

@@ -481,8 +481,11 @@ requireDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
   'name: codex-cli-auth-setup',
   'description:',
   '# Codex CLI Auth Setup',
-  '## OpenClaw AGENTS.md Codex-only Repo Work Policy',
-  'this agent MUST use Codex CLI as the execution engine',
+  '## Repo Operations Policy Reference',
+  'REPO_OPERATIONS.md',
+  'agent-neutral',
+  'this agent',
+  'Do not duplicate the full root policy',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/codex-hooks/codex-run',
   '/workspace/new-mobile-app/',
@@ -499,6 +502,9 @@ requireNoDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
   'Boram must',
   'Boram SHOULD',
   'Boram should',
+  'Recommended AGENTS.md policy wording:',
+  'Allowed direct actions by this agent:',
+  'This agent MUST NOT directly use read/edit/write for Codex-managed repo/path content',
 ]);
 
 if (exists(`${codexCliAuthSetupSkillRoot}/SKILL.md`)) {

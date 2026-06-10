@@ -22,61 +22,20 @@ Runtime shape:
 - Apply redaction to command output before sharing reports.
 - Prefer Markdown reports for room/user reporting.
 
-## OpenClaw AGENTS.md Codex-only Repo Work Policy
+## Repo Operations Policy Reference
 
-When this skill is used to configure a pod that will operate on a GitHub repository
-through Codex CLI, keep AGENTS.md policy agent-neutral. AGENTS.md must describe the
-workspace rule for `this agent`, `assistant`, or `the agent`; do not make an
-agent name the policy subject.
+When this skill is used to configure a pod that will operate on a GitHub
+repository through Codex CLI, keep repo-wide operating policy in the repository
+root policy files. For this repo, the policy owner is `REPO_OPERATIONS.md`;
+`AGENTS.md` should only carry the runtime instruction surface needed by Codex.
 
-Recommended AGENTS.md policy wording:
+Keep AGENTS.md policy agent-neutral. Use `this agent`, `assistant`, or
+`the agent` as the subject, not a named pod or persona. Named identity belongs
+in SOUL.md or IDENTITY.md, not AGENTS.md.
 
-```markdown
-## Codex-only Repo Work Policy
-
-For any task that targets a specific repository or path listed as Codex-managed,
-this agent MUST use Codex CLI as the execution engine.
-
-Codex-managed paths are listed in:
-`/workspace/CODEX_MANAGED_PATHS.md`
-
-This includes:
-- reading or summarizing files in that repo/path
-- writing or editing code
-- writing or editing Markdown documents
-- creating handoff/process documents
-- debugging
-- refactoring
-- test creation
-- test execution
-- build or verification commands
-- repo-local scripts, configs, and documentation work
-
-This agent MUST NOT directly use read/edit/write for Codex-managed repo/path content,
-even for small patches or simple file inspection.
-
-Required execution path:
-1. Identify the target repo/path.
-2. Check whether the target path is listed as Codex-managed.
-3. If the path is Codex-managed, run Codex through the configured Codex hook wrapper,
-   defaulting to `/workspace/codex-hooks/codex-run` when available.
-4. Provide Codex with the task goal, target path, constraints, and expected output.
-5. Wait for Codex completion via OpenClaw system event or process result.
-6. Review Codex evidence/results outside the managed repo path.
-7. Report the result to the user.
-
-Allowed direct actions by this agent:
-- send and receive room messages
-- ask clarification questions
-- start Codex jobs
-- inspect Codex-generated evidence outside the managed repo path
-- run non-repo OpenClaw/admin/status commands
-- handle approvals and safety checks
-- perform emergency stop or rollback orchestration
-
-If Codex CLI is unavailable, auth fails, or the hook fails, this agent MUST report the blocker
-instead of silently falling back to direct repo edits.
-```
+Do not duplicate the full root policy in this pod-native skill. This skill
+only records the OpenClaw pod setup facts that must be checked before repo work
+is routed through Codex CLI.
 
 Project path setup:
 
@@ -91,16 +50,17 @@ Use this registry shape:
 # Codex-managed Paths
 
 Add repository or directory paths here. Any task targeting these paths must be
-executed through Codex CLI according to the Codex-only Repo Work Policy in
-`AGENTS.md`.
+executed through Codex CLI according to the root repo operations policy in
+`REPO_OPERATIONS.md` and the runtime instructions in `AGENTS.md`.
 
 - /workspace/new-mobile-app/
 ```
 
-When checking an existing OpenClaw pod, inspect AGENTS.md and
-`/workspace/CODEX_MANAGED_PATHS.md` without reading secrets. The policy is not
-complete until `/workspace/new-mobile-app/` is present in the managed-paths
-registry and repository work is routed through the configured Codex hook wrapper.
+When checking an existing OpenClaw pod, inspect AGENTS.md,
+`REPO_OPERATIONS.md`, and `/workspace/CODEX_MANAGED_PATHS.md` without reading
+secrets. The policy setup is not complete until `/workspace/new-mobile-app/`
+is present in the managed-paths registry and repository work is routed through
+the configured Codex hook wrapper.
 
 ## Workflow
 

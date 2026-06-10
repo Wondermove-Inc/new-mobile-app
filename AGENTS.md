@@ -6,6 +6,7 @@
 - Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts; required validators, evals, scripts, and evidence may still be added when the change needs them.
 
 This repository is the mobile app template runtime for WonderMove mobile agents.
+Repo-wide operating policy ownership is defined in `REPO_OPERATIONS.md`.
 
 ## Required Rules
 

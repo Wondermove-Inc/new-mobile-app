@@ -109,6 +109,7 @@ pnpm run validate
 pnpm run validate:repo-operations
 pnpm run validate:team-doc
 pnpm run validate:work-units
+pnpm run validate:work-unit-next
 pnpm run test:hooks
 ```
 
@@ -155,6 +156,10 @@ Validators enforce documented policy; they are not the policy owner.
   schema. It is repo-local runtime validation only and does not prove pod,
   native, EAS, branch-protection, Jira, Confluence, or other external platform
   state.
+- `scripts/work-unit-next.mjs` resolves deterministic next actions from
+  validated work-unit state and validates its own resolver fixtures. It is
+  repo-local orchestration validation only and does not execute role work,
+  external platform changes, pod behavior, native behavior, or human approval.
 - `scripts/validate-team-doc-archive.mjs` validates archive/reference integrity
   from root archive files: `TEAM_DOC_ARCHIVE_MANIFEST.json` and
   `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`. It must preserve `_meta` source map,

@@ -216,6 +216,7 @@
     ],
     "allowedNativeDevSkills": [
       "wm",
+      "wm-orchestrate",
       "mobile-app-dev-workflow",
       "mobile-backend-api-integrator-workflow",
       "po-requirement-office-hours",

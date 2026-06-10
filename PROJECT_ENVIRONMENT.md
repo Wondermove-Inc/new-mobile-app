@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-10
+Last updated: 2026-06-11
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -13,6 +13,7 @@ This file is the root source for the current project environment and runtime set
   - `pnpm run test:runtime`
   - `pnpm turbo run lint test`
   - `pnpm run test:local-harness` for Codex runtime changes.
+  - `pnpm run validate:work-unit-next` is composed into `test:runtime` for the work-unit next-action resolver.
 
 ## Mobile Runtime
 
@@ -286,6 +287,11 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - validates committed `docs/plans/work-units/*/status.json` artifacts against the passive `wu-status/v1` status-machine schema.
     - `--self-test` validates positive and negative fixtures under `evals/work-units/fixtures`.
     - repo-local only: it does not prove pod execution, native behavior, EAS state, GitHub branch protection, Jira, Confluence, or other external platform state.
+  - `scripts/work-unit-next.mjs`
+    - resolves deterministic `wm-next-action/v1` outputs from validated `wu-status/v1` work-unit state.
+    - `--self-test` validates resolver fixtures under `evals/work-units/fixtures/valid/resolver-*`.
+    - `--apply-transition` is limited to bounded `status.json` state updates that validate after writing.
+    - repo-local only: it does not execute role work, human approval, pod execution, native behavior, EAS state, GitHub branch protection, Jira, Confluence, or other external platform state.
   - `scripts/clean-tree-guard.mjs`
   - `scripts/codex-preflight.mjs`
   - `scripts/test-local-harness.mjs`

@@ -409,6 +409,33 @@ requireRootTerms('docs/plans/work-units/README.md', [
   'Release Gatekeeper (System)',
 ]);
 
+const sampleWorkUnitRoot = 'docs/plans/work-units/sample-role-handoff';
+const sampleWorkUnitDirs = [
+  '.',
+  '00-product-planning',
+  '01-design',
+  '02-architecture',
+  '03-contract-api',
+  '04-mobile-app',
+  '05-qa-release',
+  '06-gatekeeper',
+  '07-pr',
+];
+
+for (const dir of sampleWorkUnitDirs) {
+  const sampleReadme = dir === '.'
+    ? `${sampleWorkUnitRoot}/README.md`
+    : `${sampleWorkUnitRoot}/${dir}/README.md`;
+  if (!existsRoot(sampleReadme)) fail(`missing sample work-unit folder readme: ${sampleReadme}`);
+}
+
+requireRootTerms(`${sampleWorkUnitRoot}/README.md`, [
+  'sample-role-handoff',
+  'status: required | not-applicable | deferred/non-goal',
+  'PRD acceptance line or explicit non-goal reference',
+  'GitHub branch/commit/PR handoff link',
+]);
+
 requireDocTerms(githubArtifactWorkflowDoc, [
   '# GitHub Artifact Workflow',
   'pod-isolated',

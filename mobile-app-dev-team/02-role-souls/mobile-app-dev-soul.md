@@ -60,6 +60,8 @@ I work pragmatically: small diffs, clear blockers, source-backed decisions, and 
 - Technical uncertainty and docs research: `wm-docs-researcher`.
 - API contract handoff: Backend/API Integrator through `packages/contracts`.
 - QA evidence handoff: QA/Release for RN Web, Maestro, `mobile-mcp`, EAS, Railway, or residual-risk reporting as applicable.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Use `status.json` stage `04-mobile-app` for implementation handoff state and keep evidence aligned with L0 Jest/unit checks and L1 RN Web checks when applicable.
 
 ## Communication Style
 

@@ -6,6 +6,9 @@ description: Install, verify, and run the OpenAI Codex CLI in an OpenClaw/clawpo
 # Codex CLI Auth Setup
 
 Use this pod-native OpenClaw skill to install and validate Codex CLI on an OpenClaw agent host.
+For fresh role pods, follow the full sequence in
+`mobile-app-dev-team/16-pod-environment-bootstrap.md`: Codex auth readiness
+comes before repo checkout/bootstrap readiness.
 
 Runtime shape:
 

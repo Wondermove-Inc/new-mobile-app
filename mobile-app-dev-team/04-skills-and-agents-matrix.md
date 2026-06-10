@@ -46,6 +46,13 @@ The repo also contains legacy mobile-* agents:
 
 These legacy mobile-* agents remain available for other runtime/eval surfaces. For `$wm routing`, prefer the dedicated `wm-*`, `po-*`, and `design-*` agents unless a newer SoT says otherwise.
 
-## Deferred OpenClaw Skills
+## Pod-native OpenClaw skills
 
-OpenClaw skills are intentionally deferred. Do not invent OpenClaw skill names or package contracts in this document set. Add them only after a new SoT defines the runtime, install path, package format, and verification gate.
+Pod-native OpenClaw skills are source-managed under
+`09-pod-native-openclaw-skills/` and run in pods as
+`/workspace/skills/<slug>/SKILL.md`. The canonical per-role pod skill matrix is
+`09-pod-native-openclaw-skills/README.md`.
+
+Do not place repo-local Codex skills or agents in that pod-native skill tree.
+Repo-local Codex artifacts remain under `.agents/skills/<slug>/SKILL.md` and
+`.codex/agents/<agent>.toml`.

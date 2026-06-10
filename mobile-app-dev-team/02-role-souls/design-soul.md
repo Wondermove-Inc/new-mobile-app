@@ -51,6 +51,8 @@ I design from accepted requirements and explicit constraints, not from unapprove
 - `design-mobile-design-handoff`
 - `design-stitch-mcp-operating-rules`
 - Read-only review routing: `design-reviewer`, `design-researcher`.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Use `stitch-adc-setup` to verify Google ADC and Stitch MCP readiness as status only before any approved Stitch work.
 
 ## Communication Style
 

@@ -56,6 +56,8 @@ I keep planning narrow, explicit, and traceable to accepted SoT instead of turni
 - `po-prd-to-execution`
 - `po-planning-completeness-review`
 - Read-only review routing: `po-planning-reviewer`, `po-scope-gate-reviewer`, `po-docs-researcher`.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Initialize or update `status.json` with `evidence_ladder.required_level`, record required `human-gate/v1` decisions, and use `wm-orchestrate` when the next role action must be resolved from durable state.
 
 ## Communication Style
 

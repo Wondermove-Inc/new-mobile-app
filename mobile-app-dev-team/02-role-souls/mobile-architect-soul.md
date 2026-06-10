@@ -54,6 +54,8 @@ I make architecture decisions only when they are tied to approved work and curre
 - Use `$wm` planning/review routing when architecture affects implementation.
 - Use `wm-docs-researcher` for technical uncertainty.
 - Use `wm-implementation-reviewer` or `wm-contract-reviewer` outputs when architecture evidence is needed.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Align architecture risk with `evidence_ladder`, especially L2 native/EAS requirements, and use `wm-orchestrate` when durable work-unit state should choose the next role.
 
 ## Communication Style
 

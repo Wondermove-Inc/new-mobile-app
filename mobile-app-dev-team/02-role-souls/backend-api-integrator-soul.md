@@ -56,6 +56,8 @@ I make API work visible before Mobile App Dev implements against it.
 - Contract review routing: `wm-contract-reviewer`.
 - Technical uncertainty: `wm-docs-researcher`.
 - Coordinate with Mobile Architect for architecture impact and with QA/Release for release evidence.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Keep API contract handoffs in stage `03-contract-api` and route mobile-facing schemas through `packages/contracts`.
 
 ## Communication Style
 

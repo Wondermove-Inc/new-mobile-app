@@ -178,6 +178,8 @@ const githubArtifactWorkflowDoc = `${managedTeamDocRoot}/10-github-artifact-work
 const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
+const easRobotAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/eas-robot-auth-setup`;
+const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`;
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
 
 for (const relativePath of [
@@ -195,6 +197,7 @@ for (const relativePath of [
   `${managedTeamDocRoot}/05-work-processes.md`,
   `${managedTeamDocRoot}/06-gates-and-evidence.md`,
   `${managedTeamDocRoot}/07-new-team-template-guide.md`,
+  `${managedTeamDocRoot}/16-pod-environment-bootstrap.md`,
   githubArtifactWorkflowDoc,
   `${managedTeamDocRoot}/99-source-map.md`,
   `${podNativeOpenClawSkillRoot}/README.md`,
@@ -204,6 +207,12 @@ for (const relativePath of [
   `${podRoleBootstrapSkillRoot}/SKILL.md`,
   `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`,
   `${podRoleBootstrapSkillRoot}/references/report-template.md`,
+  `${easRobotAuthSetupSkillRoot}/SKILL.md`,
+  `${easRobotAuthSetupSkillRoot}/scripts/eas-robot-auth-precheck.sh`,
+  `${easRobotAuthSetupSkillRoot}/references/report-template.md`,
+  `${stitchAdcSetupSkillRoot}/SKILL.md`,
+  `${stitchAdcSetupSkillRoot}/scripts/stitch-adc-precheck.sh`,
+  `${stitchAdcSetupSkillRoot}/references/report-template.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: ${relativePath}`);
 }
@@ -221,8 +230,80 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   '/workspace/skills/<slug>/SKILL.md',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
+  'eas-robot-auth-setup',
+  'stitch-adc-setup',
+  '## Per-Role Required Pod Skills',
+  'Product/Planning',
+  'QA/Release',
+  'Design',
   'Do not place repo-local Codex CLI artifacts here',
 ]);
+
+function requirePodNativeSkill(relativePath, slug, scriptName, requiredTerms = []) {
+  requireDocTerms(`${relativePath}/SKILL.md`, [
+    `name: ${slug}`,
+    'description:',
+    `/workspace/skills/${slug}/SKILL.md`,
+    'status only',
+    'Do not print auth token values',
+    ...requiredTerms,
+  ]);
+
+  requireNoDocTerms(`${relativePath}/SKILL.md`, [
+    'cat ~/.codex/auth.json',
+    'cat /root/.codex/auth.json',
+    'print(data)',
+    'json.dumps(data',
+    'OPENAI_API_KEY=',
+    'EXPO_TOKEN=',
+    'GITHUB_TOKEN=',
+    'GOOGLE_APPLICATION_CREDENTIALS=',
+  ]);
+
+  const skillPath = `${relativePath}/SKILL.md`;
+  if (exists(skillPath)) {
+    const skillFrontmatter = parseFrontmatter(read(skillPath));
+    if (!skillFrontmatter) {
+      fail(`pod-native OpenClaw skill missing YAML frontmatter: ${skillPath}`);
+    } else {
+      const keys = Object.keys(skillFrontmatter).sort();
+      const unexpectedKeys = keys.filter((key) => !['description', 'name'].includes(key));
+      if (skillFrontmatter.name !== slug) {
+        fail(`pod-native OpenClaw skill frontmatter name must be ${slug}: ${skillPath}`);
+      }
+      if (!skillFrontmatter.description) {
+        fail(`pod-native OpenClaw skill frontmatter missing description: ${skillPath}`);
+      }
+      if (unexpectedKeys.length) {
+        fail(`pod-native OpenClaw skill frontmatter must only include name and description: ${unexpectedKeys.join(', ')}`);
+      }
+    }
+  }
+
+  requireDocTerms(`${relativePath}/scripts/${scriptName}`, [
+    'set -euo pipefail',
+    'redact()',
+    'REPORT_PATH',
+    '/workspace/state/',
+  ]);
+
+  requireNoDocTerms(`${relativePath}/scripts/${scriptName}`, [
+    'cat ~/.codex/auth.json',
+    'cat /root/.codex/auth.json',
+    'print(data)',
+    'json.dumps(data',
+    'OPENAI_API_KEY=',
+    'EXPO_TOKEN=',
+    'GITHUB_TOKEN=',
+    'GOOGLE_APPLICATION_CREDENTIALS=',
+  ]);
+
+  requireDocTerms(`${relativePath}/references/report-template.md`, [
+    `${slug}/v1`,
+    'status only',
+    'auth token values',
+  ]);
+}
 
 requireRootTerms('docs/plans/work-units/README.md', [
   'docs/plans/work-units/<work-unit-id>/',
@@ -376,6 +457,12 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
   'WM_ROLE',
   '/workspace/IDENTITY',
   'WM_EXPECTED_ROLE',
+  'REPO_CLONE_URL',
+  'GITHUB_TOKEN',
+  'gh auth status',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  'managed path entry',
+  'repo_acquisition',
   'pnpm@9.15.9',
   'pnpm install --frozen-lockfile',
   'node scripts/codex-preflight.mjs --pod --json',
@@ -392,6 +479,7 @@ requireNoDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
   'json.dumps(data',
   'OPENAI_API_KEY=',
   'EXPO_TOKEN=',
+  'GITHUB_TOKEN=',
 ]);
 
 if (exists(`${podRoleBootstrapSkillRoot}/SKILL.md`)) {
@@ -417,6 +505,12 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
   'set -euo pipefail',
   'redact()',
   'resolve_role()',
+  'ensure_repo_checkout()',
+  'check_managed_path()',
+  'REPO_CLONE_URL',
+  'gh auth status',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  '/workspace/new-mobile-app',
   'REPORT_PATH',
   '/workspace/state/pod-role-bootstrap-report.json',
   'corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate',
@@ -431,15 +525,36 @@ requireNoDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
   'json.dumps(data',
   'OPENAI_API_KEY=',
   'EXPO_TOKEN=',
+  'GITHUB_TOKEN=',
 ]);
 
 requireDocTerms(`${podRoleBootstrapSkillRoot}/references/report-template.md`, [
   'Pod Role Bootstrap Report Template',
   'pod-role-bootstrap/v1',
+  'repo_acquisition',
+  'managed_path',
+  '/workspace/CODEX_MANAGED_PATHS.md',
   'pnpm@9.15.9',
   'status-only blocker reason',
   'native_e2e_local',
   'auth token values',
+]);
+
+requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [
+  'EAS CLI',
+  'EXPO_TOKEN',
+  'eas whoami',
+  'human-gate/v1',
+  'scripts/ingest-eas-evidence.mjs',
+  'eas-evidence/v1',
+]);
+
+requirePodNativeSkill(stitchAdcSetupSkillRoot, 'stitch-adc-setup', 'stitch-adc-precheck.sh', [
+  'Google ADC',
+  'gcloud auth application-default',
+  'codex mcp list',
+  'stitch',
+  'human-gate/v1',
 ]);
 
 requireDocTerms(`${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`, [
@@ -1007,12 +1122,14 @@ requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/historical-v
 requireDocTerms(`${managedTeamDocRoot}/README.md`, [
   'ref-organization/',
   'Reference organization',
+  '16-pod-environment-bootstrap.md',
 ]);
 
 requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
   'ref-organization',
   '12-ref-organization-goal-plan.md',
   'old-to-new-crosswalk.md',
+  '16-pod-environment-bootstrap.md',
 ]);
 
 requireDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
@@ -1029,6 +1146,13 @@ requireDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
   'Operating Role',
   '$wm routing',
   'legacy mobile-* agents',
+  'Pod-native OpenClaw skills',
+  '09-pod-native-openclaw-skills/README.md',
+]);
+
+forbidDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
+  'OpenClaw skills are intentionally deferred',
+  'Do not invent OpenClaw skill names or package contracts in this document set',
 ]);
 
 requireDocTerms(`${managedTeamDocRoot}/08-role-title-update-plan.md`, [
@@ -1061,6 +1185,13 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/product-planning-soul.md`, 
   'po-work-unit-planning-and-agent-sprint',
   'po-prd-to-execution',
   'po-planning-completeness-review',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  'status.json',
+  'evidence_ladder',
+  'required_level',
+  'human-gate/v1',
+  'wm-orchestrate',
   'Do not approve Design quality during P0/P1',
   'approve only PRD fit, non-goals, evidence readiness, and human-gate routing',
 ]);
@@ -1068,6 +1199,10 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/product-planning-soul.md`, 
 requireDocTerms(`${managedTeamDocRoot}/02-role-souls/design-soul.md`, [
   'design-mobile-design-handoff',
   'design-stitch-mcp-operating-rules',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  'stitch-adc-setup',
+  'Google ADC',
   'Stitch',
   'P0 and P1 packet preparation for Product/Planning scope/evidence approval',
   'Do not ask Product/Planning to own design quality',
@@ -1075,6 +1210,11 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/design-soul.md`, [
 
 requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-architect-soul.md`, [
   'No dedicated repo-local skill is currently assigned to this role',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  'evidence_ladder',
+  'L2',
+  'wm-orchestrate',
   'Do not absorb Mobile App Dev implementation ownership',
   'Do not absorb Backend/API Integrator service or API ownership',
 ]);
@@ -1087,6 +1227,12 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-app-dev-soul.md`, [
   'mobile-app-dev-workflow',
   'wm-implementation-reviewer',
   'wm-docs-researcher',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  'status.json',
+  'L0',
+  'L1',
+  '04-mobile-app',
   'packages/contracts',
   'NativeWind',
   'React Native primitives',
@@ -1097,6 +1243,9 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-app-dev-soul.md`, [
 
 requireDocTerms(`${managedTeamDocRoot}/02-role-souls/backend-api-integrator-soul.md`, [
   'mobile-backend-api-integrator-workflow',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  '03-contract-api',
   'packages/contracts',
   'Backend/API Service Owner',
   'backend implementation',
@@ -1110,6 +1259,13 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/backend-api-integrator-soul
 requireDocTerms(`${managedTeamDocRoot}/02-role-souls/qa-release-soul.md`, [
   'e2e-test',
   'qa-railway-workflow',
+  'pod-role-bootstrap',
+  'docs/plans/work-units/<work-unit-id>/',
+  'achieved_level',
+  'eas-evidence/v1',
+  'eas-robot-auth-setup',
+  'evidence hygiene',
+  'failed_check_reference',
   'Do not treat RN Web evidence as native behavior proof',
   'Do not treat Railway deployment evidence as full mobile release readiness',
   'Do not accept failed gate risk on behalf of Product/Planning or a human owner',
@@ -1163,6 +1319,21 @@ requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
   'qa-railway-workflow',
   '10-github-artifact-workflow.md',
   'docs/plans/work-units/<work-unit-id>/',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/16-pod-environment-bootstrap.md`, [
+  '# Pod Environment Bootstrap',
+  '/workspace/new-mobile-app',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  'REPO_CLONE_URL',
+  'codex-cli-auth-setup',
+  'pod-role-bootstrap',
+  'eas-robot-auth-setup',
+  'stitch-adc-setup',
+  '.codex/config.toml',
+  'status only',
+  'human-gate/v1',
+  'does not prove actual OrbStack/OpenClaw pod execution',
 ]);
 
 if (errors.length) {

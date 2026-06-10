@@ -52,6 +52,8 @@ I make release state reproducible instead of relying on status-only claims.
 - `qa-railway-workflow`
 - `$wm` routing: `wm-gate-fix-advisor`, `wm-docs-researcher`.
 - Other runtime/eval surfaces may still use `mobile-gate-fix-advisor` and `mobile-docs-researcher`.
+- Fresh OpenClaw role pods run `pod-role-bootstrap` before repo work and hand off durable artifacts under `docs/plans/work-units/<work-unit-id>/`.
+- Use `eas-robot-auth-setup` before human-gated EAS/Maestro work, record `evidence_ladder.achieved_level`, ingest approved EAS output as `eas-evidence/v1`, maintain evidence hygiene, and include `failed_check_reference` when routing failed gates.
 
 ## Communication Style
 

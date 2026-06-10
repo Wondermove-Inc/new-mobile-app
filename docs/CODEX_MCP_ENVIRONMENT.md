@@ -7,6 +7,13 @@ repository after the repo has been cloned and dependencies have been installed.
 It is repo-scoped: do not use it to configure unrelated projects or external
 runtime repositories.
 
+For fresh OpenClaw role pods, start with
+`mobile-app-dev-team/16-pod-environment-bootstrap.md`. Pod readiness requires
+the checkout at `/workspace/new-mobile-app`, the matching entry in
+`/workspace/CODEX_MANAGED_PATHS.md`, and `pod-role-bootstrap` status-only
+evidence before this repo-local MCP guide is treated as actionable inside the
+pod.
+
 Source of truth inputs:
 
 - `AGENTS.md`

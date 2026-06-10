@@ -319,7 +319,7 @@ GitHub만이 durable" 원칙과 `01-team-composition.md`의 "Gatekeeper는 비-L
 - `IDENTITY.md`: Display Title, Operating Role, 소유 stage(예: QA/Release →
   `05-qa-release/`), 상류/하류 역할, NATS 룸 규약
 - `AGENTS.md`(pod용): boram 베이스 + **GitHub handoff protocol 절** 추가 — repo URL,
-  `/workspace/repo`로 clone-on-demand, 브랜치 규약 `wu/<work-unit-id>/<stage>`,
+  `/workspace/new-mobile-app`로 clone-on-demand, 브랜치 규약 `wu/<work-unit-id>/<stage>`,
   `docs/plans/work-units/<work-unit-id>/` 스키마 요약, 그리고 핵심 규칙
   "로컬 파일/채팅으로 핸드오프 금지 — push된 branch/PR + NATS 신호만 유효"
 - `TOOLS.md`: boram 베이스(filesystem, playwright, memory, a2a, skill-store) + 역할 추가분
@@ -334,7 +334,8 @@ GitHub만이 durable" 원칙과 `01-team-composition.md`의 "Gatekeeper는 비-L
 | `wm-design`만 | Stitch용 Google ADC |
 
 **`/workspace/skills`** (pod-native): 전 pod에 `codex-cli-auth-setup` +
-`pod-role-bootstrap`(PR4); `wm-qa`에 `eas-robot-auth-setup`(PR5).
+`pod-role-bootstrap`(PR4); `wm-qa`에 `eas-robot-auth-setup`(PR5);
+`wm-design`에 `stitch-adc-setup`.
 repo-local `.agents/skills`/`.codex/agents`는 clone 후 자동 가용이므로 ConfigMap에
 중복 탑재하지 않는다.
 

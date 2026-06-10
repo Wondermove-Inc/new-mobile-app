@@ -73,6 +73,10 @@ Allowed custom agents:
 
 Reviewer/researcher outputs must include source references, must not edit files, and must not recursively delegate.
 
+Verdict-producing reviewers (`wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, and `design-reviewer`) must return findings-first prose plus exactly one fenced machine-readable reviewer verdict JSON envelope at the end. The envelope uses `verdict` (`GO`, `NO_GO`, `NEEDS_HUMAN`, `BLOCKED`), `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`. `GO` is allowed only when there are no Critical/High/Medium findings and required checks are `PASS` or source-backed `NOT_APPLICABLE`; failed required checks are `NO_GO`, missing required checks are `BLOCKED`, and human-gate blockers are `NEEDS_HUMAN`.
+
+Researcher/advisor agents remain advisory and must not be forced into the machine-readable reviewer verdict contract. Use `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>` when a headless review must validate the envelope.
+
 ## Forbidden
 
 - Using this workflow for generic Expo/RN questions that do not depend on this repo's SoT.

@@ -244,6 +244,7 @@ Root scripts:
 - `pnpm run test:runtime`
 - `pnpm run test:local-harness`
 - `node scripts/codex-headless-review.mjs --agent <wm-agent> --prompt <text-or-file> --out <path>`
+- `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>`
 
 Codex headless review:
 
@@ -251,6 +252,8 @@ Codex headless review:
 - invokes Codex with `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
 - does not use Claude, `--engine auto`, or `review_engine_preference` fallback routing.
 - rejects root Claude runtime artifacts (`CLAUDE.md`, `.claude/`, `.claude-state/`) from the active Codex runtime. Dependency-local files with matching names under ignored package directories are out of scope.
+- supports optional machine-readable reviewer verdict validation through `--json-envelope` for `wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, and `design-reviewer`.
+- the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; researcher/advisor agents remain advisory and are not valid `--json-envelope` targets.
 
 Local harness scope:
 

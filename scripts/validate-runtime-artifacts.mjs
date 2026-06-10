@@ -29,6 +29,19 @@ const designAgentNames = [
   'design-reviewer',
   'design-researcher',
 ];
+const verdictProducingReviewerNames = [
+  'wm-implementation-reviewer',
+  'wm-contract-reviewer',
+  'po-planning-reviewer',
+  'po-scope-gate-reviewer',
+  'design-reviewer',
+];
+const nonVerdictAdvisoryAgentNames = [
+  'wm-docs-researcher',
+  'wm-gate-fix-advisor',
+  'po-docs-researcher',
+  'design-researcher',
+];
 const poAgentEvalNames = poAgentNames;
 const designAgentEvalNames = designAgentNames;
 const legacyMobileReviewerNames = [
@@ -61,6 +74,17 @@ const poRoutingFixtureFiles = [
   'evals/skills/po-work-unit-planning-and-agent-sprint/review-only-routing-negative.prompt.md',
   'evals/skills/po-requirement-office-hours/sized-unknown-positive.prompt.md',
   'evals/skills/po-prd-to-execution/oversized-unclear-negative.prompt.md',
+];
+const reviewerEnvelopeFixtureFiles = [
+  'evals/agents/reviewer-json-envelope/valid-go.md',
+  'evals/agents/reviewer-json-envelope/valid-no-go.md',
+  'evals/agents/reviewer-json-envelope/valid-needs-human.md',
+  'evals/agents/reviewer-json-envelope/valid-blocked.md',
+  'evals/agents/reviewer-json-envelope/invalid-missing-envelope.md',
+  'evals/agents/reviewer-json-envelope/invalid-malformed-json.md',
+  'evals/agents/reviewer-json-envelope/invalid-unsupported-reviewer.md',
+  'evals/agents/reviewer-json-envelope/invalid-required-fail-go.md',
+  'evals/agents/reviewer-json-envelope/invalid-required-not-run-go.md',
 ];
 
 function read(file) {
@@ -223,10 +247,61 @@ for (const required of [
     `evals/agents/${agent}/positive.prompt.md`,
     `evals/agents/${agent}/negative.prompt.md`,
   ]),
+  'evals/agents/wm-implementation-reviewer/positive.prompt.md',
+  'evals/agents/wm-implementation-reviewer/negative.prompt.md',
+  'evals/agents/wm-contract-reviewer/positive.prompt.md',
+  'evals/agents/wm-contract-reviewer/negative.prompt.md',
+  ...reviewerEnvelopeFixtureFiles,
   ...poRoutingFixtureFiles,
   'evals/hooks/fixtures/pretool-deny.json',
 ]) {
   assert(exists(required), `missing eval fixture: ${required}`);
+}
+
+for (const agentName of verdictProducingReviewerNames) {
+  const file = `.codex/agents/${agentName}.toml`;
+  if (!exists(file)) continue;
+  const body = read(file);
+  assert(/machine-readable reviewer verdict|verdict-producing reviewer/i.test(body), `${agentName} must define machine-readable reviewer verdict output`);
+  assert(/```json/i.test(body), `${agentName} must require a fenced JSON reviewer envelope`);
+  for (const field of ['verdict', 'reviewer', 'mode', 'scope', 'findings', 'checks_reviewed', 'residual_risks', 'next_action']) {
+    assert(body.includes(field), `${agentName} reviewer envelope missing field ${field}`);
+  }
+  for (const value of ['GO', 'NO_GO', 'NEEDS_HUMAN', 'BLOCKED']) {
+    assert(body.includes(value), `${agentName} reviewer envelope missing verdict ${value}`);
+  }
+  for (const value of ['PASS', 'FAIL', 'NOT_RUN', 'NOT_APPLICABLE']) {
+    assert(body.includes(value), `${agentName} reviewer envelope missing check status ${value}`);
+  }
+  for (const value of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']) {
+    assert(body.includes(value), `${agentName} reviewer envelope missing severity ${value}`);
+  }
+  assert(/source_refs/.test(body), `${agentName} reviewer envelope must require source_refs`);
+  assert(/GO[\s\S]*no Critical\/High\/Medium|no Critical\/High\/Medium[\s\S]*GO/i.test(body), `${agentName} must define GO blocking rule`);
+  assert(/FAIL[\s\S]*NO_GO|NO_GO[\s\S]*FAIL/i.test(body), `${agentName} must map failed required checks to NO_GO`);
+  assert(/NOT_RUN[\s\S]*BLOCKED|BLOCKED[\s\S]*NOT_RUN/i.test(body), `${agentName} must map missing required checks to BLOCKED`);
+  assert(/read-only/i.test(body), `${agentName} must preserve read-only boundary`);
+  assert(/mark failed gates as passed|failed-gate pass authority|approve failed gates/i.test(body), `${agentName} must forbid failed-gate pass authority`);
+}
+
+for (const agentName of nonVerdictAdvisoryAgentNames) {
+  const file = `.codex/agents/${agentName}.toml`;
+  if (!exists(file)) continue;
+  const body = read(file);
+  assert(!/machine-readable reviewer verdict|verdict-producing reviewer|checks_reviewed|NO_GO/i.test(body), `${agentName} must remain advisory and not require reviewer verdict envelope`);
+}
+
+for (const agentName of verdictProducingReviewerNames) {
+  const positive = `evals/agents/${agentName}/positive.prompt.md`;
+  const negative = `evals/agents/${agentName}/negative.prompt.md`;
+  if (exists(positive)) {
+    const body = read(positive);
+    assert(/JSON envelope|machine-readable reviewer verdict|structured envelope/i.test(body), `${positive} must request the reviewer JSON envelope`);
+  }
+  if (exists(negative)) {
+    const body = read(negative);
+    assert(/read-only|do not edit/i.test(body), `${negative} must preserve read-only/no-edit review behavior`);
+  }
 }
 
 for (const skill of skills) {
@@ -361,6 +436,16 @@ if (exists(projectEnvironmentPath)) {
   assert(/must not proceed past planning until applicable local SoT has been read and cited or named/i.test(environment), 'PROJECT_ENVIRONMENT.md must block $wm implementation until applicable SoT is read and cited or named');
   assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(environment), 'PROJECT_ENVIRONMENT.md must require mandatory $wm plan and final review evidence');
   assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(environment), 'PROJECT_ENVIRONMENT.md must clarify helper choice is optional but $wm review evidence is mandatory');
+  assert(/machine-readable reviewer verdict/i.test(environment), 'PROJECT_ENVIRONMENT.md must document reviewer JSON envelope contract');
+  assert(/--json-envelope/i.test(environment), 'PROJECT_ENVIRONMENT.md must document codex-headless-review --json-envelope');
+}
+
+const confluenceRuntimeSotPath = 'docs/confluence/20260608-codex-expo-rn-runtime-sot-update.md';
+assert(exists(confluenceRuntimeSotPath), 'missing Confluence runtime SoT update document');
+if (exists(confluenceRuntimeSotPath)) {
+  const confluenceRuntimeSot = read(confluenceRuntimeSotPath);
+  assert(/machine-readable reviewer verdict/i.test(confluenceRuntimeSot), 'Confluence runtime SoT update must document reviewer JSON envelope contract');
+  assert(/--json-envelope/i.test(confluenceRuntimeSot), 'Confluence runtime SoT update must document codex-headless-review --json-envelope');
 }
 
 for (const artifactPath of forbiddenRootRuntimeArtifacts) {
@@ -388,6 +473,9 @@ if (exists(headlessPath)) {
   assert(/model_reasoning_effort="high"/.test(helper), 'Codex headless helper must request high reasoning effort');
   assert(/read-only/.test(helper), 'Codex headless helper must force read-only sandbox');
   assert(/--output-last-message/.test(helper), 'Codex headless helper must capture last message output');
+  assert(/--json-envelope/.test(helper), 'Codex headless helper must support optional --json-envelope validation');
+  assert(/--self-test/.test(helper), 'Codex headless helper must support self-test');
+  assert(/reviewer-json-envelope/.test(helper), 'Codex headless helper self-test must consume reviewer envelope fixtures');
   assert(/source references/i.test(helper), 'Codex headless helper must require source references');
   assert(/recursive delegation/i.test(helper), 'Codex headless helper must prohibit recursive delegation');
   assert(!/claude|--engine auto|review_engine_preference/i.test(helper), 'Codex headless helper contains forbidden Claude/auto fallback path');

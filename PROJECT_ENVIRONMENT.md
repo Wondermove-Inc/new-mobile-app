@@ -269,6 +269,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/codex-headless-review.mjs`
     - Codex-only read-only helper: `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
     - no Claude, `--engine auto`, or `review_engine_preference` fallback path.
+    - optional machine-readable reviewer verdict validation: `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>`.
+    - verdict-producing reviewers are `wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, and `design-reviewer`.
+    - the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; `GO` requires no Critical/High/Medium findings and required checks `PASS` or source-backed `NOT_APPLICABLE`, failed required checks map to `NO_GO`, missing required checks map to `BLOCKED`, and human-gate blockers map to `NEEDS_HUMAN`.
+    - researcher/advisor agents are advisory and are not valid `--json-envelope` targets.
   - `scripts/test-hooks.mjs`
   - `scripts/clean-tree-guard.mjs`
   - `scripts/codex-preflight.mjs`

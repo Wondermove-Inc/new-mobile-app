@@ -13,6 +13,13 @@
 | Native E2E | Maestro/mobile-mcp evidence when simulator/device is available |
 | Production submit | Human approval record plus release evidence |
 
+## Release Gatekeeper (System)
+
+- Release Gatekeeper (System) is the display title for the non-LLM deterministic Gatekeeper.
+- It is not a person, custom agent, LLM role, or SOUL.md owner.
+- It cannot replace human approval or accept failed-gate risk.
+- It only consumes required evidence and returns deterministic pass/fail.
+
 ## Evidence Rules
 
 - Done requires linked artifacts, not status-only claims.
@@ -21,6 +28,14 @@
 - Command output must include exit status.
 - Screenshots/logs are required for visual or runtime failures when available.
 - Secrets, tokens, private `.env` values, bearer credentials, signing keys, and private endpoints must not be printed or persisted.
+
+## Durable GitHub Handoff
+
+- Pod-isolated role agents must use `docs/plans/work-units/<work-unit-id>/` as the committed durable GitHub handoff root.
+- Durable GitHub handoff means a downstream pod consumes a branch/commit/PR or merged repo artifact, not another pod local workspace.
+- Work-unit QA files are summaries and indexes. They must link canonical evidence instead of replacing it.
+- Canonical evidence remains in workflow-owned paths such as `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/`, mobile-mcp records, Railway evidence, EAS evidence, or human approval records.
+- `.evidence/local/`, `.evidence/tmp/`, `.evidence/**/*.log`, and `.evidence/**/raw/` are not durable handoff channels.
 
 ## Railway Boundary
 
@@ -47,4 +62,3 @@ Stop for recorded human decision when work involves:
 - Business/budget owner decision.
 - Irreversible scope tradeoff.
 - Accepting risk after a failed gate.
-

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -44,6 +45,14 @@ function exists(relativePath) {
 
 function read(relativePath) {
   return fs.readFileSync(path.join(docRoot, relativePath), 'utf8');
+}
+
+function existsRoot(relativePath) {
+  return fs.existsSync(path.join(root, relativePath));
+}
+
+function readRoot(relativePath) {
+  return fs.readFileSync(path.join(root, relativePath), 'utf8');
 }
 
 function readJson(relativePath) {
@@ -159,6 +168,9 @@ for (const file of structuredFiles) {
 const currentSkillMatrix = exists('10-structured/03-skills/mvp-skill-matrix.md')
   ? read('10-structured/03-skills/mvp-skill-matrix.md')
   : '';
+const managedSkillMatrix = exists('mobile-app-dev-team/04-skills-and-agents-matrix.md')
+  ? read('mobile-app-dev-team/04-skills-and-agents-matrix.md')
+  : '';
 const repoSkillRoot = path.join(root, '.agents/skills');
 if (fs.existsSync(repoSkillRoot)) {
   const repoSkillSlugs = fs.readdirSync(repoSkillRoot, { withFileTypes: true })
@@ -168,6 +180,9 @@ if (fs.existsSync(repoSkillRoot)) {
   for (const skillSlug of repoSkillSlugs) {
     if (!currentSkillMatrix.includes(`\`${skillSlug}\``)) {
       fail(`current skill matrix missing generated repo skill: ${skillSlug}`);
+    }
+    if (managedSkillMatrix && !managedSkillMatrix.includes(`\`${skillSlug}\``)) {
+      fail(`managed skill matrix missing active repo-local skill: ${skillSlug}`);
     }
   }
 }
@@ -223,7 +238,7 @@ if (pageMap && splitMap) {
   }
 }
 
-const generatedFiles = listFiles('.', (file) => /\.(md|json)$/.test(file));
+const generatedFiles = listFiles('.', (file) => /\.(md|json|sh)$/.test(file));
 const secretPatterns = [
   /\bsk-[A-Za-z0-9_-]{20,}\b/,
   /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
@@ -240,9 +255,6 @@ for (const file of generatedFiles) {
   }
 }
 
-const soulMdRoot =
-  '00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138';
-
 function requireDocTerms(relativePath, terms) {
   if (!exists(relativePath)) {
     fail(`missing required role document: team-doc/${relativePath}`);
@@ -256,59 +268,84 @@ function requireDocTerms(relativePath, terms) {
   }
 }
 
-requireDocTerms(`${soulMdRoot}/soul-md-backend-api-integrator-1373700180.md`, [
-  'Backend/API Service Owner',
-  'backend implementation',
-  'DB schema/migration',
-  'deployment config',
-  'runtime smoke',
-  'rollback note',
-  'service evidence',
-]);
+function requireRootTerms(relativePath, terms) {
+  if (!existsRoot(relativePath)) {
+    fail(`missing required root document: ${relativePath}`);
+    return;
+  }
+  const body = readRoot(relativePath);
+  for (const term of terms) {
+    if (!body.includes(term)) {
+      fail(`${relativePath} missing required term: ${term}`);
+    }
+  }
+}
 
-requireDocTerms(`${soulMdRoot}/soul-md-qa-release-1373700201.md`, [
-  'backend smoke',
-  'release-readiness evidence',
-  'does not implement backend service',
-  'does not own DB migrations',
-  'does not operate deployment runtime',
-]);
+function forbidDocTerms(relativePath, terms) {
+  if (!exists(relativePath)) {
+    fail(`missing required role document: team-doc/${relativePath}`);
+    return;
+  }
+  const body = read(relativePath);
+  for (const term of terms) {
+    if (body.includes(term)) {
+      fail(`team-doc/${relativePath} includes forbidden role-boundary term: ${term}`);
+    }
+  }
+}
 
-requireDocTerms(
-  `${soulMdRoot}/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md`,
-  [
-    'Security/Privacy is a conditional reviewer/gate',
-    'not a standing implementation agent',
-  ],
-);
+function requireNoDocTerms(relativePath, terms) {
+  if (!exists(relativePath)) {
+    fail(`missing required document: team-doc/${relativePath}`);
+    return;
+  }
+  const body = read(relativePath);
+  for (const term of terms) {
+    if (body.includes(term)) {
+      fail(`team-doc/${relativePath} includes forbidden term: ${term}`);
+    }
+  }
+}
 
-requireDocTerms(
-  `${soulMdRoot}/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md`,
-  [
-    'Security/Privacy is a conditional reviewer/gate',
-    'not a standing implementation agent',
-  ],
-);
+function requireOrderedTopLevelHeadings(relativePath, headings) {
+  if (!exists(relativePath)) {
+    fail(`missing required role document: team-doc/${relativePath}`);
+    return;
+  }
 
-requireDocTerms(
-  `${soulMdRoot}/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454.md`,
-  ['trigger-based'],
-);
+  const actualHeadings = read(relativePath)
+    .split('\n')
+    .filter((line) => /^#{1,2} /.test(line))
+    .map((line) => line.trim());
 
-requireDocTerms(`${soulMdRoot}/soul-md-mobile-architect-1373667383.md`, [
-  'working architecture owner',
-  'code standards review',
-  'TDD red-first',
-  'clean architecture layer/import boundaries',
-  'app-side code vulnerability review',
-  'Security/Privacy gate',
-  "Mobile App Dev's implementation responsibility",
-  "Backend/API Integrator's service/security contract responsibility",
-  'QA/Release evidence gates',
-  'Product/Planning scope ownership',
-]);
+  let start = 0;
+  for (const expected of headings) {
+    const index = actualHeadings.indexOf(expected, start);
+    if (index < 0) {
+      fail(`team-doc/${relativePath} missing ordered runtime SOUL heading: ${expected}`);
+      return;
+    }
+    start = index + 1;
+  }
+}
+
+const roleSoulRuntimeHeadings = [
+  '## Identity',
+  '## Responsibilities',
+  '## Skills',
+  '## Communication Style',
+  '## Decision Making',
+  '## Boundaries',
+  '## Goals',
+  '## Working Principles',
+  '## Security Policy',
+  '## Sub-Agent & Background Delegation (Mandatory)',
+];
 
 const managedTeamDocRoot = 'mobile-app-dev-team';
+const githubArtifactWorkflowDoc = `${managedTeamDocRoot}/10-github-artifact-workflow.md`;
+const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
+const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 
 for (const relativePath of [
   `${managedTeamDocRoot}/README.md`,
@@ -325,27 +362,304 @@ for (const relativePath of [
   `${managedTeamDocRoot}/05-work-processes.md`,
   `${managedTeamDocRoot}/06-gates-and-evidence.md`,
   `${managedTeamDocRoot}/07-new-team-template-guide.md`,
+  githubArtifactWorkflowDoc,
   `${managedTeamDocRoot}/99-source-map.md`,
+  `${podNativeOpenClawSkillRoot}/README.md`,
+  `${codexCliAuthSetupSkillRoot}/SKILL.md`,
+  `${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`,
+  `${codexCliAuthSetupSkillRoot}/references/report-template.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: team-doc/${relativePath}`);
 }
 
+requireRootTerms('AGENTS.md', [
+  '## OpenClaw And Codex Skill Routing',
+  'Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape',
+  'team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
+  'Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts',
+  'required validators, evals, scripts, and evidence may still be added when the change needs them',
+]);
+
+requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
+  'source-only',
+  '/workspace/skills/<slug>/SKILL.md',
+  'codex-cli-auth-setup',
+  'Do not place repo-local Codex CLI artifacts here',
+]);
+
+requireRootTerms('docs/plans/work-units/README.md', [
+  'docs/plans/work-units/<work-unit-id>/',
+  'durable handoff',
+  'GitHub branch/commit/PR',
+  'status: required | not-applicable | deferred/non-goal',
+  'PRD acceptance line or explicit non-goal reference',
+  'owner',
+  'input artifact',
+  'output artifact',
+  'acceptance criteria',
+  'evidence requirement',
+  'dependencies/blockers',
+  'open decisions',
+  'next responsible role',
+  'P0',
+  'P1',
+  'design-pub-html/<YYYY-MM-DD>/<work-unit-id>/',
+  '.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/',
+  '.evidence/local/',
+  'Release Gatekeeper (System)',
+]);
+
+requireDocTerms(githubArtifactWorkflowDoc, [
+  '# GitHub Artifact Workflow',
+  'pod-isolated',
+  'No shared storage',
+  'GitHub branch/commit/PR',
+  'docs/plans/work-units/<work-unit-id>/',
+  'status: required | not-applicable | deferred/non-goal',
+  'PRD acceptance line or explicit non-goal reference',
+  'owner',
+  'input artifact',
+  'output artifact',
+  'acceptance criteria',
+  'evidence requirement',
+  'dependencies/blockers',
+  'open decisions',
+  'next responsible role',
+  'P0 before Stitch generation',
+  'P1 before HTML/image extraction',
+  'fetch_screen_code',
+  'code.html',
+  'getHtml',
+  'htmlCode.downloadUrl',
+  'design-reviewer',
+  'design-pub-html/<YYYY-MM-DD>/<work-unit-id>/',
+  'option-a.html',
+  'option-a.png',
+  'option-b.html',
+  'option-b.png',
+  'manifest.json',
+  'handoff.md',
+  '.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/',
+  '.evidence/local/',
+  '.evidence/tmp/',
+  '.evidence/**/*.log',
+  '.evidence/**/raw/',
+  'mobile-mcp',
+  'exit status',
+  'No Gatekeeper SOUL.md',
+  'does not prove actual OrbStack/OpenClaw pod execution',
+]);
+
+requireDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
+  'name: codex-cli-auth-setup',
+  'description:',
+  '# Codex CLI Auth Setup',
+  '/workspace/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh',
+  '--dangerously-bypass-approvals-and-sandbox',
+  'Never print auth token values',
+  'Report auth presence, file mode, key names, and health status only',
+  'redaction',
+]);
+
+if (exists(`${codexCliAuthSetupSkillRoot}/SKILL.md`)) {
+  const skillFrontmatter = parseFrontmatter(read(`${codexCliAuthSetupSkillRoot}/SKILL.md`));
+  if (!skillFrontmatter) {
+    fail(`pod-native OpenClaw skill missing YAML frontmatter: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+  } else {
+    const keys = Object.keys(skillFrontmatter).sort();
+    const unexpectedKeys = keys.filter((key) => !['description', 'name'].includes(key));
+    if (skillFrontmatter.name !== 'codex-cli-auth-setup') {
+      fail(`pod-native OpenClaw skill frontmatter name must be codex-cli-auth-setup: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+    }
+    if (!skillFrontmatter.description) {
+      fail(`pod-native OpenClaw skill frontmatter missing description: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+    }
+    if (unexpectedKeys.length) {
+      fail(`pod-native OpenClaw skill frontmatter must only include name and description: ${unexpectedKeys.join(', ')}`);
+    }
+  }
+}
+
+requireDocTerms(`${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`, [
+  'set -euo pipefail',
+  'redact()',
+  'auth/config status, redacted',
+  'has_token_like_keys',
+  'stored_api_key_present',
+]);
+
+requireNoDocTerms(`${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`, [
+  'cat ~/.codex/auth.json',
+  'cat /root/.codex/auth.json',
+  'print(data)',
+  'json.dumps(data',
+  'OPENAI_API_KEY=',
+]);
+
+requireDocTerms(`${codexCliAuthSetupSkillRoot}/references/report-template.md`, [
+  'Codex CLI 설치/Auth/무승인 실행 보고',
+  'Auth:',
+  'auth token 값은 출력하지 않음',
+  '--dangerously-bypass-approvals-and-sandbox',
+  'status only',
+]);
+
+const codexCliPrecheckPath = path.join(docRoot, `${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`);
+if (fs.existsSync(codexCliPrecheckPath)) {
+  const syntax = spawnSync('bash', ['-n', codexCliPrecheckPath], { encoding: 'utf8' });
+  if (syntax.status !== 0) {
+    fail(`codex-cli-precheck.sh must pass bash -n: ${syntax.stderr || syntax.stdout}`);
+  }
+}
+
 requireDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
   '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
+  'Chief Product Officer (CPO) / Product Delivery Lead',
+  'Mobile Architect / Technical Lead',
+  'Operating Role',
   'No Gatekeeper SOUL.md',
 ]);
 
 requireDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
   'Active repo-local skills',
+  'Chief Product Officer (CPO) / Product Delivery Lead',
+  'Operating Role',
   '$wm routing',
   'legacy mobile-* agents',
 ]);
 
+requireDocTerms(`${managedTeamDocRoot}/08-role-title-update-plan.md`, [
+  'Chief Product Officer (CPO) / Product Delivery Lead',
+  'Operating Role',
+  'Do not use CTO as a runtime role, agent, fixture, SOUL identity, H1, or filename',
+]);
+
+forbidDocTerms(`${managedTeamDocRoot}/08-role-title-update-plan.md`, [
+  'CTO / Mobile Technical Lead',
+  '# CTO / Mobile Technical Lead SOUL.md',
+]);
+
+const allowedManagedCtoSafetySentence =
+  'Do not use CTO as a runtime role, agent, fixture, SOUL identity, H1, or filename';
+for (const relativePath of listFiles(managedTeamDocRoot, (file) => file.endsWith('.md'))) {
+  const fileName = path.basename(relativePath);
+  if (/(^|[-_. ])cto([-_. ]|$)/i.test(fileName)) {
+    fail(`managed team doc filename must not introduce CTO: team-doc/${relativePath}`);
+  }
+
+  const bodyWithoutAllowedSafetySentence = read(relativePath).replaceAll(allowedManagedCtoSafetySentence, '');
+  if (/\bCTO\b/i.test(bodyWithoutAllowedSafetySentence)) {
+    fail(`managed team doc must not introduce CTO outside the approved safety sentence: team-doc/${relativePath}`);
+  }
+}
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/product-planning-soul.md`, [
+  'po-requirement-office-hours',
+  'po-work-unit-planning-and-agent-sprint',
+  'po-prd-to-execution',
+  'po-planning-completeness-review',
+  'Do not approve Design quality during P0/P1',
+  'approve only PRD fit, non-goals, evidence readiness, and human-gate routing',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/design-soul.md`, [
+  'design-mobile-design-handoff',
+  'design-stitch-mcp-operating-rules',
+  'Stitch',
+  'P0 and P1 packet preparation for Product/Planning scope/evidence approval',
+  'Do not ask Product/Planning to own design quality',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-architect-soul.md`, [
+  'No dedicated repo-local skill is currently assigned to this role',
+  'Do not absorb Mobile App Dev implementation ownership',
+  'Do not absorb Backend/API Integrator service or API ownership',
+]);
+
+forbidDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-app-dev-soul.md`, [
+  'Runtime template note: This document is a runtime `/workspace/SOUL.md` template for a generated Mobile App Dev agent. It is not a raw `create-full` `soulMd` seed payload. For seed payload generation, follow the platform injection rules recorded in the 01-5 SOUL source and OrbStack canary evidence instead of copying this file verbatim.',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-app-dev-soul.md`, [
+  'mobile-app-dev-workflow',
+  'wm-implementation-reviewer',
+  'wm-docs-researcher',
+  'packages/contracts',
+  'NativeWind',
+  'React Native primitives',
+  'testID',
+  'shadcn/ui',
+  'customer app config or secrets',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/backend-api-integrator-soul.md`, [
+  'mobile-backend-api-integrator-workflow',
+  'packages/contracts',
+  'Backend/API Service Owner',
+  'backend implementation',
+  'DB schema/migration',
+  'deployment config',
+  'runtime smoke',
+  'rollback note',
+  'service evidence',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/02-role-souls/qa-release-soul.md`, [
+  'e2e-test',
+  'qa-railway-workflow',
+  'Do not treat RN Web evidence as native behavior proof',
+  'Do not treat Railway deployment evidence as full mobile release readiness',
+  'Do not accept failed gate risk on behalf of Product/Planning or a human owner',
+]);
+
+for (const [roleFile, title] of [
+  ['product-planning-soul.md', '# Product/Planning SOUL.md'],
+  ['design-soul.md', '# Design SOUL.md'],
+  ['mobile-architect-soul.md', '# Mobile Architect SOUL.md'],
+  ['mobile-app-dev-soul.md', '# Mobile App Dev SOUL.md'],
+  ['backend-api-integrator-soul.md', '# Backend/API Integrator SOUL.md'],
+  ['qa-release-soul.md', '# QA/Release SOUL.md'],
+]) {
+  requireOrderedTopLevelHeadings(`${managedTeamDocRoot}/02-role-souls/${roleFile}`, [
+    title,
+    ...roleSoulRuntimeHeadings,
+  ]);
+}
+
+for (const [roleFile, displayTitle, operatingRole, authorityLevel] of [
+  ['product-planning-soul.md', 'Chief Product Officer (CPO) / Product Delivery Lead', 'Product/Planning', 'Executive / Delivery Lead'],
+  ['design-soul.md', 'Product Designer', 'Design', 'Practitioner'],
+  ['mobile-architect-soul.md', 'Mobile Architect / Technical Lead', 'Mobile Architect', 'Technical Lead'],
+  ['mobile-app-dev-soul.md', 'Mobile App Developer', 'Mobile App Dev', 'Practitioner'],
+  ['backend-api-integrator-soul.md', 'Backend/API Engineer', 'Backend/API Integrator', 'Practitioner'],
+  ['qa-release-soul.md', 'QA/Release Engineer', 'QA/Release', 'Practitioner / Reviewer'],
+]) {
+  requireDocTerms(`${managedTeamDocRoot}/02-role-souls/${roleFile}`, [
+    `Display Title: ${displayTitle}`,
+    `Operating Role: ${operatingRole}`,
+    `Authority Level: ${authorityLevel}`,
+  ]);
+}
+
+requireDocTerms(`${managedTeamDocRoot}/06-gates-and-evidence.md`, [
+  'Release Gatekeeper (System)',
+  'Railway Boundary',
+  'It does not prove:',
+  'Full production release approval',
+  'docs/plans/work-units/<work-unit-id>/',
+  'durable GitHub handoff',
+  'canonical evidence',
+]);
+
 requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
+  'Chief Product Officer (CPO) / Product Delivery Lead',
+  'Operating Role',
   'active-vs-historical skill crosswalk',
   'mobile-api-contract',
   'mobile-qa-release',
   'qa-railway-workflow',
+  '10-github-artifact-workflow.md',
+  'docs/plans/work-units/<work-unit-id>/',
 ]);
 
 if (errors.length) {

@@ -1,8 +1,8 @@
 # Project Environment
 
-Last updated: 2026-06-09
+Last updated: 2026-06-10
 
-This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, or required environment variables.
+This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
 ## Workspace
 
@@ -233,6 +233,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - legacy `mobile-*` agents remain available for other runtime/eval surfaces, but `$wm` reviewer routing and `scripts/codex-headless-review.mjs` allow only the dedicated `wm-*`, Product/Planning `po-*`, and Design `design-*` read-only agents listed above.
 - Hooks: `.codex/hooks.json` and `.codex/hooks/*.mjs`.
 - MCP config: `.codex/config.toml`.
+- Codex MCP/CLI setup guide: `docs/CODEX_MCP_ENVIRONMENT.md`.
 - Root Claude runtime artifacts are not part of the active Codex runtime:
   - `CLAUDE.md`
   - `.claude/`
@@ -261,7 +262,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `expo`
   - URL: `https://mcp.expo.dev/mcp`
   - status: enabled
-  - authentication status: not logged in
+  - authentication: run `codex mcp login expo` when the target Codex session reports Expo MCP is not logged in, then verify with `codex mcp list`; auth display can be session-specific.
   - this does not replace `mobile-mcp` for local visual QA/device automation.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`

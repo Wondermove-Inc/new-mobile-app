@@ -463,14 +463,6 @@ if (exists(projectEnvironmentPath)) {
   assert(/--json-envelope/i.test(environment), 'PROJECT_ENVIRONMENT.md must document codex-headless-review --json-envelope');
 }
 
-const confluenceRuntimeSotPath = 'docs/confluence/20260608-codex-expo-rn-runtime-sot-update.md';
-assert(exists(confluenceRuntimeSotPath), 'missing Confluence runtime SoT update document');
-if (exists(confluenceRuntimeSotPath)) {
-  const confluenceRuntimeSot = read(confluenceRuntimeSotPath);
-  assert(/machine-readable reviewer verdict/i.test(confluenceRuntimeSot), 'Confluence runtime SoT update must document reviewer JSON envelope contract');
-  assert(/--json-envelope/i.test(confluenceRuntimeSot), 'Confluence runtime SoT update must document codex-headless-review --json-envelope');
-}
-
 for (const artifactPath of forbiddenRootRuntimeArtifacts) {
   assert(!exists(artifactPath), `root Claude runtime artifact must not be present: ${artifactPath}`);
 }

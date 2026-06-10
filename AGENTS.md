@@ -40,7 +40,7 @@ Monorepo layout (top-level):
 ## Expo / React Native Runtime Policy
 
 - Current mobile baseline is Expo SDK 56 (`expo ~56.0.9`) with React Native 0.85, NativeWind v5 preview, Tailwind CSS v4, and `expo-dev-client`.
-- Environment/runtime changes must keep `PROJECT_ENVIRONMENT.md` and the Confluence update document in sync with actual repo settings.
+- Environment/runtime changes must keep `PROJECT_ENVIRONMENT.md` and any required local publication/evidence mirror in sync with actual repo settings. Live Confluence publication is a human-gated external update, not a local validation gate.
 - Before a mobile environment change is considered done, verify mobile lint/test, `expo install --check`, native run smoke on iOS/Android when available, and Maestro smoke where available.
 - Official Expo skills may be introduced in a separate verified step with `npx skills add expo/skills`. Official Expo skills should cover generic Expo/RN workflows; repo skills remain responsible for this project's contracts, role boundaries, evidence, and QA gates.
 - `mobile-mcp` is the required local visual QA/device automation MCP. Pin its version in `.codex/config.toml`, do not use `@latest`, do not add it to required CI gates, and do not parallelize simulator/device operations.

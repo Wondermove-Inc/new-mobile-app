@@ -53,15 +53,57 @@ function requirePackageScripts() {
   }
 
   const scripts = packageJson.scripts || {};
-  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run test:hooks';
+  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run test:hooks';
   if (scripts['test:runtime'] !== expectedRuntime) {
     fail(`package.json test:runtime must keep active gates only: ${expectedRuntime}`);
   }
   if (scripts['validate:team-doc-archive'] !== 'node scripts/validate-team-doc-archive.mjs') {
     fail('package.json missing validate:team-doc-archive archive/reference validator script');
   }
+  if (scripts['validate:work-units'] !== 'node scripts/validate-work-units.mjs --self-test && node scripts/validate-work-units.mjs') {
+    fail('package.json missing validate:work-units runtime validator script');
+  }
   if (scripts['test:runtime']?.includes('validate:team-doc-archive')) {
     fail('package.json test:runtime must not include archive/reference validator');
+  }
+  for (const [scriptName, scriptCommand] of Object.entries(scripts)) {
+    const manualRefreshLike = /sot-refresh|provenance-refresh|Atlassian MCP|live Confluence|Confluence.*refresh/i.test(`${scriptName} ${scriptCommand}`);
+    if (scriptName.startsWith('test:') && manualRefreshLike) {
+      fail(`package.json manual/provenance refresh script must not use test: prefix: ${scriptName}`);
+    }
+  }
+}
+
+function requireConfluenceDependencyBoundary() {
+  const runtimeValidator = requireFile('scripts/validate-runtime-artifacts.mjs');
+  if (runtimeValidator) {
+    if (!runtimeValidator.includes("PROJECT_ENVIRONMENT.md")) {
+      fail('scripts/validate-runtime-artifacts.mjs must validate PROJECT_ENVIRONMENT.md as a repo-local runtime SoT');
+    }
+    if (/docs[\\/]+confluence|['"]docs['"]\s*,\s*['"]confluence['"]/i.test(runtimeValidator)) {
+      fail('scripts/validate-runtime-artifacts.mjs must not require any docs/confluence/** path as active runtime SoT');
+    }
+    const docsConfluencePath = ['docs', 'confluence'].join('/');
+    const hardCouplingPatterns = [
+      `${docsConfluencePath}/20260608-codex-expo-rn-runtime-sot-update.md`,
+      'confluenceRuntimeSotPath',
+      'Confluence runtime SoT update',
+    ];
+    for (const pattern of hardCouplingPatterns) {
+      if (runtimeValidator.includes(pattern)) {
+        fail(`scripts/validate-runtime-artifacts.mjs must not require ${pattern} as active runtime SoT`);
+      }
+    }
+  }
+
+  const harnessReadme = requireFile('evals/local-harness/README.md');
+  if (harnessReadme) {
+    if (/Confluence pages listed in `sot\/snapshot\.json` as the source of truth/i.test(harnessReadme)) {
+      fail('evals/local-harness/README.md must describe sot/snapshot.json as an offline local snapshot, not live Confluence as source of truth');
+    }
+    if (/^## Confluence Sources$/m.test(harnessReadme)) {
+      fail('evals/local-harness/README.md must rename Confluence Sources to a provenance/source-crosswalk section or state it is not a live dependency');
+    }
   }
 }
 
@@ -102,6 +144,7 @@ requireTerms('REPO_OPERATIONS.md', [
 ]);
 
 requirePackageScripts();
+requireConfluenceDependencyBoundary();
 
 requireFile('TEAM_DOC_ARCHIVE_MANIFEST.json');
 requireFile('TEAM_DOC_ARCHIVE_BUNDLE.jsonl');

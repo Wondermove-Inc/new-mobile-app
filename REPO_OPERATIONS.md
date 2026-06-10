@@ -29,6 +29,13 @@ process detail.
 
 - Root policy and runtime files are the current canonical layer for repo-wide
   operations.
+- `docs/confluence/**` is a local publication mirror and evidence area. It is
+  not the active runtime SoT, and local runtime gates must not require live
+  Confluence access or require `docs/confluence/**` as current policy input.
+- Confluence page IDs, versions, source URLs, and fetched timestamps are
+  provenance/refetch anchors. Preserve them in local snapshots, crosswalks, and
+  archive evidence unless a separate source-refresh or archive migration is
+  approved.
 - Team docs describe how roles, processes, evidence, and migrations work within
   the mobile app development team.
 - `team-doc/00-source/` preserves source/export evidence and should not be
@@ -101,6 +108,7 @@ Active runtime composition:
 pnpm run validate
 pnpm run validate:repo-operations
 pnpm run validate:team-doc
+pnpm run validate:work-units
 pnpm run test:hooks
 ```
 
@@ -126,6 +134,9 @@ unless a source-backed blocker is reported.
 Local validation and local harness evidence prove repo-local rules only. They do
 not prove actual OrbStack/OpenClaw pod execution, Jira or Confluence behavior,
 GitHub branch protection, EAS production submit, or external platform state.
+Live Confluence publish/update is external platform work and requires explicit
+human approval with target page IDs, current versions, proposed body changes,
+and reviewer evidence. It must not be required for local CI or `test:runtime`.
 
 ## Validator Responsibility Model
 
@@ -139,6 +150,11 @@ Validators enforce documented policy; they are not the policy owner.
   skill documentation, and current migration documents. It must not require
   `team-doc/00-source/` or `team-doc/10-structured/` as active current
   team/runtime inputs.
+- `scripts/validate-work-units.mjs` validates committed work-unit `status.json`
+  artifacts and its own fixtures for the passive `wu-status/v1` status-machine
+  schema. It is repo-local runtime validation only and does not prove pod,
+  native, EAS, branch-protection, Jira, Confluence, or other external platform
+  state.
 - `scripts/validate-team-doc-archive.mjs` validates archive/reference integrity
   from root archive files: `TEAM_DOC_ARCHIVE_MANIFEST.json` and
   `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`. It must preserve `_meta` source map,
@@ -149,6 +165,9 @@ Validators enforce documented policy; they are not the policy owner.
   and migration tooling. It is not current team/runtime validation.
 - Package scripts compose subvalidators explicitly. Do not rely on hidden
   coupling in a monolithic validator to preserve gate strength.
+- Manual or provenance refresh commands must not use a `test:` package script
+  prefix unless they execute deterministic local tests. Keep live Atlassian or
+  Confluence access out of active runtime gate composition.
 
 Future validator changes must keep required gates explicit in `package.json`
 and must include reviewer evidence before removing or demoting an existing check.

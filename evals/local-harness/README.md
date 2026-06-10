@@ -1,6 +1,6 @@
 # Local Harness Contract
 
-This harness validates the mobile organization runtime surface that can be checked locally in this repository. It uses the Confluence pages listed in `sot/snapshot.json` as the source of truth.
+This harness validates the mobile organization runtime surface that can be checked locally in this repository. It uses the repo-local offline snapshot at `sot/snapshot.json` as the test input; Confluence page IDs in that file are provenance/refetch anchors, not live validation dependencies.
 
 ## ASSERTS
 
@@ -27,7 +27,13 @@ This harness validates the mobile organization runtime surface that can be check
 - It does not validate app feature behavior; app behavior belongs in workspace tests, Maestro flows, and release evidence.
 - It does not validate OpenClaw packaging, `/workspace/skills`, `OPENCLAW_ROOT`, generated agent packages, or external platform/runtime repositories.
 
-## Confluence Sources
+## Confluence Provenance
+
+This section records the source pages used to derive the local offline snapshot.
+It is not a live Confluence dependency and does not authorize external side
+effects. A provenance refresh must record page IDs, current versions, fetched
+time, diff summary, reviewer evidence, and explicit user approval before any
+live publish.
 
 | Source | Page ID | Harness Use |
 | --- | ---: | --- |

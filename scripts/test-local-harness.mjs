@@ -717,9 +717,9 @@ function extractReadmeSection(readme, startHeading, endHeading, failures) {
 
 function runSummarySelfTest() {
   const missingAsserts = [];
-  extractReadmeSection('## DOES NOT ASSERT\n\n- no external side effects\n\n## Confluence Sources', 'ASSERTS', 'DOES NOT ASSERT', missingAsserts);
+  extractReadmeSection('## DOES NOT ASSERT\n\n- no external side effects\n\n## Confluence Provenance', 'ASSERTS', 'DOES NOT ASSERT', missingAsserts);
   const missingDoesNotAssert = [];
-  extractReadmeSection('## ASSERTS\n\n- local only\n\n## Confluence Sources', 'DOES NOT ASSERT', 'Confluence Sources', missingDoesNotAssert);
+  extractReadmeSection('## ASSERTS\n\n- local only\n\n## Confluence Provenance', 'DOES NOT ASSERT', 'Confluence Provenance', missingDoesNotAssert);
   const missingProofRows = validateSummaryProofRows('# Local Harness Summary\n\n- Case A: local fixture verified\n- Cross-cutting: local verified\n');
   const failures = [];
 
@@ -781,7 +781,7 @@ function generateSummary(results) {
   lines.push(...extractReadmeSection(readme, 'ASSERTS', 'DOES NOT ASSERT', summaryFailures));
   lines.push('');
   lines.push('DOES NOT ASSERT');
-  lines.push(...extractReadmeSection(readme, 'DOES NOT ASSERT', 'Confluence Sources', summaryFailures));
+  lines.push(...extractReadmeSection(readme, 'DOES NOT ASSERT', 'Confluence Provenance', summaryFailures));
   lines.push('');
   lines.push('## Stage Results');
   for (const result of results) {

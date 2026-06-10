@@ -33,6 +33,7 @@ Required folder schema:
 ```text
 docs/plans/work-units/<work-unit-id>/
   README.md
+  status.json
   00-product-planning/
   01-design/
   02-architecture/
@@ -42,6 +43,12 @@ docs/plans/work-units/<work-unit-id>/
   06-gatekeeper/
   07-pr/
 ```
+
+`status.json` uses the passive `wu-status/v1` schema and is validated by
+`pnpm run validate:work-units`. It records the current stage, state, owning
+role, read-only reviewer envelope, durable evidence links, handoff target, and
+append-only event sequence for repo-state handoff. It is not an orchestrator and
+does not trigger role execution.
 
 Design handoff indexes must link the committed publication package:
 

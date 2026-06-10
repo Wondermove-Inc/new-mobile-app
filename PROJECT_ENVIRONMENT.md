@@ -221,6 +221,11 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - P0/P1 Product/Planning approvals are scope/evidence approvals for PRD fit, non-goals, evidence readiness, and human-gate routing. They are not Design quality approvals and do not move selected-option ownership out of Design.
     - Before P1 approval, Design must not call or persist `fetch_screen_code`, official ZIP `code.html`, SDK `getHtml`, `htmlCode.downloadUrl`, or equivalent HTML extraction metadata.
     - Stitch prompt generation must use prompt enhancement and current `DESIGN.md`; Gemini 3.1 Pro, Pro, or Thinking mode is requested best-effort when the Stitch surface exposes model or mode selection, with actual capability and limitations recorded in `manifest.json`.
+- Local harness SoT mode:
+  - `evals/local-harness/sot/snapshot.json` is the repo-local offline snapshot used by `scripts/test-local-harness.mjs`.
+  - Confluence page IDs and versions in local harness files are provenance/refetch anchors, not live runtime inputs.
+  - `docs/confluence/**` is a local publication mirror/evidence area derived from root runtime facts such as `PROJECT_ENVIRONMENT.md`; it is not the active runtime SoT for local validators.
+  - Live Confluence publish/update requires explicit user approval with target page IDs, current versions, proposed body changes, and reviewer evidence.
 - Custom agents: `.codex/agents/<agent-name>.toml`.
   - wm review routing uses dedicated read-only agents:
     - `wm-implementation-reviewer`
@@ -268,7 +273,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - this does not replace `mobile-mcp` for local visual QA/device automation.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`
-    - The root `validate` package script removes transient `.claude-state` before running this validator, while the validator itself still rejects root Claude runtime artifacts.
+    - The root `validate` package script removes transient `.claude/` and `.claude-state/` before running this validator, while the validator itself still rejects root Claude runtime artifacts.
   - `scripts/codex-headless-review.mjs`
     - Codex-only read-only helper: `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
     - no Claude, `--engine auto`, or `review_engine_preference` fallback path.
@@ -277,9 +282,18 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; `GO` requires no Critical/High/Medium findings and required checks `PASS` or source-backed `NOT_APPLICABLE`, failed required checks map to `NO_GO`, missing required checks map to `BLOCKED`, and human-gate blockers map to `NEEDS_HUMAN`.
     - researcher/advisor agents are advisory and are not valid `--json-envelope` targets.
   - `scripts/test-hooks.mjs`
+  - `scripts/validate-work-units.mjs`
+    - validates committed `docs/plans/work-units/*/status.json` artifacts against the passive `wu-status/v1` status-machine schema.
+    - `--self-test` validates positive and negative fixtures under `evals/work-units/fixtures`.
+    - repo-local only: it does not prove pod execution, native behavior, EAS state, GitHub branch protection, Jira, Confluence, or other external platform state.
   - `scripts/clean-tree-guard.mjs`
   - `scripts/codex-preflight.mjs`
   - `scripts/test-local-harness.mjs`
+- Manual provenance refresh:
+  - `pnpm run sot:provenance-refresh:manual`
+  - Advisory only: not a test, not CI, and not required by `test:runtime` or `test:local-harness`.
+  - Use only to describe the human-gated provenance refresh workflow for `evals/local-harness/sot/snapshot.json`.
+  - Required refresh evidence: page IDs, current versions, fetched time, diff summary, reviewer evidence, and explicit user approval before any live Confluence publish.
 - Local harness path: `evals/local-harness`.
 - Local harness result path: `evals/local-harness/results`.
 - Runtime stability evidence path: `.evidence/`.
@@ -294,8 +308,9 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - Runs `pnpm run test:local-harness` when these paths change:
   - `.agents/**`
   - `.codex/**`
-  - `evals/{skills,agents,hooks,local-harness}/**`
-  - `scripts/{validate-runtime-artifacts,codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
+  - `evals/{skills,agents,hooks,local-harness,work-units}/**`
+  - `scripts/lib/**`
+  - `scripts/{validate-runtime-artifacts,validate-work-units,codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
   - `.github/workflows/quality-gate.yml`
   - `PROJECT_ENVIRONMENT.md`
   - `docs/{confluence,plans}/**`

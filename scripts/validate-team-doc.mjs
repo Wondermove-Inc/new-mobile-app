@@ -178,6 +178,7 @@ const githubArtifactWorkflowDoc = `${managedTeamDocRoot}/10-github-artifact-work
 const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
+const projectBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/project-bootstrap`;
 const easRobotAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/eas-robot-auth-setup`;
 const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`;
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
@@ -207,6 +208,9 @@ for (const relativePath of [
   `${podRoleBootstrapSkillRoot}/SKILL.md`,
   `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`,
   `${podRoleBootstrapSkillRoot}/references/report-template.md`,
+  `${projectBootstrapSkillRoot}/SKILL.md`,
+  `${projectBootstrapSkillRoot}/scripts/project-bootstrap-preflight.sh`,
+  `${projectBootstrapSkillRoot}/references/report-template.md`,
   `${easRobotAuthSetupSkillRoot}/SKILL.md`,
   `${easRobotAuthSetupSkillRoot}/scripts/eas-robot-auth-precheck.sh`,
   `${easRobotAuthSetupSkillRoot}/references/report-template.md`,
@@ -230,6 +234,7 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   '/workspace/skills/<slug>/SKILL.md',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
+  'project-bootstrap',
   'eas-robot-auth-setup',
   'stitch-adc-setup',
   '## Per-Role Required Pod Skills',
@@ -538,6 +543,46 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/references/report-template.md`, [
   'status-only blocker reason',
   'native_e2e_local',
   'auth token values',
+]);
+
+requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-bootstrap-preflight.sh', [
+  'codex-cli-auth-setup',
+  'pod-role-bootstrap',
+  'stitch-adc-setup',
+  'eas-robot-auth-setup',
+  'references/blocker-resolution-guide.md',
+  'PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH',
+  'project-bootstrap-blockers.md',
+  'qa-release',
+  'repo_sot_files',
+  'REPO_OPERATIONS.md',
+  '.codex/config.toml',
+  'mobile-mcp',
+  'serena',
+  'stitch',
+  'expo',
+  'atlassian',
+  'node_repl',
+  'playwright',
+  'Railway',
+  'gcloud',
+  'EAS',
+  'PROJECT_ENVIRONMENT.md',
+  'human-gate/v1',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  'project-bootstrap-report.json',
+]);
+
+requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
+  'Project Bootstrap Blocker Resolution Guide',
+  'missing role identity',
+  'pnpm-pin-mismatch',
+  'git-identity-missing',
+  'github-auth-unavailable',
+  'codex-mcp-unavailable',
+  'Agent/tool-use boundary',
+  'Do not print token values',
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [
@@ -1300,6 +1345,19 @@ for (const [roleFile, displayTitle, operatingRole, authorityLevel] of [
   ]);
 }
 
+for (const [roleFile, displayTitle, operatingRole] of [
+  ['product-planning-soul.md', 'Chief Product Officer (CPO) / Product Delivery Lead', 'Product/Planning'],
+  ['design-soul.md', 'Product Designer', 'Design'],
+  ['mobile-architect-soul.md', 'Mobile Architect / Technical Lead', 'Mobile Architect'],
+  ['mobile-app-dev-soul.md', 'Mobile App Developer', 'Mobile App Dev'],
+  ['backend-api-integrator-soul.md', 'Backend/API Engineer', 'Backend/API Integrator'],
+  ['qa-release-soul.md', 'QA/Release Engineer', 'QA/Release'],
+]) {
+  requireDocTerms(`${managedTeamDocRoot}/02-role-souls/${roleFile}`, [
+    `You are the ${displayTitle} operating under the ${operatingRole} runtime role`,
+  ]);
+}
+
 requireDocTerms(`${managedTeamDocRoot}/06-gates-and-evidence.md`, [
   'Release Gatekeeper (System)',
   'Railway Boundary',
@@ -1328,6 +1386,7 @@ requireDocTerms(`${managedTeamDocRoot}/16-pod-environment-bootstrap.md`, [
   'REPO_CLONE_URL',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
+  'project-bootstrap',
   'eas-robot-auth-setup',
   'stitch-adc-setup',
   '.codex/config.toml',

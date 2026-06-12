@@ -20,6 +20,7 @@ this file.
 | `CODEX_MANAGED_PATHS` | `/workspace/CODEX_MANAGED_PATHS.md` | Default managed-path registry path. Target pod may override it only for scripts that support the override. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
 | Managed path entry | `- /workspace/projects/Wondermove-Inc/new-mobile-app/` | Owner-approved entry required before Codex-managed repo work. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
 | `STATE_DIR` | `/workspace/state` | Default state/evidence directory for pod preflight and bootstrap reports. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
+| `PROJECT_BOOTSTRAP_REPORT_PATH` | `/workspace/state/project-bootstrap-report.json` | Default project-level pod readiness report path. | `mobile-app-dev-team/16-pod-environment-bootstrap.md`, `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md` |
 | `REPORT_PATH` | `/workspace/state/pod-role-bootstrap-report.json` | Default bootstrap report path when no override is provided. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
 | `EXPECTED_PNPM_VERSION` | `9.15.9` | Expected package manager version. Source order is `package.json` `packageManager`, confirmation in `PROJECT_ENVIRONMENT.md`, then explicit source-backed override. | `package.json`, `PROJECT_ENVIRONMENT.md` |
 | Expo SDK | `56` | Current mobile runtime baseline. | `AGENTS.md`, `PROJECT_ENVIRONMENT.md` |
@@ -60,6 +61,7 @@ release, or EAS job configuration.
 | `WM_EXPECTED_ROLE` | Missing | Guardrail that must match resolved role identity. | Non-secret pod config or workspace bootstrap file. |
 | Repo presence in target pod | Missing | Determines whether clone is needed. | Pod-internal read-only preflight checks `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`. |
 | Owner-approved managed path entry in target pod | Missing | Allows Codex-managed work under the repo path. | Owner/operator adds normalized entry to `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}`. |
+| `/workspace/skills/project-bootstrap` | Missing from local repo because this is a pod artifact | Required project-level boram pod readiness skill. | Installed under `/workspace/skills` in the target pod from `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/`. |
 | `/workspace/skills/codex-cli-auth-setup` | Missing from local repo because this is a pod artifact | Required pod-native auth precheck skill. | Installed under `/workspace/skills` in the target pod from `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/`. |
 | `/workspace/skills/pod-role-bootstrap` | Missing from local repo because this is a pod artifact | Required pod bootstrap skill. | Installed under `/workspace/skills` in the target pod from `mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/`. |
 | `EXPO_OWNER` | Missing | Required when EAS project, build, submit, or release evidence is in scope. | Owner/operator provides public Expo account or organization name. |
@@ -82,5 +84,5 @@ release, or EAS job configuration.
 The current repo contains enough non-secret source information to prepare a
 canary handoff package, but it does not contain target-pod identity, live pod
 readiness, managed-path approval in the pod, `/workspace/skills` installation
-proof, or credential status. Request those items from the owner/operator before
-running bootstrap.
+proof, `project-bootstrap` report proof, or credential status. Request those
+items from the owner/operator before running bootstrap.

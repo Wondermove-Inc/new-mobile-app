@@ -54,6 +54,7 @@ config/private-material patch
 -> rollout restart
 -> readiness check
 -> pod-internal redacted read-only preflight
+-> project-bootstrap
 -> pod-role-bootstrap
 ```
 
@@ -61,7 +62,7 @@ config/private-material patch
 
 | Class | Values | Allowed Delivery |
 | --- | --- | --- |
-| Non-secret bootstrap config | `REPO_PATH`, `CODEX_MANAGED_PATHS`, `STATE_DIR`, `REPORT_PATH`, `EXPECTED_PNPM_VERSION`, `WM_ROLE`, `WM_EXPECTED_ROLE`, non-secret `REPO_CLONE_URL`, `REPO_REF`, `REPO_COMMIT`, `EXPO_OWNER`, `EAS_PROJECT_ID`, `API_PORT`, Railway Dockerfile/health paths | ConfigMap/pod config, workspace bootstrap file, wrapper/source file. |
+| Non-secret bootstrap config | `REPO_PATH`, `CODEX_MANAGED_PATHS`, `STATE_DIR`, `REPORT_PATH`, `PROJECT_BOOTSTRAP_REPORT_PATH`, `EXPECTED_PNPM_VERSION`, `WM_ROLE`, `WM_EXPECTED_ROLE`, non-secret `REPO_CLONE_URL`, `REPO_REF`, `REPO_COMMIT`, `EXPO_OWNER`, `EAS_PROJECT_ID`, `API_PORT`, Railway Dockerfile/health paths | ConfigMap/pod config, workspace bootstrap file, wrapper/source file. |
 | Public Expo config | `APP_DISPLAY_NAME`, `APP_SLUG`, `APP_SCHEME`, `IOS_BUNDLE_IDENTIFIER`, `ANDROID_PACKAGE`, `API_URL` | ConfigMap/pod config or non-secret workspace bootstrap file. Never include bearer tokens, passwords, signing keys, or private endpoints. |
 | Secret/tool auth | `GITHUB_TOKEN`, Codex auth, `EXPO_TOKEN`, `DATABASE_URL`, `API_BEARER_TOKEN`, Railway auth, Google ADC, ASC key, Google service account JSON | Secret, secure store, tool auth, or mounted private file only. Report presence/status only. |
 
@@ -167,6 +168,7 @@ export REPO_REF="main"
 export WM_ROLE="qa-release"
 export WM_EXPECTED_ROLE="qa-release"
 export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
+export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.json"
 export REPORT_PATH="/workspace/state/pod-role-bootstrap-report.json"
 
 # Public mobile app config; compiled into the app bundle
@@ -234,15 +236,22 @@ object names, exit status, and redacted status.
    `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`. If any required
    SoT file, skill directory, repo path, managed path entry, or credential
    status check is missing, stop and request the missing artifact.
-4. Run `codex-cli-auth-setup` from `/workspace/skills/codex-cli-auth-setup/SKILL.md`
+4. Run `project-bootstrap` from `/workspace/skills/project-bootstrap/SKILL.md`.
+   It orchestrates the project-level readiness check for the configured boram
+   role pod, verifies the repo path, managed path, required pod skills, required
+   MCP names, conditional external CLI/account status, role-specific setup
+   reports, `PROJECT_ENVIRONMENT.md`, and `human-gate/v1` policy, then writes
+   status-only evidence to
+   `${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`.
+5. Run `codex-cli-auth-setup` from `/workspace/skills/codex-cli-auth-setup/SKILL.md`
    to verify Codex CLI and auth readiness without printing secrets.
-5. Resolve role identity from `WM_ROLE` or `/workspace/IDENTITY`.
-6. Ensure the repo checkout exists at `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`.
+6. Resolve role identity from `WM_ROLE` or `/workspace/IDENTITY`.
+7. Ensure the repo checkout exists at `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`.
    If it is missing, `REPO_CLONE_URL` must be provided by explicit pod config.
-7. Ensure `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains
+8. Ensure `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains
    the normalized managed path entry for `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`.
    A pod is not ready for Codex-managed repo work until that entry exists.
-8. Run `pod-role-bootstrap` from `/workspace/skills/pod-role-bootstrap/SKILL.md`.
+9. Run `pod-role-bootstrap` from `/workspace/skills/pod-role-bootstrap/SKILL.md`.
    It aligns pnpm using this source order: `package.json` `packageManager`,
    confirmed against `PROJECT_ENVIRONMENT.md`, then `EXPECTED_PNPM_VERSION`
    override only when explicitly source-backed. The current expected value is
@@ -251,9 +260,9 @@ object names, exit status, and redacted status.
    `node scripts/codex-preflight.mjs --pod --json`, and writes status-only
    evidence under `${STATE_DIR:-/workspace/state}` or the configured
    `REPORT_PATH`.
-9. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
+10. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
    as the pin source. Do not duplicate MCP versions in pod-local claims.
-10. Run role-specific checks when needed:
+11. Run role-specific checks when needed:
    - Design: `stitch-adc-setup` verifies Google ADC and Stitch MCP readiness.
    - QA/Release: `eas-robot-auth-setup` verifies EAS CLI and Expo robot auth
      readiness before any human-gated EAS/Maestro run.
@@ -307,6 +316,7 @@ test -f docs/TEMPLATE_VARIABLES.md
 test -f docs/CREDENTIALS.md
 test -f mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
 test -d mobile-app-dev-team/09-pod-native-openclaw-skills
+test -d /workspace/skills/project-bootstrap
 test -d /workspace/skills/codex-cli-auth-setup
 test -d /workspace/skills/pod-role-bootstrap
 grep -Fx -- "- ${MANAGED_PATH}" "${CODEX_MANAGED_PATHS}"
@@ -363,6 +373,7 @@ Run these only after the read-only preflight has no required blockers.
 REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_PATH="${REPO_PATH%/}"
 cd "${REPO_PATH}"
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh
 EXPECTED_PNPM_VERSION="$(
   node -p "require('./package.json').packageManager.replace(/^pnpm@/, '')"
 )"
@@ -399,6 +410,7 @@ Required canary evidence:
 - redacted `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`;
 - rollout and readiness result when pod-template variables or references changed;
 - pod-internal read-only preflight result;
+- `project-bootstrap` result;
 - `pod-role-bootstrap` result;
 - role-specific check result, or source-backed `not_applicable` reason;
 - linked `human-gate/v1` decision before any live external action.
@@ -411,6 +423,7 @@ A role pod is ready for repo work only when:
 - `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}` exists;
 - `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains the
   normalized managed path entry for `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`;
+- `project-bootstrap` exits 0 and writes status-only project readiness evidence;
 - `pod-role-bootstrap` exits 0;
 - required role-specific pod-native checks either pass or are documented as
   not applicable;

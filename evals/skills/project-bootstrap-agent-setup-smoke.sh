@@ -85,6 +85,37 @@ assert_file_contains() {
   fi
 }
 
+assert_file_not_contains() {
+  local file="$1"
+  local unexpected="$2"
+  if grep -F -- "${unexpected}" "${file}" >/dev/null 2>&1; then
+    printf 'assertion failed: expected %s not to contain %s\n' "${file}" "${unexpected}" >&2
+    exit 1
+  fi
+}
+
+assert_action_section_not_contains() {
+  local file="$1"
+  local unexpected="$2"
+  node - "${file}" "${unexpected}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const unexpected = process.argv[3];
+const body = fs.readFileSync(file, 'utf8');
+const start = body.indexOf('### What you need to do');
+const end = body.indexOf('### What I will do after that');
+if (start === -1 || end === -1 || end <= start) {
+  console.error(`assertion failed: could not find action section in ${file}`);
+  process.exit(1);
+}
+const section = body.slice(start, end);
+if (section.includes(unexpected)) {
+  console.error(`assertion failed: expected action section in ${file} not to contain ${unexpected}`);
+  process.exit(1);
+}
+NODE
+}
+
 case_design_full_setup() {
   local tmpdir
   tmpdir="$(mktemp -d)"
@@ -503,14 +534,188 @@ JSON
   assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('git-identity-missing')"
   assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('github-auth-unavailable')"
   assert_json_field "${report_path}" "r.blockers.includes('pod-role-bootstrap blocked')"
-  assert_file_contains "${blockers_md_path}" "## User-understandable result"
+  assert_file_contains "${blockers_md_path}" "## Action needed"
+  assert_file_contains "${blockers_md_path}" "The pod agent cannot continue because"
   assert_file_contains "${blockers_md_path}" "The pod role bootstrap report exists, but the pod is not ready yet."
-  assert_file_contains "${blockers_md_path}" "## What the agent already checked"
-  assert_file_contains "${blockers_md_path}" "## Minimum user request"
-  assert_file_contains "${blockers_md_path}" "approved non-secret Git identity pair"
-  assert_file_contains "${blockers_md_path}" 'human-present `gh auth login`'
-  assert_file_contains "${blockers_md_path}" "browser/device login"
-  assert_file_contains "${blockers_md_path}" "## Next agent action"
+  assert_file_contains "${blockers_md_path}" "### What you need to do"
+  assert_file_contains "${blockers_md_path}" "one approved non-secret Git identity"
+  assert_file_contains "${blockers_md_path}" "GitHub login screen"
+  assert_file_contains "${blockers_md_path}" "approved secure GitHub auth source"
+  assert_file_contains "${blockers_md_path}" "### What I will do after that"
+  assert_file_contains "${blockers_md_path}" "verify GitHub status"
+  assert_file_contains "${blockers_md_path}" "### Do not send in chat"
+  assert_file_contains "${blockers_md_path}" "passwords, tokens, 2FA codes"
+  assert_file_not_contains "${blockers_md_path}" "Create /workspace/state/pod-role-bootstrap-report.json"
+  assert_file_not_contains "${blockers_md_path}" 'create `/workspace/state/pod-role-bootstrap-report.json`'
+}
+
+case_project_preflight_guides_missing_sot_and_mcp() {
+  local tmpdir repo_path report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  : > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing repo SoT file .codex/config.toml')"
+  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP mobile-mcp')"
+  assert_file_contains "${blockers_md_path}" "## Action needed"
+  assert_file_contains "${blockers_md_path}" "approved project artifact"
+  assert_file_contains "${blockers_md_path}" ".codex/config.toml"
+  assert_file_contains "${blockers_md_path}" "approved MCP/tool-auth config"
+  assert_file_contains "${blockers_md_path}" "Do not install arbitrary tools"
+  assert_file_contains "${blockers_md_path}" 'Do not use `@latest`'
+  assert_file_contains "${blockers_md_path}" "I will recheck the project files"
+  assert_file_not_contains "${blockers_md_path}" 'Run `codex mcp list` yourself'
+  assert_action_section_not_contains "${blockers_md_path}" 'linked `human-gate/v1` decision'
+}
+
+case_project_preflight_guides_missing_codex_cli() {
+  local tmpdir repo_path report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+  mkdir -p \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+
+  PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing codex CLI')"
+  assert_file_contains "${blockers_md_path}" "platform owner refresh"
+  assert_file_contains "${blockers_md_path}" "approved Codex CLI artifact"
+  assert_file_contains "${blockers_md_path}" "pod image/runtime"
+  assert_file_contains "${blockers_md_path}" "I will rerun version checks"
+  assert_file_not_contains "${blockers_md_path}" "install Codex yourself"
+}
+
+case_project_preflight_guides_role_specific_secure_sources() {
+  local tmpdir repo_path report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${tmpdir}/skills/stitch-adc-setup" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="design" \
+  WM_EXPECTED_ROLE="design" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing stitch-adc-setup report')"
+  assert_file_contains "${blockers_md_path}" "approved secure credential source"
+  assert_file_contains "${blockers_md_path}" "Secret, secure store, tool auth, mounted file, or human-present login"
+  assert_file_contains "${blockers_md_path}" "public non-secret app config values"
+  assert_file_contains "${blockers_md_path}" "app display name"
+  assert_file_contains "${blockers_md_path}" "app slug"
+  assert_file_contains "${blockers_md_path}" "app scheme"
+  assert_file_contains "${blockers_md_path}" "iOS bundle ID"
+  assert_file_contains "${blockers_md_path}" "Android package"
+  assert_file_contains "${blockers_md_path}" "public API URL"
+  assert_file_contains "${blockers_md_path}" 'linked `human-gate/v1` decision'
+  assert_file_contains "${blockers_md_path}" "Google ADC JSON"
+  assert_file_contains "${blockers_md_path}" "service account JSON"
+  assert_file_contains "${blockers_md_path}" "DATABASE_URL"
+  assert_file_contains "${blockers_md_path}" "bearer tokens"
+  assert_file_contains "${blockers_md_path}" "Railway tokens"
+  assert_file_not_contains "${blockers_md_path}" 'Create `/workspace/state`'
+  assert_file_not_contains "${blockers_md_path}" 'Choose `WM_ROLE`'
+  assert_file_not_contains "${blockers_md_path}" 'Repair `/workspace/CODEX_MANAGED_PATHS.md` yourself'
+  assert_file_not_contains "${blockers_md_path}" "Register missing required MCPs yourself"
+  assert_file_not_contains "${blockers_md_path}" 'Align `pnpm-pin-mismatch` yourself'
 }
 
 case_design_full_setup
@@ -526,5 +731,8 @@ case_github_auth_setup_git_when_authenticated
 case_github_auth_missing_skips_setup_git
 case_product_planning_status_only_missing_preflight
 case_project_preflight_blocks_on_pod_role_report_blocked
+case_project_preflight_guides_missing_sot_and_mcp
+case_project_preflight_guides_missing_codex_cli
+case_project_preflight_guides_role_specific_secure_sources
 
 printf 'project-bootstrap-agent-setup smoke passed\n'

@@ -97,6 +97,31 @@ The default order is: run
 source `/workspace/state/project-bootstrap-role.env` when present, rerun
 preflight, and only then report unresolved blockers to the user.
 
+## User-Facing Message Rules
+
+The generated blocker guide should start with `## Action needed`, then use
+`### What you need to do`, `### What I will do after that`, and
+`### Do not send in chat`.
+
+Ask only for the smallest user-owned input. Use plain wording first and keep raw
+blocker names for technical details:
+
+- For GitHub, ask the user to be present for a GitHub login screen or confirm an
+  approved secure GitHub auth source exists. Do not ask for tokens in chat.
+- For Git identity, ask for one approved non-secret Git identity name/email pair
+  or an approved local handoff path.
+- For project files, ask for the correct checkout or approved project artifact.
+- For platform/runtime problems, ask for platform owner refresh of the pod
+  image/runtime, an approved Codex CLI artifact, or approved MCP/tool-auth
+  config.
+- For credentials, ask for an approved secure credential source.
+- For live external or risk-bearing work, ask for a linked `human-gate/v1`
+  decision.
+
+Do not ask the user to perform agent-owned setup. The do-not-ask cases include
+report directories, role identity writing, canonical managed-path repair,
+pinned credential-free MCP registration, and pnpm pin alignment.
+
 ## Status-Only Missing Values
 
 Not every `missing` status in `/workspace/state/project-bootstrap-report.json`
@@ -285,6 +310,31 @@ Agent action:
 - The agent must not use `@latest` when a pinned version exists in SoT.
 - The agent must not print ADC JSON or auth files.
 
+## Codex CLI And Runtime Blockers
+
+Related blockers:
+
+- `missing codex CLI`
+- `no-valid-codex-binary`
+- `node-major-mismatch`
+- terminal missing Codex CLI after agent-owned setup
+
+Resolution:
+
+- Ask for platform owner refresh of the pod image/runtime when the pod runtime
+  does not match repo SoT.
+- Ask for an approved Codex CLI artifact when the binary is missing or invalid
+  after the agent has run the approved local precheck.
+- Ask for approved MCP/tool-auth config when Codex exists but the required MCP
+  cannot be registered or authenticated from pinned, credential-free repo SoT.
+
+Agent action:
+
+- The agent reruns version checks, Codex checks, MCP checks, setup, and preflight
+  after the platform/runtime source exists.
+- Do not ask a non-IT user to install arbitrary tools, choose package versions,
+  or use `@latest`.
+
 ## Repo And Managed Path Blockers
 
 Related blockers:
@@ -312,6 +362,49 @@ Agent action:
 - If `REPO_PATH` points anywhere else, keep it blocked as a wrong repo path
   instead of adding the override to `/workspace/CODEX_MANAGED_PATHS.md`.
 - If clone is required, `REPO_CLONE_URL` must be non-secret and token-free.
+
+## Public App Config Blockers
+
+Related blockers:
+
+- preview, release, or EAS job needs public app configuration
+- missing public app display or identifier values requested by a role-specific
+  approved workflow
+
+Resolution:
+
+- Ask for public non-secret app config values only.
+- The user-facing template may ask for app display name, app slug, app scheme,
+  iOS bundle ID, Android package, and public API URL.
+- Do not ask for customer secrets, private API keys, database URLs, bearer
+  tokens, or credential-bearing config files.
+
+Agent action:
+
+- Apply approved public values only through the repo-approved non-secret config
+  channel.
+- Rerun the related project, EAS, Expo, or runtime checks after the public config
+  exists.
+
+## API/Railway Secret Blockers
+
+Related blockers:
+
+- API/backend work needs database, API, Railway, or deployment secret status
+- missing secure credential source for Railway, API, or database checks
+
+Resolution:
+
+- Ask only for Secret, secure store, tool auth, mounted file, or human-present login
+  that makes the credential available to the pod.
+- Do not ask the user to paste `DATABASE_URL`, bearer tokens, Railway tokens,
+  API keys, passwords, or full secret-bearing config in chat.
+
+Agent action:
+
+- Run redacted status checks only after the approved secure source exists.
+- Record status, presence, file mode, object names, and key names only. Do not
+  print secret values.
 
 ## Role-Specific Setup Report Blockers
 

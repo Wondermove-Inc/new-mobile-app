@@ -1,0 +1,69 @@
+{
+  "verdict": "GO",
+  "reviewer": "po-scope-gate-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "b144d53879b2f0cc8c98d509a41d5f6074a76fea",
+    "target": "docs/plans/active/20260613-project-bootstrap-user-request-guidance-goal.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "docs/plans/active/20260611-pr4-pod-bootstrap-preimplementation-plan.md",
+      "docs/plans/active/20260610-confluence-dependency-decoupling-plan.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md",
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md",
+      "scripts/codex-preflight.mjs",
+      ".evidence/wm/project-bootstrap/20260613-user-request-cases-report.md",
+      ".evidence/wm/project-bootstrap/20260613-user-request-cases-xhigh-final.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse HEAD",
+      "status": "PASS",
+      "evidence": "Baseline commit is b144d53879b2f0cc8c98d509a41d5f6074a76fea."
+    },
+    {
+      "command": "test -e docs/plans/active/20260613-project-bootstrap-user-request-guidance-goal.md",
+      "status": "PASS",
+      "evidence": "Exit status 1 confirmed the planned document does not exist yet; this is a pre-write scope review."
+    },
+    {
+      "command": "rg -n \"human-gate|Confluence|SoT|secret|token|password|2FA|ADC|database URL|bearer|reviewer|xhigh|production submit|payment|PII|external messaging|legal|terms|contracts\" <requested SoT paths>",
+      "status": "PASS",
+      "evidence": "Cross-checked scope containment, human gates, Confluence rules, reviewer routing, and secret-safety boundaries."
+    },
+    {
+      "command": "rg -n \"GitHub auth|Git identity|role-source|repo checkout|source artifact|codex-config-missing|pod-native skill|wrong managed path|runtime|toolchain|Codex CLI|MCP|Design Stitch|QA|EAS|public Expo|Railway|human-gate/v1|ConfigMap|Secret|pnpm-pin-mismatch\" .evidence/wm/project-bootstrap/20260613-user-request-cases-report.md .evidence/wm/project-bootstrap/20260613-user-request-cases-xhigh-final.md",
+      "status": "PASS",
+      "evidence": "Confirmed the planned cases match the previously reviewed SoT-backed user-request cases."
+    },
+    {
+      "command": "nl -ba <requested SoT and evidence files>",
+      "status": "PASS",
+      "evidence": "Reviewed line-numbered sources for all claims cited in this report."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No file was written and no runtime artifact was changed in this read-only scope review. Runtime gates become required for the later implementation/editing stage."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No Codex runtime, skill, hook, eval, or script change was made in this read-only scope review."
+    }
+  ],
+  "residual_risks": [
+    "This review covers the planned goal document scope, not an actual drafted file. The written document should be rereviewed before any implementation stage starts.",
+    "Future project-bootstrap or pod-role-bootstrap behavior changes must use tests/evals before edits and then run applicable runtime/local-harness gates.",
+    "Any live Confluence publish remains external human-gated work requiring target page IDs, current versions, proposed body changes, reviewer evidence, and explicit human approval."
+  ],
+  "next_action": "proceed"
+}

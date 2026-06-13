@@ -148,28 +148,32 @@ When the report is blocked, `/workspace/state/project-bootstrap-blockers.md`
 must begin with a user-facing summary before raw technical blockers:
 
 ```markdown
-## User-understandable result
+## Action needed
 
-<Plain-language current state.>
+<Plain-language current state and why the pod agent cannot continue.>
 
-## What the agent already checked
+### What you need to do
 
-- <Status-only local checks and agent-owned setup already attempted.>
+- <Only the smallest user-owned action: a public non-secret value, approved
+  artifact, approved secure credential source, human-present login, platform
+  owner refresh, or linked `human-gate/v1` decision.>
 
-## Minimum user request
+### What I will do after that
 
-- <Only the smallest non-secret value, missing artifact, or human-present auth
-  action needed.>
+- <The status-only local checks, setup script, report regeneration, and
+  bootstrap/preflight rerun the agent will perform.>
 
-## Next agent action
+### Do not send in chat
 
-<How the agent can continue after that input exists.>
+- <Passwords, tokens, 2FA codes, recovery codes, private keys, database URLs,
+  bearer tokens, Google ADC JSON, service account JSON, or full secret-bearing
+  config.>
 ```
 
 Future JSON reports may add a `user_summary` object with the same shape:
-`current_state`, `agent_checked`, `minimum_user_request`, and
-`next_agent_action`. Until that exists, the generated Markdown is the user-facing
-contract.
+`action_needed`, `user_request`, `agent_next_action`, and
+`do_not_send_in_chat`. Until that exists, the generated Markdown is the
+user-facing contract.
 
 ## Interpretation Notes
 

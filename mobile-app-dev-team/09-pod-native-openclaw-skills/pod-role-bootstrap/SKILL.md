@@ -86,6 +86,25 @@ The preflight must report:
 - EAS cloud auth material as status only
 - `.codex/config.toml` and `codex mcp list` status only
 
+Codex CLI candidate validation accepts either a native executable whose `file`
+architecture matches the pod host or an executable Node.js script/symlink such
+as `/workspace/.npm-global/bin/codex` when `codex --version`,
+`codex exec --help`, and the read-only headless smoke command all pass. An
+unknown `file` architecture for a script wrapper is not by itself a blocker.
+An explicit opposite-architecture native binary remains an `arch-mismatch`
+blocker.
+
+Preflight blockers are interpreted as follows:
+
+- `git-identity-missing`: configure a non-secret pod Git identity outside the
+  report path, then rerun bootstrap. Do not hardcode customer names or print
+  credential material.
+- `github-auth-unavailable`: inject approved GitHub auth material through the
+  pod environment or image policy and verify with `gh auth status`. Report only
+  available/missing status; never print token values or full auth config.
+- `no-valid-codex-binary`: ensure `codex --version`, `codex exec --help`, and
+  the read-only headless smoke command work from the resolved `codex` path.
+
 4. Write the readiness report under `/workspace/state/`.
 
 The default report path is:

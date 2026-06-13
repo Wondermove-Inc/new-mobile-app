@@ -36,10 +36,9 @@ function expectedArch(unameMachine) {
 }
 
 function fileMatchesHostArch(fileOutput, unameMachine) {
-  const arch = expectedArch(unameMachine);
-  if (arch === 'arm64') return /\barm64\b|aarch64/i.test(fileOutput);
-  if (arch === 'x86_64') return /\bx86_64\b|amd64/i.test(fileOutput);
-  return fileOutput.includes(arch);
+  const detectedArch = fileArch(fileOutput);
+  if (detectedArch === 'unknown') return true;
+  return detectedArch === expectedArch(unameMachine);
 }
 
 function fileArch(fileOutput) {
@@ -456,6 +455,8 @@ function runSelfTest() {
     'codex.invalid-missing-sentinel.json',
     'pod.invalid-pnpm-mismatch.json',
     'pod.valid-pnpm-match.json',
+    'pod.valid-codex-node-wrapper.json',
+    'pod.valid-codex-node-wrapper-x86_64.json',
     'pod.invalid-missing-role.json',
     'pod.invalid-role-mismatch.json',
     'pod.invalid-gh-auth.json',

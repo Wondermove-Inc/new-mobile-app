@@ -353,6 +353,12 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 ## CI
 
 - GitHub quality gate: `.github/workflows/quality-gate.yml`.
+- GitHub auto-merge workflow: `.github/workflows/auto-merge.yml`.
+  - Triggered by successful `Quality gate` `workflow_run` events for pull requests targeting `main`.
+  - Uses GitHub native auto-merge through `gh pr merge --auto --squash --match-head-commit`.
+  - Does not check out or execute pull request head code.
+  - Does not bypass required reviews, required status checks, branch protection, rulesets, or merge queue requirements.
+  - Requires the external GitHub repository setting `Allow auto-merge` and sufficient workflow token permissions; local validators cannot prove those live settings.
 - The quality gate relies on root `package.json` `packageManager` as the single
   pnpm version SoT; `pnpm/action-setup@v4` must not set a separate `version`
   input.
@@ -375,7 +381,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/ingest-eas-evidence.mjs`
   - `scripts/validate-project-environment.mjs`
   - `scripts/validate-evidence-hygiene.mjs`
-  - `.github/workflows/quality-gate.yml`
+  - `.github/workflows/*.yml`
   - `PROJECT_ENVIRONMENT.md`
   - `docs/{confluence,plans}/**`
   - `AGENTS.md`

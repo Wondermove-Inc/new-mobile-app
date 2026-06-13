@@ -1,0 +1,15 @@
+{
+  "name": "invalid-auto-merge-checkout",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/auto-merge.yml",
+      "from": "      - name: Enable GitHub native auto-merge",
+      "to": "      - uses: actions/checkout@v4\n      - name: Enable GitHub native auto-merge"
+    }
+  ],
+  "expectedErrors": [
+    "auto-merge.yml must not check out PR code"
+  ]
+}

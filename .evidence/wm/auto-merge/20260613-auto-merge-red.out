@@ -1,0 +1,4 @@
+- valid-current.json: valid fixture failed:
+  - quality-gate.yml must detect .github/workflows/*.yml changes
+  - auto-merge.yml must exist
+exit=1

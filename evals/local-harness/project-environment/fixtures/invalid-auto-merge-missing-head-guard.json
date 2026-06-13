@@ -1,0 +1,15 @@
+{
+  "name": "invalid-auto-merge-missing-head-guard",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/auto-merge.yml",
+      "from": " --match-head-commit \"$HEAD_SHA\"",
+      "to": ""
+    }
+  ],
+  "expectedErrors": [
+    "auto-merge.yml must guard the exact head commit"
+  ]
+}

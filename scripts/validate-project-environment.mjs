@@ -12,6 +12,7 @@ const requiredFiles = [
   'turbo.json',
   '.codex/config.toml',
   '.github/workflows/quality-gate.yml',
+  '.github/workflows/auto-merge.yml',
   'PROJECT_ENVIRONMENT.md',
   'REPO_OPERATIONS.md',
   'evals/local-harness/sot/snapshot.json',
@@ -37,7 +38,9 @@ function readFileMap(baseRoot = root) {
   return Object.fromEntries(
     requiredFiles.map((relativePath) => [
       relativePath,
-      fs.readFileSync(path.join(baseRoot, relativePath), 'utf8'),
+      fs.existsSync(path.join(baseRoot, relativePath))
+        ? fs.readFileSync(path.join(baseRoot, relativePath), 'utf8')
+        : '',
     ]),
   );
 }
@@ -108,6 +111,48 @@ function qualityGateSetsPnpmActionVersion(qualityGate) {
   return false;
 }
 
+function validateAutoMergeWorkflow(errors, autoMerge) {
+  if (!autoMerge.trim()) {
+    errors.push('auto-merge.yml must exist');
+    return;
+  }
+
+  const requiredSnippets = [
+    ['auto-merge.yml must trigger on workflow_run', /workflow_run:/],
+    ['auto-merge.yml must listen for Quality gate workflow', /workflows:\s*\[\s*['"]Quality gate['"]\s*\]/],
+    ['auto-merge.yml must run only on completed workflow_run events', /types:\s*\[\s*completed\s*\]/],
+    ['auto-merge.yml must require pull_request source event', /github\.event\.workflow_run\.event\s*==\s*['"]pull_request['"]/],
+    ['auto-merge.yml must require successful Quality gate conclusion', /github\.event\.workflow_run\.conclusion\s*==\s*['"]success['"]/],
+    ['auto-merge.yml must require exactly one associated pull request', /github\.event\.workflow_run\.pull_requests\s*&&\s*github\.event\.workflow_run\.pull_requests\.length\s*==\s*1/],
+    ['auto-merge.yml must require base branch main', /github\.event\.workflow_run\.pull_requests\[0\]\.base\.ref\s*==\s*['"]main['"]/],
+    ['auto-merge.yml must grant contents write permission', /contents:\s*write/],
+    ['auto-merge.yml must grant pull-requests write permission', /pull-requests:\s*write/],
+    ['auto-merge.yml must pass PR_URL from workflow_run pull request html_url', /PR_URL:\s*\$\{\{\s*github\.event\.workflow_run\.pull_requests\[0\]\.html_url\s*\}\}/],
+    ['auto-merge.yml must pass HEAD_SHA from workflow_run head_sha', /HEAD_SHA:\s*\$\{\{\s*github\.event\.workflow_run\.head_sha\s*\}\}/],
+    ['auto-merge.yml must inspect PR state before merge', /gh pr view "\$PR_URL"/],
+    ['auto-merge.yml must skip closed PRs', /pr\.state\s*!=\s*['"]OPEN['"]/],
+    ['auto-merge.yml must skip draft PRs', /isDraft\s*==\s*true/],
+    ['auto-merge.yml must verify PR head SHA matches workflow_run head_sha', /headRefOid\s*!=\s*process\.env\.HEAD_SHA/],
+    ['auto-merge.yml must use GitHub native auto-merge', /gh pr merge "\$PR_URL" --auto/],
+    ['auto-merge.yml must use squash merge strategy non-interactively', /--squash/],
+    ['auto-merge.yml must guard the exact head commit', /--match-head-commit "\$HEAD_SHA"/],
+  ];
+
+  for (const [message, pattern] of requiredSnippets) {
+    if (!pattern.test(autoMerge)) errors.push(message);
+  }
+
+  if (/--admin/.test(autoMerge)) {
+    errors.push('auto-merge.yml must not use --admin');
+  }
+  if (/actions\/checkout@/.test(autoMerge)) {
+    errors.push('auto-merge.yml must not check out PR code');
+  }
+  if (/PAT|PERSONAL_ACCESS_TOKEN|secrets\.(?!GITHUB_TOKEN\b)|ghp_|github_pat_/i.test(autoMerge)) {
+    errors.push('auto-merge.yml must not use PATs or hardcoded tokens');
+  }
+}
+
 function validateSnapshot(errors, snapshot) {
   if (!snapshot) return;
   if (snapshot.snapshotVersion !== 1) {
@@ -148,6 +193,7 @@ export function validateProjectEnvironment(files = readFileMap()) {
   const repoOperations = files['REPO_OPERATIONS.md'] || '';
   const codexConfig = files['.codex/config.toml'] || '';
   const qualityGate = files['.github/workflows/quality-gate.yml'] || '';
+  const autoMerge = files['.github/workflows/auto-merge.yml'] || '';
   const qualityGateRuntimePattern = extractQualityGateRuntimePattern(qualityGate);
 
   if (packageJson) {
@@ -204,6 +250,12 @@ export function validateProjectEnvironment(files = readFileMap()) {
       errors.push(`quality-gate.yml must include ${command}`);
     }
   }
+  if (!qualityGateRuntimePattern.includes('\\.github/workflows/.*\\.yml')) {
+    errors.push('quality-gate.yml must detect .github/workflows/*.yml changes');
+  }
+  if (!environment.includes('.github/workflows/auto-merge.yml')) {
+    errors.push('PROJECT_ENVIRONMENT.md must document .github/workflows/auto-merge.yml');
+  }
   for (const script of [
     'validate-repo-operations',
     'validate-team-doc',
@@ -248,6 +300,8 @@ export function validateProjectEnvironment(files = readFileMap()) {
       errors.push('package.json test:runtime must include pnpm run validate:evidence-hygiene');
     }
   }
+
+  validateAutoMergeWorkflow(errors, autoMerge);
 
   validateSnapshot(errors, snapshot);
 

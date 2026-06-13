@@ -1,0 +1,49 @@
+name: Auto merge
+on:
+  workflow_run:
+    workflows: ['Quality gate']
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable-auto-merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.pull_requests &&
+      github.event.workflow_run.pull_requests.length == 1 &&
+      github.event.workflow_run.pull_requests[0].base.ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable GitHub native auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.workflow_run.pull_requests[0].html_url }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          pr_json="$(gh pr view "$PR_URL" --json state,isDraft,headRefOid)"
+          PR_JSON="$pr_json" node <<'NODE'
+          const pr = JSON.parse(process.env.PR_JSON);
+
+          if (pr.state != 'OPEN') {
+            console.log(`Skipping auto-merge because PR state is ${pr.state}.`);
+            process.exit(0);
+          }
+
+          if (pr.isDraft == true) {
+            console.log('Skipping auto-merge because PR is still draft.');
+            process.exit(0);
+          }
+
+          if (pr.headRefOid != process.env.HEAD_SHA) {
+            console.error(`Refusing auto-merge because PR head ${pr.headRefOid} does not match workflow head ${process.env.HEAD_SHA}.`);
+            process.exit(1);
+          }
+          NODE
+
+          gh pr merge "$PR_URL" --auto --squash --match-head-commit "$HEAD_SHA"

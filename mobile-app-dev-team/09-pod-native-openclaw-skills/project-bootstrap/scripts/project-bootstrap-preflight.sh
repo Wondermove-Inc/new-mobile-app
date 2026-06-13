@@ -375,16 +375,27 @@ const blockerGuide = {
 
 function buildUserUnderstandableResult() {
   const nestedBlockers = new Set(podRoleBootstrapNestedReport.blockers);
+  const blockerSet = new Set(blockers);
   const hasPodRoleBlocked = blockers.includes('pod-role-bootstrap blocked');
   const hasGitIdentityMissing = nestedBlockers.has('git-identity-missing');
   const hasGithubAuthUnavailable = nestedBlockers.has('github-auth-unavailable');
+  const hasMissingRepoSot = blockers.some((blocker) => blocker.startsWith('missing repo SoT file '));
+  const hasMissingCodexCli = blockerSet.has('missing codex CLI');
+  const missingRequiredMcps = blockers
+    .filter((blocker) => blocker.startsWith('missing required MCP '))
+    .map((blocker) => blocker.replace('missing required MCP ', ''));
+  const hasMissingRequiredMcp = missingRequiredMcps.length > 0;
+  const hasMissingPodSkill = blockers.some((blocker) => blocker.startsWith('missing /workspace/skills/'));
+  const hasCredentialReportBlocker = blockerSet.has('missing stitch-adc-setup report') || blockerSet.has('missing eas-robot-auth-setup report');
+  const hasHumanGateBlocker = blockers.some((blocker) => /human-gate|live external|risk-bearing/i.test(blocker));
   const technicalBlockers = blockers
     .concat(podRoleBootstrapNestedReport.blockers.map((blocker) => `pod-role-bootstrap: ${blocker}`))
     .map((blocker) => `\`${blocker}\``)
     .join(', ');
   const lines = [
-    '## User-understandable result',
+    '## Action needed',
     '',
+    'The pod agent cannot continue because one or more setup items still need a user-owned input, approved artifact, or platform owner action.',
   ];
 
   if (hasPodRoleBlocked) {
@@ -397,11 +408,11 @@ function buildUserUnderstandableResult() {
   lines.push(`Technical details: ${technicalBlockers || 'none'}.`);
   lines.push(
     '',
-    '## What the agent already checked',
+    '### What the agent already checked',
     '',
     '- The agent ran the project readiness preflight and recorded status-only local checks.',
     '- The agent checked the repo path, managed path, required skills, required MCPs, and generated report paths that are visible to this preflight.',
-    '- The agent can use local CLI, MCP status checks, and browser/computer-use for safe setup; browser auth UI requires a human to be present for credential entry.',
+    '- The agent can use local CLI, MCP status checks, and browser/computer-use for safe setup; a login screen requires a human to be present for credential entry.',
   );
 
   if (hasPodRoleBlocked) {
@@ -416,30 +427,74 @@ function buildUserUnderstandableResult() {
 
   lines.push(
     '',
-    '## Minimum user request',
+    '### What you need to do',
     '',
   );
-  if (hasGitIdentityMissing || hasGithubAuthUnavailable) {
-    if (hasGitIdentityMissing) {
-      lines.push('- Provide one approved non-secret Git identity pair through `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`.');
-    }
-    if (hasGithubAuthUnavailable) {
-      lines.push('- For GitHub, either confirm an approved mounted/managed auth source is available, or be present while the agent opens human-present `gh auth login` / browser/device login. Do not send tokens in chat.');
-    }
-  } else {
-    lines.push('- Provide only the missing source artifact, non-secret value, or human-gate decision named by the technical blocker list. Do not send secrets in chat.');
+
+  const userRequests = [];
+  if (hasGitIdentityMissing) {
+    userRequests.push('Provide one approved non-secret Git identity name/email pair, or an approved local handoff path. Do not ask the agent to invent an email address.');
+  }
+  if (hasGithubAuthUnavailable) {
+    userRequests.push('For GitHub, be present for a GitHub login screen, or confirm an approved secure GitHub auth source exists. Do not send GitHub tokens in chat.');
+  }
+  if (hasMissingRepoSot) {
+    userRequests.push('Provide the correct checkout or approved project artifact for the missing project file, such as `.codex/config.toml`. Do not paste a secret-bearing config in chat.');
+  }
+  if (hasMissingPodSkill) {
+    userRequests.push('Ask the platform owner to install or refresh the exact missing pod skill artifact.');
+  }
+  if (hasMissingCodexCli) {
+    userRequests.push('Ask the platform owner for a platform owner refresh of the pod image/runtime or an approved Codex CLI artifact. Do not manually add unapproved binaries.');
+  }
+  if (hasMissingRequiredMcp) {
+    userRequests.push(`Ask the platform owner for approved MCP/tool-auth config for: ${missingRequiredMcps.join(', ')}. Do not install arbitrary tools. Do not use \`@latest\`.`);
+  }
+  if (hasCredentialReportBlocker) {
+    userRequests.push('Provide an approved secure credential source through Secret, secure store, tool auth, mounted file, or human-present login. This is credential availability only, not raw secret text.');
+  }
+  if (hasHumanGateBlocker) {
+    userRequests.push('For live external or risk-bearing action, provide a linked `human-gate/v1` decision naming the exact action and evidence path.');
+  }
+  if (userRequests.length === 0) {
+    userRequests.push('Provide only the missing source artifact, public non-secret value, approved secure credential source, or human-gate decision named by the technical blocker list.');
+  }
+  for (const request of userRequests) {
+    lines.push(`- ${request}`);
   }
 
   lines.push(
     '',
-    '## Next agent action',
+    '### What I will do after that',
     '',
   );
+  const nextActions = [];
   if (hasGitIdentityMissing || hasGithubAuthUnavailable) {
-    lines.push('After the minimum input exists, the agent can continue by applying the approved Git identity, completing status-only GitHub setup, rerunning `pod-role-bootstrap`, and rerunning `project-bootstrap` preflight.');
-  } else {
-    lines.push('After the required input or artifact exists, the agent can continue by rerunning the relevant local setup check and then rerunning `project-bootstrap` preflight.');
+    nextActions.push('I will apply the approved Git identity source, verify GitHub status, run `gh auth setup-git` only after authenticated state exists, rerun `pod-role-bootstrap`, and rerun `project-bootstrap` preflight.');
   }
+  if (hasMissingRepoSot || hasMissingPodSkill) {
+    nextActions.push('I will recheck the project files, required pod skills, managed path, and repo SoT, then rerun setup and preflight.');
+  }
+  if (hasMissingCodexCli || hasMissingRequiredMcp) {
+    nextActions.push('I will rerun version checks, Codex CLI checks, MCP checks, and bootstrap/preflight after the approved runtime or tool-auth source exists.');
+  }
+  if (hasCredentialReportBlocker) {
+    nextActions.push('I will run the relevant redacted status-only setup report and continue only from status labels, not secret values.');
+  }
+  if (nextActions.length === 0) {
+    nextActions.push('I will rerun the relevant local setup check and then rerun `project-bootstrap` preflight.');
+  }
+  for (const action of nextActions) {
+    lines.push(`- ${action}`);
+  }
+
+  lines.push(
+    '',
+    '### Do not send in chat',
+    '',
+    '- Do not send passwords, tokens, 2FA codes, recovery codes, private keys, database URLs, bearer tokens, Google ADC JSON, service account JSON, or full secret-bearing config.',
+    '- I will ask only for a user-owned approval, public non-secret value, approved artifact, approved secure place, or human-present login when the pod agents cannot safely do that part themselves.',
+  );
 
   return lines.join('\n');
 }

@@ -1,0 +1,15 @@
+{
+  "name": "invalid-auto-merge-uses-admin",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/auto-merge.yml",
+      "from": "gh pr merge \"$PR_URL\" --auto --squash --match-head-commit \"$HEAD_SHA\"",
+      "to": "gh pr merge \"$PR_URL\" --auto --squash --admin --match-head-commit \"$HEAD_SHA\""
+    }
+  ],
+  "expectedErrors": [
+    "auto-merge.yml must not use --admin"
+  ]
+}

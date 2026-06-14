@@ -8,6 +8,11 @@
 This repository is the mobile app template runtime for WonderMove mobile agents.
 Repo-wide operating policy ownership is defined in `REPO_OPERATIONS.md`.
 
+For the canonical `skill` / `agent` / `AGENTS.md` term definitions and the
+`.agents/` vs `.codex/agents/` directory trap, see `REPO_OPERATIONS.md` →
+"Skill, Agent, And AGENTS.md Terminology" rather than relying on the path lists
+repeated in this file.
+
 ## Required Rules
 
 - TDD required: write or update tests before implementation changes.

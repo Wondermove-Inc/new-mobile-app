@@ -16,10 +16,7 @@ playwright-report/
 test-results/
 apps/mobile/playwright-report/
 apps/mobile/test-results/
-.evidence/local/
-.evidence/tmp/
-.evidence/**/*.log
-.evidence/**/raw/
+.evidence/**
 .serena/
 apps/api/deploy/
 *.log

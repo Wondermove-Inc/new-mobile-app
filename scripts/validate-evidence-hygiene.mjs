@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { findSecretLikeValues } from './lib/secret-patterns.mjs';
 
 const root = process.cwd();
 const fixtureDir = 'evals/local-harness/evidence-hygiene/fixtures';
 const args = process.argv.slice(2);
-const scanRoots = ['.evidence', 'docs/plans/work-units'];
+const trackedEvidenceRoot = '.evidence';
+const workspaceScanRoots = ['docs/plans/work-units'];
 
 const forbiddenPathRules = [
   { name: '.evidence/local', pattern: /^\.evidence\/local(?:\/|$)/ },
@@ -35,9 +37,30 @@ function listFiles(baseDir) {
   return out.sort();
 }
 
+function listTrackedFiles(baseDir) {
+  try {
+    const output = execFileSync('git', ['ls-files', '--', baseDir], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    return output
+      .split('\n')
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .filter((relativePath) => fs.existsSync(path.join(root, relativePath)))
+      .sort();
+  } catch (error) {
+    throw new Error(`Unable to list tracked evidence files for ${baseDir}: ${error.message}`);
+  }
+}
+
 function readFileMap() {
   const files = {};
-  for (const scanRoot of scanRoots) {
+  for (const relativePath of listTrackedFiles(trackedEvidenceRoot)) {
+    files[relativePath] = fs.readFileSync(path.join(root, relativePath), 'utf8');
+  }
+  for (const scanRoot of workspaceScanRoots) {
     for (const relativePath of listFiles(scanRoot)) {
       files[relativePath] = fs.readFileSync(path.join(root, relativePath), 'utf8');
     }
@@ -69,6 +92,7 @@ function validateEvidenceHygiene(files = readFileMap()) {
 function runSelfTest() {
   const fixtureFiles = fs.readdirSync(path.join(root, fixtureDir)).filter((file) => file.endsWith('.json')).sort();
   const failures = [];
+  const ignoredScratchPath = path.join(root, '.evidence/local/evidence-hygiene-self-test.tmp');
 
   for (const file of fixtureFiles) {
     const fixturePath = path.join(root, fixtureDir, file);
@@ -86,6 +110,17 @@ function runSelfTest() {
         failures.push(`${file}: missing expected error containing "${expectedError}". Actual errors:\n${errors.map((error) => `  - ${error}`).join('\n')}`);
       }
     }
+  }
+
+  try {
+    fs.mkdirSync(path.dirname(ignoredScratchPath), { recursive: true });
+    fs.writeFileSync(ignoredScratchPath, 'ignored local scratch output\n');
+    const ignoredScratchRelativePath = normalizePath(path.relative(root, ignoredScratchPath));
+    if (Object.hasOwn(readFileMap(), ignoredScratchRelativePath)) {
+      failures.push(`${ignoredScratchRelativePath}: ignored local scratch evidence must not be scanned`);
+    }
+  } finally {
+    fs.rmSync(ignoredScratchPath, { force: true });
   }
 
   if (failures.length) {

@@ -24,13 +24,13 @@ This file is the root source for the current project environment and runtime set
 - App path: `apps/mobile`.
 - Framework: Expo SDK 56 with Expo Router.
 - Runtime versions:
-  - `expo`: `~56.0.9`
+  - `expo`: `~56.0.11`
   - `react`: `19.2.3`
   - `react-dom`: `19.2.3`
   - `react-native`: `0.85.3`
   - `react-native-web`: `^0.21.2`
-  - `expo-router`: `~56.2.9`
-  - `expo-dev-client`: `~56.0.19`
+  - `expo-router`: `~56.2.10`
+  - `expo-dev-client`: `~56.0.20`
   - `expo-doctor`: `^1.19.9` as the `doctor` script dependency.
   - `@playwright/test`: `^1.60.0` as the browser E2E test runner.
 - Expo config: `apps/mobile/app.config.ts`.
@@ -320,17 +320,19 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - Project-bootstrap-required CLI surfaces:
   - `railway`
   - required for Railway QA/API deploy/evidence readiness checks.
-  - `project-bootstrap-agent-setup.sh` installs it with `npm i -g @railway/cli` when missing and npm is available, then rechecks `railway --version`.
+  - `project-bootstrap-agent-setup.sh` may install it with `npm i -g @railway/cli` only when `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`; otherwise it reports `install_blocked_needs_approval`, lists `install_plan`, keeps `installed_exact` empty, and waits for approval. `installed_exact` must list only verified successful installs; failed attempts are not installed.
   - If Railway auth is missing and a human is present, the agent runs `railway login`; the user signs in only in the Railway browser surface. Browserless fallback uses `railway login --browserless`.
   - Railway token values remain secret-safe and must not be sent in chat or evidence.
   - `gcloud`
   - required for Stitch/Google ADC readiness checks.
-  - `project-bootstrap-agent-setup.sh` may install it only from an approved official Google Cloud CLI installer source, then recheck `gcloud --version`.
+  - `project-bootstrap-agent-setup.sh` may install it only from an approved official Google Cloud CLI installer source and only when `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`, then recheck `gcloud --version`.
   - If gcloud auth is missing and a human is present, the agent runs `gcloud auth login`. If ADC is needed, the agent runs `gcloud auth application-default login`.
   - If project selection is missing, the user provides only the non-secret project ID; the agent runs `gcloud config set project <project-id>` and verifies with `gcloud config get-value project`.
+  - `project-bootstrap-preflight.sh` consumes `/workspace/state/project-bootstrap-agent-setup-report.json` and blocks on missing/unreadable/blocked setup reports, `railway-auth-missing`, `gcloud-auth-missing`, `gcloud-adc-missing`, `expo-mcp-auth-missing`, and `expo-cli-auth-missing`.
+  - Expo MCP auth and workspace Expo CLI auth are separate readiness surfaces. Expo CLI status checks use `npx --no-install expo whoami`.
   - Google ADC JSON, service account JSON, and token values remain secret-safe and must not be sent in chat or evidence.
   - Credential storage proof for GitHub, Expo, Railway, and gcloud is metadata-only: path, filename, owner/group, mode, size, and modification time. File contents are never read.
-  - Approved installer env vars are `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH` and optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`.
+  - Approved installer env vars are `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`, `PROJECT_BOOTSTRAP_INSTALL_APPROVED`, and optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`.
   - EAS CLI remains the baseline exception until QA/Release EAS work or another approved EAS action is selected.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`

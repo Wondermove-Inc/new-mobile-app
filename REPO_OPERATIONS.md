@@ -51,6 +51,26 @@ Do not delete, rewrite, or migrate `team-doc/00-source/` or
 Classify each reference first as current invariant, source/export integrity,
 generated/reference traceability, migration evidence, or accidental coupling.
 
+## Plan Lifecycle
+
+Planning documents move through three layers with different durability and gate
+coupling:
+
+- `docs/plans/active/` is an intentionally gitignored, local scratch workspace
+  for in-progress planning. It is not tracked, not shared through PRs, and not a
+  durable SoT. Do not treat files there as committed plan state, and do not
+  schedule them for repo cleanup or archival — they never enter git history.
+  Durable execution handoff must use commits, PRs, `.evidence/`, and
+  `docs/plans/work-units/`.
+- `docs/plans/work-units/` is the tracked, durable work-unit structure enforced
+  by `scripts/validate-work-units.mjs`. Work that must survive across sessions or
+  drive role handoffs belongs here, not in `active/`.
+- `mobile-app-dev-team/_archive/` holds completed team-level plans retained for
+  history. A tracked plan becomes archive-eligible once its PR is merged and its
+  status is terminal; move it there, preserving any source-map crosswalk entries
+  validated by `scripts/validate-team-doc.mjs`, rather than leaving terminal
+  plans in place indefinitely.
+
 ## Source And Archive Rules
 
 `team-doc/00-source/` is immutable source/export evidence by default. If it is
@@ -79,6 +99,14 @@ Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime
 and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/`.
 Repo-local Codex skills and agents use `.agents/skills/<skill-name>/SKILL.md`
 and `.codex/agents/<agent-name>.toml`.
+
+A skill's only required entrypoint is its `SKILL.md`. An optional
+`references/sot.md` pointer is a convenience SoT aid used by some role skills
+(currently the write-side `mobile-app-dev-workflow` and
+`mobile-backend-api-integrator-workflow`); it is not a required artifact and its
+presence is intentionally not uniform across skills. Validators do not require
+`references/sot.md`, so its absence on a skill such as `mobile-architect-workflow`
+is an accepted exception, not a gap.
 
 ### Codex-only Repo Work Policy
 

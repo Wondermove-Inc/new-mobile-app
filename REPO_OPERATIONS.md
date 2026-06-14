@@ -159,7 +159,13 @@ concept is stored in two locations:
 
 - Codex CLI custom agent: `.codex/agents/<name>.toml` (TOML; the internal `name` field
   is the identity source of truth, the filename is conventional)
-- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated)
+- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated for reviewer-logic ports).
+  The sole generated file is `.claude/agents/reviewer.md`, a read-only **bridge** that
+  dispatches to the five Codex verdict reviewers (`wm-implementation-reviewer`,
+  `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`,
+  `design-reviewer`) and the `po-docs-researcher` researcher via
+  `scripts/codex-headless-review.mjs` and relays the result. The bridge is not a port of
+  reviewer logic; full Codex→Claude reviewer ports remain deferred/NO_GO.
 
 ### AGENTS.md (a distinct third concept)
 

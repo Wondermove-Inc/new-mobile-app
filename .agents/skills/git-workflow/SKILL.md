@@ -29,7 +29,7 @@ Before any mutating Git operation, inspect and report:
 - upstream/remotes and default base branch;
 - recent base sync status when available;
 - Git identity and GitHub CLI auth status when needed;
-- required local evidence paths and applicable gate commands.
+- required durable evidence surfaces and applicable gate commands.
 
 If preflight finds unrelated user changes, work with them and do not revert them. If the requested operation would touch unrelated changes, stop and ask for a human decision.
 
@@ -53,7 +53,7 @@ Commit only scoped changes that have matching tests/evidence. Use Conventional C
 
 ### `pr`
 
-Open or update a PR only after required local checks have run or the result is explicitly BLOCKED. PR text must include summary, tests, evidence paths, reviewer/human-gate status, external-platform proof gaps, and residual risks.
+Open or update a PR only after required local checks have run or the result is explicitly BLOCKED. PR text must include summary, tests, durable evidence or proof links, reviewer/human-gate status, external-platform proof gaps, and residual risks.
 
 ### `review-status`
 
@@ -65,7 +65,7 @@ Read issue context freely when authorized by the task. For issue mutation, requi
 
 ### `handoff`
 
-Prepare the next actor handoff with branch, PR, evidence paths, blocked gates, reviewer state, issue links, and required human decisions. Do not claim completion.
+Prepare the next actor handoff with branch, PR, durable evidence or proof links, blocked gates, reviewer state, issue links, and required human decisions. Do not claim completion.
 
 ### `complete`
 
@@ -75,7 +75,11 @@ Confirm final evidence and reviewer state. Report whether the work is ready for 
 
 - For runtime changes: `pnpm run test:runtime`, `pnpm turbo run lint test`, and `pnpm run test:local-harness`.
 - For narrow structure checks: `node scripts/test-local-harness.mjs --self-test --stage structure` and `node scripts/test-local-harness.mjs --stage structure --json`.
-- For review gates: persist pre-implementation and final reviewer evidence under `.evidence/` or `evals/*/results/`.
+- For review gates: include reviewer verdicts, actionable findings, missing-test notes, human-gate status, and residual risks in the PR or handoff. Raw reviewer transcripts and local scratch evidence are local by default.
+- Git-tracked evidence must be role- and durability-based, not filename-based. Commit evidence only when it is durable proof required by a gate, handoff, audit, QA/release record, human approval, external-platform proof summary, or canonical validator/eval result.
+- `.evidence/**` is ignored by default for new local artifacts. Do not stage it automatically. The runtime hygiene validator scans tracked durable `.evidence/` artifacts, not ignored scratch output.
+- If a specific `.evidence/` artifact is required as durable proof, stage it intentionally with `git add -f` plus a repo-scope reason. Keep it minimal, redacted, and linked from the PR or work-unit handoff.
+- Existing tracked `.evidence/` history is a separate cleanup decision. Do not mix mass untracking or removal of historical evidence into an ordinary feature, fix, or PR workflow unless the user explicitly asks for that cleanup.
 
 If a required command cannot run or fails, report BLOCKED with command output. Do not downgrade required PR gates to best effort.
 

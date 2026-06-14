@@ -195,6 +195,23 @@ historical `team-doc/00-source/`, historical `team-doc/10-structured/`, `_meta`
 source maps, or migration crosswalks. Do not treat that command as proof that
 the legacy Confluence-shaped corpus is current team/runtime SoT.
 
+`validate:team-doc-archive` is intentionally a manual, dedicated-trigger gate. It
+is deliberately excluded from `test:runtime` and from the default CI runtime
+composition, and `scripts/validate-repo-operations.mjs` fails the build if
+`test:runtime` ever includes it. This keeps the historical archive/reference
+corpus check out of the active runtime gate.
+
+No automated gate runs `validate:team-doc-archive`. The change-detection filter
+in `.github/workflows/quality-gate.yml` only triggers `pnpm run
+test:local-harness`, and `test:local-harness` composes `test:runtime`, which
+excludes the archive validator; the filter also does not list the root archive
+SoT files `TEAM_DOC_ARCHIVE_MANIFEST.json` or `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`.
+Archive integrity is therefore enforced solely by running
+`validate:team-doc-archive` manually whenever you change those root archive files
+or the historical source/reference corpus. Treat that manual run as a required
+step of any archive-affecting change. It is not, and must not become, part of
+`test:runtime`.
+
 Runtime path or harness changes must also run `pnpm run test:local-harness`
 unless a source-backed blocker is reported.
 

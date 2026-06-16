@@ -68,11 +68,12 @@ source /workspace/state/project-bootstrap-role.env
 bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh
 ```
 
-These commands do not approve package installation, write secrets, or bypass
-human-owned authentication. If a bootstrap step reports that an install,
-account login, external auth surface, or secret is required, stop and report the
-translated blocker plus the minimum user-owned request instead of inventing a
-credential or proceeding with role work.
+These commands do not write secrets or bypass human-owned authentication. If a
+bootstrap step reports that an install is required, complete the required
+installation so the pod environment can converge with the Product Delivery Lead's
+standard environment. If authentication, an external auth surface, or a secret is
+required, ask the Product Delivery Lead for the approved path and follow that
+instruction instead of inventing a credential or proceeding with role work.
 
 ## Role Slug Resolution Table
 
@@ -105,6 +106,31 @@ The agent should read only the matching role runtime specification, then
 `codex-role-workflow`, and then follow the resolved allowed repo-local skill,
 reviewer, durable artifact stage, and stop rules.
 
+## Escalation And Environment Consistency
+
+When setup reports a blocker, the role pod must ask the Product Delivery Lead
+for direction and then follow that direction. Do not route blocker questions to a
+named individual in this README; route by role to the Product Delivery Lead.
+
+The Product Delivery Lead owns cross-pod environment consistency. The Product
+Delivery Lead should make sure every role pod uses the same setup policy,
+required CLI baseline, install decisions, authentication path, reporting format,
+and rerun order after clone or pull.
+
+Required installations should be completed rather than left as permanent setup
+blockers. If an install is needed to satisfy `project-bootstrap`, the role pod
+should report the exact install requirement to the Product Delivery Lead, receive
+the approved install direction, perform the installation to completion, and then
+rerun setup/preflight.
+
+Authentication-related setup is different from installation. If GitHub, Railway,
+Google Cloud, Google ADC, Stitch, Expo, EAS, Atlassian, or another external auth
+surface is required, the role pod must ask the Product Delivery Lead for the
+approved auth path. The Product Delivery Lead coordinates the human-owned login
+or mounted credential surface. Role pods must not request, paste, print, store,
+or commit token values, passwords, ADC JSON, service account JSON, OAuth codes,
+or other secrets.
+
 ## Stop Rules When Project Bootstrap Is Blocked
 
 If `project-bootstrap is blocked`, role work is forbidden. Do not begin role
@@ -117,16 +143,16 @@ blocker instead of raw blocker names. The result must explain:
 
 - what happened;
 - what the agent can still do with local CLI/browser/computer-use/MCP tools;
-- the minimum user-owned request or action needed from the user;
+- the minimum Product Delivery Lead direction, install action, or human-owned auth action needed;
 - how the agent continues after that action is completed;
 - the raw technical blockers only as support details, never as the main answer.
 
 Use `project-bootstrap/references/blocker-resolution-guide.md` and, when
 present, `${PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH:-/workspace/state/project-bootstrap-blockers.md}`
 for blocker translation. Ask for the smallest user-owned action that can unblock
-setup. Examples include approving a named install plan, completing a browser
-login, mounting a human-owned credential file, or confirming that a missing
-external account is intentionally unavailable.
+setup. Examples include Product Delivery Lead direction for a named install
+plan, completing a browser login, mounting a human-owned credential file, or
+confirming that a missing external account is intentionally unavailable.
 
 ## Mandatory Report Checklist
 
@@ -147,14 +173,15 @@ Every pod setup report based on this README must include:
 - clone or pull report fields: before/after commit, fetched branches, pruned branches, and changed files summary;
 - repo packageManager pin and active pnpm version, including mismatch and whether any alignment was performed;
 - `project-bootstrap` status: ready or blocked;
-- if blocked, the translated blocker and minimum user-owned request;
+- if blocked, the translated blocker and minimum Product Delivery Lead direction, install action, or human-owned auth action;
 - install and auth approval status, without secret values;
 - local proof boundary: local validation cannot prove live OpenClaw pod
   execution, external auth surfaces, GitHub branch protection, EAS submit, or
   other external platform state;
 - next action: read the matching runtime spec and
   `/workspace/skills/codex-role-workflow/SKILL.md` only when ready, otherwise
-  wait for the user-owned unblock action and rerun setup.
+  ask the Product Delivery Lead for the required install/auth direction and rerun
+  setup after the unblock action is complete.
 
 ## Human-Owned Auth And Secret Safety Examples
 
@@ -163,33 +190,36 @@ and secret material must be handled by the user or by an approved mounted
 runtime surface, not pasted into agent instructions.
 
 - GitHub auth unavailable: report that GitHub authentication is required and
-  ask the user to complete the login or provide an approved mounted auth surface.
+  ask the Product Delivery Lead for the approved login or mounted auth surface.
   Do not ask for token values in chat.
-- Railway auth unavailable: the agent may report or start the approved login
-  surface when requested, but the user completes authentication. Do not print or
-  store Railway token values in evidence.
-- Google ADC or Stitch auth unavailable: ask the user to complete the approved
-  Google login or mount the approved credential file. Do not paste ADC JSON or
+- Railway CLI missing: install the required Railway CLI according to Product
+  Delivery Lead direction, then rerun setup/preflight. Railway authentication
+  still requires the approved human-owned login path. Do not print or store
+  Railway token values in evidence.
+- Railway auth unavailable: ask the Product Delivery Lead for the approved login
+  path. The human owner completes authentication through the approved surface.
+- Google Cloud CLI missing: install `gcloud` from the Product Delivery Lead's
+  approved official source, then rerun setup/preflight.
+- Google ADC or Stitch auth unavailable: ask the Product Delivery Lead for the
+  approved Google login or mounted credential path. Do not paste ADC JSON or
   service account JSON into chat.
-- gcloud CLI missing: report the approved official Google Cloud CLI install plan
-  and wait for explicit approval before installing.
-- Expo or EAS auth unavailable: ask the user to complete the approved Expo auth
-  path or provide the approved runtime secret surface. Do not paste Expo token
-  values into chat or reports.
-- Atlassian remote auth unavailable: ask the user to complete the approved
-  OAuth or connector login. Do not paste OAuth codes or access token values into
-  chat.
+- Expo or EAS auth unavailable: ask the Product Delivery Lead for the approved
+  Expo/EAS auth path or runtime secret surface. Do not paste Expo token values
+  into chat or reports.
+- Atlassian remote auth unavailable: ask the Product Delivery Lead for the
+  approved OAuth or connector login path. Do not paste OAuth codes or access
+  token values into chat.
 - Package installation required: report the exact package or command, reason,
-  and target. Wait for explicit user approval before setting an install approval
-  environment variable or running the install.
+  and target to the Product Delivery Lead, follow the approved install direction,
+  complete the installation, and rerun setup/preflight.
 
 ## Current Skills
 
 | Skill | Runtime Shape | Purpose |
 | --- | --- | --- |
 | `openclaw-pod-skills-sync` | `/workspace/skills/openclaw-pod-skills-sync/SKILL.md` | Copy-sync the repo SoT pod-native skills into the `/workspace/skills` runtime snapshot and verify the clone/pull setup rule before `project-bootstrap`. |
-| `codex-cli-auth-setup` | `/workspace/skills/codex-cli-auth-setup/SKILL.md` | Verify Codex CLI readiness and, after explicit approval, install or update Codex CLI in an OpenClaw agent pod without exposing secrets. |
-| `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin, install repo dependencies only after explicit approval, run `codex-preflight --pod`, and write a status-only readiness report. |
+| `codex-cli-auth-setup` | `/workspace/skills/codex-cli-auth-setup/SKILL.md` | Verify Codex CLI readiness and install or update Codex CLI according to Product Delivery Lead setup direction without exposing secrets. |
+| `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin according to Product Delivery Lead setup direction, install required repo dependencies, run `codex-preflight --pod`, and write a status-only readiness report. |
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |
 | `eas-robot-auth-setup` | `/workspace/skills/eas-robot-auth-setup/SKILL.md` | Verify QA/Release EAS CLI and Expo robot auth readiness as status only before any human-gated EAS/Maestro run. |
 | `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify Design Google ADC and Stitch MCP readiness as status only before any approved Stitch handoff run. |

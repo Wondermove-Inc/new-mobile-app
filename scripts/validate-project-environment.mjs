@@ -95,6 +95,67 @@ function extractQualityGateRuntimePattern(qualityGate) {
   return match?.[1] || '';
 }
 
+function qualityGatePatternMatches(pattern, relativePath) {
+  if (!pattern) return false;
+  try {
+    return new RegExp(pattern).test(relativePath);
+  } catch (error) {
+    return false;
+  }
+}
+
+const requiredLocalHarnessTriggerPaths = [
+  '.agents/skills/mobile-app-dev-workflow/SKILL.md',
+  '.codex/agents/wm-implementation-reviewer.toml',
+  'evals/local-harness/README.md',
+  'scripts/lib/team-doc-validation-helpers.mjs',
+  'scripts/test-local-harness.mjs',
+  'scripts/codex-preflight.mjs',
+  'scripts/codex-headless-review.mjs',
+  '.github/workflows/quality-gate.yml',
+  'AGENTS.md',
+  'PROJECT_ENVIRONMENT.md',
+  'REPO_OPERATIONS.md',
+  'package.json',
+  'pnpm-lock.yaml',
+];
+
+const notLocalHarnessOnlyTriggerPaths = [
+  'mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md',
+  'mobile-app-dev-team/ref-organization/source-map-and-migration/README.md',
+  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md',
+  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'evals/skills/openclaw-pod-skills-sync-smoke.sh',
+  'evals/team-doc-structure/fixtures/valid-target-registry.json',
+  'docs/plans/work-units/project-bootstrap-auth-gates/README.md',
+];
+
+const documentedValidatorScripts = [
+  'validate-repo-operations',
+  'validate-team-doc',
+  'validate-team-doc-managed',
+  'validate-team-doc-structure',
+  'validate-runtime-sources',
+  'validate-runtime-routing-support',
+  'validate-workflow-docs',
+  'validate-governance-docs',
+  'validate-reference-docs',
+  'validate-team-doc-archive',
+  'validate-project-environment',
+  'validate-evidence-hygiene',
+];
+
+const localHarnessScriptTriggers = [
+  'validate-runtime-artifacts',
+  'validate-repo-operations',
+  'codex-headless-review',
+  'test-hooks',
+  'test-local-harness',
+  'clean-tree-guard',
+  'codex-preflight',
+  'validate-project-environment',
+];
+
 function qualityGateSetsPnpmActionVersion(qualityGate) {
   const lines = qualityGate.split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
@@ -269,19 +330,25 @@ export function validateProjectEnvironment(files = readFileMap()) {
   if (!qualityGateRuntimePattern.includes('\\.github/workflows/.*\\.yml')) {
     errors.push('quality-gate.yml must detect .github/workflows/*.yml changes');
   }
+  for (const relativePath of requiredLocalHarnessTriggerPaths) {
+    if (!qualityGatePatternMatches(qualityGateRuntimePattern, relativePath)) {
+      errors.push(`quality-gate.yml must run local harness for ${relativePath}`);
+    }
+  }
+  for (const relativePath of notLocalHarnessOnlyTriggerPaths) {
+    if (qualityGatePatternMatches(qualityGateRuntimePattern, relativePath)) {
+      errors.push(`quality-gate.yml must not require local harness for ${relativePath}`);
+    }
+  }
   if (!environment.includes('.github/workflows/auto-merge.yml')) {
     errors.push('PROJECT_ENVIRONMENT.md must document .github/workflows/auto-merge.yml');
   }
-  for (const script of [
-    'validate-repo-operations',
-    'validate-team-doc',
-    'validate-team-doc-archive',
-    'validate-project-environment',
-    'validate-evidence-hygiene',
-  ]) {
+  for (const script of localHarnessScriptTriggers) {
     if (!qualityGateRuntimePattern.includes(script)) {
       errors.push(`quality-gate.yml must detect scripts/${script}.mjs`);
     }
+  }
+  for (const script of documentedValidatorScripts) {
     if (!environment.includes(`scripts/${script}.mjs`)) {
       errors.push(`PROJECT_ENVIRONMENT.md must document scripts/${script}.mjs`);
     }
@@ -291,6 +358,17 @@ export function validateProjectEnvironment(files = readFileMap()) {
   }
   if (!environment.includes('validate:evidence-hygiene')) {
     errors.push('PROJECT_ENVIRONMENT.md must document validate:evidence-hygiene');
+  }
+  for (const term of [
+    'Local harness is required for Codex runtime and harness changes',
+    'mobile-app-dev-team/reports/**',
+    'mobile-app-dev-team/ref-organization/**',
+    'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**',
+    'targeted pod-native smoke',
+  ]) {
+    if (!environment.includes(term)) {
+      errors.push(`PROJECT_ENVIRONMENT.md must document local harness applicability term: ${term}`);
+    }
   }
   if (!environment.includes('tracked Claude Code helper artifacts')) {
     errors.push('PROJECT_ENVIRONMENT.md must distinguish tracked Claude Code helper artifacts from transient Claude local state');
@@ -312,6 +390,17 @@ export function validateProjectEnvironment(files = readFileMap()) {
   }
   if (!repoOperations.includes('scripts/validate-evidence-hygiene.mjs')) {
     errors.push('REPO_OPERATIONS.md must document scripts/validate-evidence-hygiene.mjs responsibility');
+  }
+  for (const term of [
+    '## Local Harness Applicability',
+    'Codex runtime and harness changes',
+    'mobile-app-dev-team/reports/**',
+    'mobile-app-dev-team/ref-organization/**',
+    'targeted pod-native smoke',
+  ]) {
+    if (!repoOperations.includes(term)) {
+      errors.push(`REPO_OPERATIONS.md must document local harness applicability term: ${term}`);
+    }
   }
   if (packageJson) {
     const script = packageJson.scripts?.['validate:project-environment'];

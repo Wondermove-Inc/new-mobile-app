@@ -11,6 +11,7 @@ const checks = [
 
 function runSelfTest() {
   const labels = checks.map(([label]) => label);
+  const managedScopeReason = 'not a direct pod-native skill source, role SOUL source, Codex CLI runtime input, or required codex-role-workflow routing-support input';
   const forbiddenLabels = [
     'team-doc structure fixture self-test',
     'team-doc structure registry',
@@ -27,7 +28,7 @@ function runSelfTest() {
 
   for (const label of forbiddenLabels) {
     if (labels.includes(label)) {
-      errors.push(`validate-team-doc active runtime wrapper must not run broad validator: ${label}`);
+      errors.push(`validate-team-doc active runtime wrapper must not run broad validator: ${label} (${managedScopeReason})`);
     }
   }
   for (const label of requiredLabels) {

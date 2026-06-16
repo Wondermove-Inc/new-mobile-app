@@ -71,12 +71,15 @@ scripts, workflow gate configuration, root runtime policy files, `package.json`,
 and `pnpm-lock.yaml`.
 
 The local harness is not required for `mobile-app-dev-team/reports/**` changes
-when no Codex runtime path changes. Reports use `validate:team-doc`,
-`validate:evidence-hygiene`, and diff checks.
+when no Codex runtime path changes. Reports use `validate:evidence-hygiene` and
+diff checks unless they modify or promote content into a managed runtime source
+or `codex-role-workflow` routing-support dependency.
 
 The local harness is not required for `mobile-app-dev-team/ref-organization/**`
 changes when no Codex runtime path changes. Reference organization changes use
-`validate:reference-docs` and `validate:team-doc`.
+`validate:reference-docs` when explicitly relevant and do not trigger
+`validate:team-doc` unless they also change a managed runtime source or
+`codex-role-workflow` routing-support dependency.
 
 Changes under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`
 use targeted pod-native smoke plus `test:runtime` unless the same change also

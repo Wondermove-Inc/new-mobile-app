@@ -433,6 +433,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - GitHub quality gate: `.github/workflows/quality-gate.yml`.
 - GitHub auto-merge workflow: `.github/workflows/auto-merge.yml`.
   - Triggered by successful `Quality gate` `workflow_run` events for pull requests targeting `main`.
+  - Resolves the target pull request from the completed workflow run `head_sha` through GitHub's commit pull-request API, then proceeds only when exactly one open pull request targets `main` and still matches that head SHA.
   - Uses GitHub native auto-merge through `gh pr merge --auto --squash --match-head-commit`.
   - Does not check out or execute pull request head code.
   - Does not bypass required reviews, required status checks, branch protection, rulesets, or merge queue requirements.

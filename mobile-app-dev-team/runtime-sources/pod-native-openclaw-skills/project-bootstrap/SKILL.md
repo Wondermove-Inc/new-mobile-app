@@ -159,6 +159,14 @@ Raw blockers must appear only in support details and JSON.
 - /workspace/projects/Wondermove-Inc/new-mobile-app/
 ```
 
+Default behavior:
+
+- For new-mobile-app repository work, use `/workspace/projects/Wondermove-Inc/new-mobile-app` as the working directory.
+- Do not use `/workspace` root as the project repo directory. The root contains agent operating files such as AGENTS.md, SOUL.md, WORKFLOW.md, and TOOLS.md.
+- Do not confuse this file with the project-local `/workspace/projects/Wondermove-Inc/new-mobile-app/AGENTS.md`.
+- Before installing dependencies or system packages, report what will be installed and wait for explicit approval unless the user already approved that installation.
+- After any computer/package installation, report exactly what was installed.
+
 ## Required Pod Skills
 
 Common setup:

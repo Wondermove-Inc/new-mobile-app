@@ -6,6 +6,19 @@ This folder is source-only documentation for pod-native OpenClaw skills whose ru
 /workspace/skills/<slug>/SKILL.md
 ```
 
+The organizations and reporting guidance source for pod work lives next to the
+runtime sources:
+
+```text
+mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md
+```
+
+`openclaw-pod-skills-sync` copies that guidance to:
+
+```text
+/workspace/ORGANIZATIONS.md
+```
+
 Do not place repo-local Codex CLI artifacts here. Codex CLI native skills and agents belong under `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml`.
 
 ## Start Here
@@ -28,6 +41,8 @@ such as `ko-KR` or `en-US`; do not copy that placeholder literally.
 export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"
 export REPO_PATH="/workspace/projects/Wondermove-Inc/new-mobile-app"
 export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
+export OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${REPO_PATH}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md"
+export OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH="/workspace/ORGANIZATIONS.md"
 export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.json"
 export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="/workspace/state/project-bootstrap-blockers.md"
 export PROJECT_BOOTSTRAP_USER_LANGUAGE="auto"
@@ -162,6 +177,9 @@ blocker instead of raw blocker names. The result must explain:
 - how the agent continues after that action is completed;
 - the raw technical blockers only as support details, never as the main answer.
 
+The final user-understandable result should ask for the minimum request/action
+that unblocks the next concrete setup step.
+
 Use `project-bootstrap/references/blocker-resolution-guide.md` and, when
 present, `${PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH:-/workspace/state/project-bootstrap-blockers.md}`
 for blocker translation. Ask for the smallest user-owned action that can unblock
@@ -176,6 +194,9 @@ Every pod setup report based on this README must include:
 - repository path used: `/workspace/projects/Wondermove-Inc/new-mobile-app`;
 - `/workspace/skills` sync status and the report path
   `/workspace/state/openclaw-pod-skills-sync-report.json`;
+- `/workspace/ORGANIZATIONS.md` sync status, source path
+  `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md`, and guidance-only
+  boundary;
 - selected canonical `role_slug` and matching runtime spec source path;
 - role setup report path:
   `/workspace/state/project-bootstrap-agent-setup-report.json`;
@@ -232,7 +253,7 @@ runtime surface, not pasted into agent instructions.
 
 | Skill | Runtime Shape | Purpose |
 | --- | --- | --- |
-| `openclaw-pod-skills-sync` | `/workspace/skills/openclaw-pod-skills-sync/SKILL.md` | Copy-sync the repo SoT pod-native skills into the `/workspace/skills` runtime snapshot and verify the clone/pull setup rule before `project-bootstrap`. |
+| `openclaw-pod-skills-sync` | `/workspace/skills/openclaw-pod-skills-sync/SKILL.md` | Copy-sync the repo SoT pod-native skills into the `/workspace/skills` runtime snapshot, apply `/workspace/AGENTS.md` and `/workspace/ORGANIZATIONS.md`, and verify the clone/pull setup rule before `project-bootstrap`. |
 | `codex-cli-auth-setup` | `/workspace/skills/codex-cli-auth-setup/SKILL.md` | Verify Codex CLI readiness and install or update Codex CLI according to Product Delivery Lead setup direction without exposing secrets. |
 | `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin according to Product Delivery Lead setup direction, install required repo dependencies, run `codex-preflight --pod`, and write a status-only readiness report. |
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |

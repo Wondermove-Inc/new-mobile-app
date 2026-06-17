@@ -47,6 +47,14 @@ preflight report. That report has this shape:
     "path": "/workspace/AGENTS.md",
     "project_workspace_defaults": "present | created_default | blocked"
   },
+  "guidance_artifacts": {
+    "workspace_organizations": {
+      "path": "/workspace/ORGANIZATIONS.md",
+      "status": "present | missing | unreadable",
+      "guidance_only": true,
+      "enforcement": "not_enforced_by_this_report"
+    }
+  },
   "codex_cli_setup": "not_needed | available_after_precheck | missing_after_precheck | codex_cli_precheck_missing",
   "mcp": {
     "mobile_mcp": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
@@ -249,6 +257,12 @@ preflight report. That report has this shape:
 }
 ```
 
+`guidance_artifacts.workspace_organizations` records only whether the workspace
+organizations guidance artifact is present and readable. Missing or unreadable
+organizations guidance is report-only status; it must not block bootstrap or
+preflight by itself and must not be parsed as an approval schema, role SOUL, or
+enforcement policy.
+
 ```json
 {
   "schema": "project-bootstrap/v1",
@@ -290,6 +304,14 @@ preflight report. That report has this shape:
     "docs/TEMPLATE_VARIABLES.md": "present | missing",
     "docs/CREDENTIALS.md": "present | missing",
     "mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md": "present | missing"
+  },
+  "guidance_artifacts": {
+    "workspace_organizations": {
+      "path": "/workspace/ORGANIZATIONS.md",
+      "status": "present | missing | unreadable",
+      "guidance_only": true,
+      "enforcement": "not_enforced_by_preflight"
+    }
   },
   "pod_skills": {
     "project_bootstrap": "present | missing",

@@ -11,7 +11,8 @@ This is an orchestration skill. It does not replace the role-specific pod skills
 After clone or pull, run `openclaw-pod-skills-sync` first so the repo SoT
 pod-native skills are copy-synced into `/workspace/skills`; this skill may seed
 only `openclaw-pod-skills-sync` as a fallback and then delegates broader runtime
-skill and `/workspace/AGENTS.md` sync to that skill.
+skill, `/workspace/AGENTS.md`, and `/workspace/ORGANIZATIONS.md` sync to that
+skill.
 The agent must inspect and set up its own pod environment for non-secret,
 local, deterministic readiness items before asking the user for help. Do not ask
 the user to perform agent-owned setup such as role identity writing, managed
@@ -64,7 +65,8 @@ For every pod role, these project environment entries are required before
 The agent must first perform non-secret setup that it can own:
 
 - run `openclaw-pod-skills-sync` so `/workspace/skills` is a copy snapshot of
-  the repo SoT before project readiness checks continue;
+  the repo SoT; the same sync also attempts `/workspace/ORGANIZATIONS.md` as
+  report-only guidance status;
 - register pinned MCPs from repo SoT for `mobile-mcp`, `serena`, `stitch`,
   `expo`, `atlassian`, and `playwright`;
 - report the exact install plan and wait for explicit approval before any
@@ -152,6 +154,9 @@ Raw blockers must appear only in support details and JSON.
 - Repository: `https://github.com/Wondermove-Inc/new-mobile-app.git`
 - Repo path: `/workspace/projects/Wondermove-Inc/new-mobile-app`
 - Managed-path registry: `/workspace/CODEX_MANAGED_PATHS.md`
+- Workspace organizations guidance: `/workspace/ORGANIZATIONS.md`
+- Organizations guidance source:
+  `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md`
 - Runtime environment SoT: `PROJECT_ENVIRONMENT.md`
 - Required managed path entry:
 
@@ -162,10 +167,17 @@ Raw blockers must appear only in support details and JSON.
 Default behavior:
 
 - For new-mobile-app repository work, use `/workspace/projects/Wondermove-Inc/new-mobile-app` as the working directory.
-- Do not use `/workspace` root as the project repo directory. The root contains agent operating files such as AGENTS.md, SOUL.md, WORKFLOW.md, and TOOLS.md.
+- Do not use `/workspace` root as the project repo directory. The root contains agent operating files such as AGENTS.md, ORGANIZATIONS.md, SOUL.md, WORKFLOW.md, and TOOLS.md.
 - Do not confuse this file with the project-local `/workspace/projects/Wondermove-Inc/new-mobile-app/AGENTS.md`.
 - Before installing dependencies or system packages, report what will be installed and wait for explicit approval unless the user already approved that installation.
 - After any computer/package installation, report exactly what was installed.
+
+`/workspace/ORGANIZATIONS.md` is guidance only. Project bootstrap records the
+artifact's presence/readability as report-only status; missing or unreadable
+organizations guidance must not block bootstrap or preflight by itself, and the
+file must not be parsed as reporting-line, approval-boundary, or role-contract
+enforcement policy.
+Project bootstrap must not parse reporting lines, approval boundaries, or role contracts from this file as enforcement policy.
 
 ## Required Pod Skills
 
@@ -279,6 +291,7 @@ assigned role is already available from SOUL, selector, or handoff context.
 export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"
 export REPO_PATH="/workspace/projects/Wondermove-Inc/new-mobile-app"
 export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
+export PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="/workspace/ORGANIZATIONS.md"
 export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.json"
 export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="/workspace/state/project-bootstrap-blockers.md"
 export PROJECT_BOOTSTRAP_USER_LANGUAGE="auto"

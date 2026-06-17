@@ -5,6 +5,8 @@ REPO_PATH="${OPENCLAW_POD_SKILLS_REPO_PATH:-/workspace/projects/Wondermove-Inc/n
 SOURCE_ROOT="${OPENCLAW_POD_SKILLS_SOURCE_ROOT:-${REPO_PATH%/}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills}"
 SKILLS_ROOT="${OPENCLAW_POD_SKILLS_ROOT:-/workspace/skills}"
 WORKSPACE_AGENTS_PATH="${OPENCLAW_WORKSPACE_AGENTS_PATH:-/workspace/AGENTS.md}"
+ORGANIZATIONS_SOURCE_PATH="${OPENCLAW_ORGANIZATIONS_SOURCE_PATH:-${REPO_PATH%/}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md}"
+WORKSPACE_ORGANIZATIONS_PATH="${OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH:-/workspace/ORGANIZATIONS.md}"
 REPORT_PATH="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:-${REPORT_PATH:-/workspace/state/openclaw-pod-skills-sync-report.json}}"
 MODE="copy"
 SOURCE_AUTHORITY="repo_sot"
@@ -19,9 +21,10 @@ write_report() {
   local blockers_json="$2"
   local skills_json="$3"
   local workspace_agents_status="$4"
+  local workspace_organizations_status="$5"
 
   mkdir -p "$(dirname "${REPORT_PATH}")"
-  node - "$REPORT_PATH" "$status" "$MODE" "$SOURCE_AUTHORITY" "$RUNTIME_TARGET" "$SOURCE_ROOT" "$SKILLS_ROOT" "$WORKSPACE_AGENTS_PATH" "$blockers_json" "$skills_json" "$workspace_agents_status" <<'NODE'
+  node - "$REPORT_PATH" "$status" "$MODE" "$SOURCE_AUTHORITY" "$RUNTIME_TARGET" "$SOURCE_ROOT" "$SKILLS_ROOT" "$WORKSPACE_AGENTS_PATH" "$ORGANIZATIONS_SOURCE_PATH" "$WORKSPACE_ORGANIZATIONS_PATH" "$blockers_json" "$skills_json" "$workspace_agents_status" "$workspace_organizations_status" <<'NODE'
 const fs = require('node:fs');
 const [
   reportPath,
@@ -32,9 +35,12 @@ const [
   sourceRoot,
   runtimeRoot,
   workspaceAgentsPath,
+  organizationsSourcePath,
+  workspaceOrganizationsPath,
   blockersJson,
   skillsJson,
   workspaceAgentsStatus,
+  workspaceOrganizationsStatus,
 ] = process.argv.slice(2);
 
 const report = {
@@ -48,10 +54,16 @@ const report = {
     source_root: sourceRoot,
     runtime_root: runtimeRoot,
     workspace_agents: workspaceAgentsPath,
+    organizations_source: organizationsSourcePath,
+    workspace_organizations: workspaceOrganizationsPath,
   },
   skills: JSON.parse(skillsJson),
   workspace_agents: {
     project_workspace_defaults: workspaceAgentsStatus,
+  },
+  workspace_organizations: {
+    status: workspaceOrganizationsStatus,
+    guidance_only: true,
   },
 };
 
@@ -68,7 +80,7 @@ NODE
 
 write_blocked_report() {
   local blocker="$1"
-  write_report "blocked" "$(json_array "${blocker}")" "{}" "missing"
+  write_report "blocked" "$(json_array "${blocker}")" "{}" "not_checked" "not_checked"
 }
 
 ensure_workspace_agents_defaults() {
@@ -104,6 +116,29 @@ EOF
       printf '\n'
       printf '%s\n' "${exact_rule}"
     } >> "${WORKSPACE_AGENTS_PATH}"
+  fi
+}
+
+copy_workspace_organizations() {
+  if [[ ! -e "${ORGANIZATIONS_SOURCE_PATH}" ]]; then
+    printf '%s\n' "missing"
+    return
+  fi
+
+  if [[ ! -f "${ORGANIZATIONS_SOURCE_PATH}" || ! -r "${ORGANIZATIONS_SOURCE_PATH}" ]]; then
+    printf '%s\n' "unreadable"
+    return
+  fi
+
+  if ! mkdir -p "$(dirname "${WORKSPACE_ORGANIZATIONS_PATH}")"; then
+    printf '%s\n' "copy_failed"
+    return
+  fi
+
+  if cp "${ORGANIZATIONS_SOURCE_PATH}" "${WORKSPACE_ORGANIZATIONS_PATH}" 2> >(redact >&2) && [[ -f "${WORKSPACE_ORGANIZATIONS_PATH}" && -r "${WORKSPACE_ORGANIZATIONS_PATH}" ]]; then
+    printf '%s\n' "copied"
+  else
+    printf '%s\n' "copy_failed"
   fi
 }
 
@@ -155,6 +190,7 @@ for slug in "${synced_slugs[@]}"; do
 done
 
 ensure_workspace_agents_defaults
+workspace_organizations_status="$(copy_workspace_organizations)"
 
 skills_json="$(node - "${synced_slugs[@]}" <<'NODE'
 const skills = {};
@@ -165,4 +201,4 @@ console.log(JSON.stringify(skills));
 NODE
 )"
 
-write_report "completed" "[]" "${skills_json}" "present"
+write_report "completed" "[]" "${skills_json}" "present" "${workspace_organizations_status}"

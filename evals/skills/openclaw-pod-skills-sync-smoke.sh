@@ -71,6 +71,12 @@ make_source_tree() {
   do
     make_source_skill "${source_root}" "${slug}"
   done
+  mkdir -p "$(dirname "${source_root}")"
+  cat > "$(dirname "${source_root}")/ORGANIZATIONS.md" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
 }
 
 run_sync() {
@@ -78,25 +84,32 @@ run_sync() {
   local target_root="$2"
   local agents_path="$3"
   local report_path="$4"
+  local organizations_source_path="${5:-$(dirname "${source_root}")/ORGANIZATIONS.md}"
+  local workspace_organizations_path="${6:-$(dirname "${agents_path}")/ORGANIZATIONS.md}"
   PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
   OPENCLAW_POD_SKILLS_SOURCE_ROOT="${source_root}" \
   OPENCLAW_POD_SKILLS_ROOT="${target_root}" \
   OPENCLAW_WORKSPACE_AGENTS_PATH="${agents_path}" \
+  OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${organizations_source_path}" \
+  OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH="${workspace_organizations_path}" \
   OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH="${report_path}" \
   /bin/bash "${SCRIPT}" >/dev/null
 }
 
 case_copy_sync_all_pod_skills() {
-  local tmpdir source_root target_root agents_path report_path
+  local tmpdir source_root target_root agents_path organizations_path report_path
   tmpdir="$(mktemp -d)"
   source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   target_root="${tmpdir}/workspace/skills"
   agents_path="${tmpdir}/workspace/AGENTS.md"
+  organizations_path="${tmpdir}/workspace/ORGANIZATIONS.md"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
   make_source_tree "${source_root}"
 
   run_sync "${source_root}" "${target_root}" "${agents_path}" "${report_path}"
 
+  [[ -f "${organizations_path}" ]]
+  assert_file_contains "${organizations_path}" "Organizations and Reporting"
   for slug in \
     openclaw-pod-skills-sync \
     project-bootstrap \
@@ -116,6 +129,9 @@ case_copy_sync_all_pod_skills() {
   assert_json_field "${report_path}" "r.runtime_target === 'runtime_snapshot'"
   assert_json_field "${report_path}" "r.skills['project-bootstrap'].status === 'synced'"
   assert_json_field "${report_path}" "r.workspace_agents.project_workspace_defaults === 'present'"
+  assert_json_field "${report_path}" "r.paths.workspace_organizations.endsWith('/workspace/ORGANIZATIONS.md')"
+  assert_json_field "${report_path}" "r.workspace_organizations.status === 'copied'"
+  assert_json_field "${report_path}" "r.workspace_organizations.guidance_only === true"
   assert_file_contains "${agents_path}" "git clone"
   assert_file_contains "${agents_path}" "git pull"
   assert_file_contains "${agents_path}" "openclaw-pod-skills-sync"
@@ -176,6 +192,36 @@ case_missing_skill_entrypoint_blocks() {
   assert_json_field "${report_path}" "r.blockers.includes('missing SKILL.md: project-bootstrap')"
 }
 
+case_missing_organizations_source_is_status_only() {
+  local tmpdir source_root report_path
+  tmpdir="$(mktemp -d)"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
+  make_source_tree "${source_root}"
+  rm -f "$(dirname "${source_root}")/ORGANIZATIONS.md"
+  report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
+  run_sync "${source_root}" "${tmpdir}/skills" "${tmpdir}/AGENTS.md" "${report_path}"
+  assert_json_field "${report_path}" "r.status === 'completed'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
+  assert_json_field "${report_path}" "r.workspace_organizations.status === 'missing'"
+  assert_json_field "${report_path}" "r.skills['project-bootstrap'].status === 'synced'"
+}
+
+case_unreadable_organizations_source_is_status_only() {
+  local tmpdir source_root organizations_source_path report_path
+  tmpdir="$(mktemp -d)"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
+  make_source_tree "${source_root}"
+  organizations_source_path="$(dirname "${source_root}")/ORGANIZATIONS.md"
+  rm -f "${organizations_source_path}"
+  mkdir -p "${organizations_source_path}"
+  report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
+  run_sync "${source_root}" "${tmpdir}/skills" "${tmpdir}/AGENTS.md" "${report_path}"
+  assert_json_field "${report_path}" "r.status === 'completed'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
+  assert_json_field "${report_path}" "r.workspace_organizations.status === 'unreadable'"
+  assert_json_field "${report_path}" "r.skills['project-bootstrap'].status === 'synced'"
+}
+
 case_report_is_secret_safe() {
   local tmpdir source_root report_path
   tmpdir="$(mktemp -d)"
@@ -205,6 +251,8 @@ case_missing_source_root_blocks
 case_unreadable_source_root_blocks
 case_empty_source_root_blocks
 case_missing_skill_entrypoint_blocks
+case_missing_organizations_source_is_status_only
+case_unreadable_organizations_source_is_status_only
 case_report_is_secret_safe
 case_no_symlink_runtime_snapshot
 

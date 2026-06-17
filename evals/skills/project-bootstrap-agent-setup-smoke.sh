@@ -7,6 +7,15 @@ PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-ope
 POD_BOOTSTRAP_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh"
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 NO_CODEX_PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin"
+DEFAULT_WORKSPACE_ORGANIZATIONS_FIXTURE_DIR="$(mktemp -d)"
+PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH:-${DEFAULT_WORKSPACE_ORGANIZATIONS_FIXTURE_DIR}/ORGANIZATIONS.md}"
+export PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH
+mkdir -p "$(dirname "${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH}")"
+cat > "${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH}" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
 
 make_node_only_bin() {
   local bin_dir="$1"
@@ -236,6 +245,12 @@ SH
 make_fake_pod_skill_sources() {
   local repo_path="$1"
   local skill_root="${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
+  mkdir -p "${repo_path}/mobile-app-dev-team/runtime-sources"
+  cat > "${repo_path}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
   for slug in \
     openclaw-pod-skills-sync \
     project-bootstrap \
@@ -257,10 +272,12 @@ set -euo pipefail
 source_root="${OPENCLAW_POD_SKILLS_SOURCE_ROOT:?source root required}"
 target_root="${OPENCLAW_POD_SKILLS_ROOT:?target root required}"
 agents_path="${OPENCLAW_WORKSPACE_AGENTS_PATH:?workspace AGENTS path required}"
+organizations_source_path="${OPENCLAW_ORGANIZATIONS_SOURCE_PATH:?organizations source path required}"
+workspace_organizations_path="${OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH:?workspace ORGANIZATIONS path required}"
 report_path="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:?sync report path required}"
 marker_path="${OPENCLAW_POD_SKILLS_SYNC_MARKER_PATH:-${STATE_DIR:-$(dirname "${report_path}")}/openclaw-pod-skills-sync-called}"
 
-mkdir -p "${target_root}" "$(dirname "${agents_path}")" "$(dirname "${report_path}")" "$(dirname "${marker_path}")"
+mkdir -p "${target_root}" "$(dirname "${agents_path}")" "$(dirname "${workspace_organizations_path}")" "$(dirname "${report_path}")" "$(dirname "${marker_path}")"
 for source_dir in "${source_root}"/*; do
   [[ -d "${source_dir}" ]] || continue
   slug="$(basename "${source_dir}")"
@@ -276,12 +293,23 @@ After git clone or git pull, use openclaw-pod-skills-sync before project-bootstr
 - Repository: https://github.com/Wondermove-Inc/new-mobile-app.git
 - Local path: /workspace/projects/Wondermove-Inc/new-mobile-app
 AGENTS
-cat > "${report_path}" <<'JSON'
-{
-  "schema": "openclaw-pod-skills-sync/v1",
-  "status": "completed"
-}
-JSON
+cp "${organizations_source_path}" "${workspace_organizations_path}"
+node - "${report_path}" "${workspace_organizations_path}" <<'NODE'
+const fs = require('node:fs');
+const [reportPath, workspaceOrganizationsPath] = process.argv.slice(2);
+const report = {
+  schema: 'openclaw-pod-skills-sync/v1',
+  status: 'completed',
+  paths: {
+    workspace_organizations: workspaceOrganizationsPath,
+  },
+  workspace_organizations: {
+    status: 'copied',
+    guidance_only: true,
+  },
+};
+fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+NODE
 printf 'called\n' > "${marker_path}"
 SH
   chmod +x "${skill_root}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
@@ -817,6 +845,14 @@ write_ready_agent_setup_report() {
     "path": "/workspace/AGENTS.md",
     "project_workspace_defaults": "present"
   },
+  "guidance_artifacts": {
+    "workspace_organizations": {
+      "path": "/workspace/ORGANIZATIONS.md",
+      "status": "present",
+      "guidance_only": true,
+      "enforcement": "not_enforced_by_this_report"
+    }
+  },
   "tool_readiness": {
     "railway": {
       "command_status": "available",
@@ -886,10 +922,29 @@ write_missing_auth_agent_setup_report() {
 JSON
 }
 
+write_workspace_organizations_fixture() {
+  local tmpdir="$1"
+  mkdir -p "${tmpdir}/workspace"
+  cat > "${tmpdir}/workspace/ORGANIZATIONS.md" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
+}
+
 run_ready_preflight() {
   local tmpdir="$1"
   local report_path="$2"
   local setup_report_path="$3"
+  write_workspace_organizations_fixture "${tmpdir}"
+  run_ready_preflight_with_organizations_path "${tmpdir}" "${report_path}" "${setup_report_path}" "${tmpdir}/workspace/ORGANIZATIONS.md"
+}
+
+run_ready_preflight_with_organizations_path() {
+  local tmpdir="$1"
+  local report_path="$2"
+  local setup_report_path="$3"
+  local workspace_organizations_path="$4"
   PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
   REPO_PATH="${tmpdir}/repo" \
@@ -897,6 +952,7 @@ run_ready_preflight() {
   PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
   PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${workspace_organizations_path}" \
   PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH="${setup_report_path}" \
   POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
   WM_ROLE="product-planning" \
@@ -992,6 +1048,22 @@ case_preflight_auth_ready_passes_auth_gate() {
   assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/IDENTITY')"
   assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/state/project-bootstrap-role.env')"
   assert_json_field "${report_path}" "r.routing.repo_sot_root === '/workspace/projects/Wondermove-Inc/new-mobile-app'"
+}
+
+case_preflight_missing_workspace_organizations_is_status_only() {
+  local tmpdir report_path setup_report_path workspace_organizations_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  workspace_organizations_path="${tmpdir}/workspace/ORGANIZATIONS.md"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight_with_organizations_path "${tmpdir}" "${report_path}" "${setup_report_path}" "${workspace_organizations_path}"
+
+  assert_json_field "${report_path}" "r.status === 'completed'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'missing'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && !r.blockers.includes('workspace-organizations-guidance-missing')"
 }
 
 case_agent_setup_detects_unauthorized_provider_state() {
@@ -1587,12 +1659,13 @@ case_failed_system_installer_is_not_reported_as_installed() {
 }
 
 case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
-  local tmpdir report_path repo_path skills_root workspace_agents_path
+  local tmpdir report_path repo_path skills_root workspace_agents_path workspace_organizations_path
   tmpdir="$(mktemp -d)"
   report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
   repo_path="${tmpdir}/workspace/projects/Wondermove-Inc/new-mobile-app"
   skills_root="${tmpdir}/workspace/skills"
   workspace_agents_path="${tmpdir}/workspace/AGENTS.md"
+  workspace_organizations_path="${tmpdir}/workspace/ORGANIZATIONS.md"
   mkdir -p \
     "${tmpdir}/bin" \
     "${tmpdir}/state" \
@@ -1611,6 +1684,7 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   PROJECT_BOOTSTRAP_REPO_SOURCE_PATH="${tmpdir}/source-repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${skills_root}" \
   PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${workspace_agents_path}" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${workspace_organizations_path}" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
   PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
@@ -1632,12 +1706,53 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   assert_text_order "${workspace_agents_path}" "openclaw-pod-skills-sync" "project-bootstrap"
   assert_file_contains "${workspace_agents_path}" "https://github.com/Wondermove-Inc/new-mobile-app.git"
   assert_file_contains "${workspace_agents_path}" "/workspace/projects/Wondermove-Inc/new-mobile-app"
+  assert_file_contains "${workspace_organizations_path}" "Organizations and Reporting"
   assert_json_field "${report_path}" "r.repo_checkout.status === 'cloned'"
   assert_json_field "${report_path}" "r.workspace_skills.sync.status === 'completed'"
   assert_json_field "${report_path}" "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_skills['project-bootstrap'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_agents.project_workspace_defaults === 'present'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'present'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.guidance_only === true"
+}
+
+case_agent_setup_missing_workspace_organizations_is_status_only() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/skills/openclaw-pod-skills-sync/scripts"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  cat > "${tmpdir}/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "${OPENCLAW_POD_SKILLS_ROOT}" "$(dirname "${OPENCLAW_WORKSPACE_AGENTS_PATH}")" "$(dirname "${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}")"
+for slug in openclaw-pod-skills-sync project-bootstrap codex-cli-auth-setup pod-role-bootstrap eas-robot-auth-setup stitch-adc-setup codex-role-workflow; do
+  mkdir -p "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}"
+  printf '# %s\n' "${slug}" > "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}/SKILL.md"
+done
+printf '## Project Workspace Defaults\n' > "${OPENCLAW_WORKSPACE_AGENTS_PATH}"
+printf '{"schema":"openclaw-pod-skills-sync/v1","status":"completed"}\n' > "${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}"
+SH
+  chmod +x "${tmpdir}/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${tmpdir}/workspace/ORGANIZATIONS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'missing'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && !r.blockers.includes('workspace-organizations-guidance-missing')"
 }
 
 case_agent_setup_blocks_failed_skill_sync() {
@@ -3147,6 +3262,7 @@ case_preflight_blocks_unreadable_agent_setup_report
 case_preflight_blocks_failed_skill_sync
 case_preflight_blocks_auth_absent_from_agent_setup_report
 case_preflight_auth_ready_passes_auth_gate
+case_preflight_missing_workspace_organizations_is_status_only
 case_agent_setup_detects_unauthorized_provider_state
 case_expo_mcp_and_expo_cli_are_separate
 case_explicit_role_slug_writes_all_role_surfaces
@@ -3159,6 +3275,7 @@ case_system_installer_requires_explicit_approval
 case_failed_npm_install_is_not_reported_as_installed
 case_failed_system_installer_is_not_reported_as_installed
 case_default_clone_runtime_skill_registration_workspace_agents_defaults
+case_agent_setup_missing_workspace_organizations_is_status_only
 case_agent_setup_blocks_failed_skill_sync
 case_token_bearing_clone_url_rejected_in_both_paths
 case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted

@@ -19,7 +19,9 @@ Schema:
   "paths": {
     "source_root": "/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills",
     "runtime_root": "/workspace/skills",
-    "workspace_agents": "/workspace/AGENTS.md"
+    "workspace_agents": "/workspace/AGENTS.md",
+    "organizations_source": "/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md",
+    "workspace_organizations": "/workspace/ORGANIZATIONS.md"
   },
   "skills": {
     "project-bootstrap": {
@@ -28,9 +30,15 @@ Schema:
   },
   "workspace_agents": {
     "project_workspace_defaults": "present"
+  },
+  "workspace_organizations": {
+    "status": "copied | missing | unreadable | copy_failed",
+    "guidance_only": true
   }
 }
 ```
 
 This report is status only. It must not contain auth token values, credential
 contents, API keys, OAuth tokens, database URLs, or secret-bearing clone URLs.
+`workspace_organizations` is guidance-only status and must not block skill sync
+by itself.

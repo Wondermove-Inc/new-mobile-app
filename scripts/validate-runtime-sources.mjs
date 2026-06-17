@@ -21,6 +21,7 @@ const legacyPodNativeRoot = `${teamRoot}/09-pod-native-openclaw-skills`;
 const roleSoulRoot = `${teamRoot}/runtime-sources/role-souls`;
 const legacyRoleSoulRoot = `${teamRoot}/02-role-souls`;
 const skillMatrixPath = `${teamRoot}/runtime-sources/codex-skill-agent-matrix.md`;
+const organizationsPath = `${teamRoot}/runtime-sources/ORGANIZATIONS.md`;
 const podEnvironmentBootstrapPath = `${teamRoot}/runtime-sources/pod-environment-bootstrap.md`;
 const orbstackPodConfigValuesPath = `${teamRoot}/runtime-sources/orbstack-pod-config-values.md`;
 
@@ -79,6 +80,8 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"',
   'bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
   'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  '/workspace/ORGANIZATIONS.md',
   'fresh pod',
   'role_slug="<canonical-role-slug>"',
   'bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh',
@@ -137,6 +140,16 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'codex-role-workflow',
 ], 'pod-native runtime source');
 
+requireTerms(errors, organizationsPath, [
+  '# ORGANIZATIONS.md - Organizations and Reporting',
+  'This file is guidance only',
+  'Overspec Controls',
+  'Role Archetypes',
+  'Approval Boundaries',
+  'Deterministic Gatekeeper / System Check',
+  '## 한국어',
+], 'organizations runtime source');
+
 function requirePodNativeSkill(relativePath, slug, scriptName) {
   const skillPath = `${relativePath}/SKILL.md`;
   requireTerms(errors, skillPath, [
@@ -177,6 +190,46 @@ requirePodNativeSkill(`${podNativeRoot}/project-bootstrap`, 'project-bootstrap',
 requirePodNativeSkill(`${podNativeRoot}/openclaw-pod-skills-sync`, 'openclaw-pod-skills-sync', 'sync-pod-skills.sh');
 requirePodNativeSkill(`${podNativeRoot}/eas-robot-auth-setup`, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh');
 requirePodNativeSkill(`${podNativeRoot}/stitch-adc-setup`, 'stitch-adc-setup', 'stitch-adc-precheck.sh');
+
+requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
+  '/workspace/ORGANIZATIONS.md',
+  'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
+  'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'workspace_organizations.status',
+  'must not block skill sync by themselves',
+  'guidance only',
+], 'pod-native organizations sync');
+
+requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh`, [
+  'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
+  'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'workspace_organizations',
+  'guidance_only',
+  'copy_failed',
+  'workspace_organizations_status="$(copy_workspace_organizations)"',
+], 'pod-native organizations sync');
+
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
+  '/workspace/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'guidance only',
+  'must not block bootstrap or preflight by itself',
+  'must not parse reporting lines, approval boundaries, or role contracts',
+], 'project bootstrap organizations guidance');
+
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/scripts/project-bootstrap-agent-setup.sh`, [
+  'PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH',
+  'PROJECT_BOOTSTRAP_ORGANIZATIONS_SOURCE_PATH',
+  'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'guidance_artifacts',
+  'not_enforced_by_this_report',
+], 'project bootstrap organizations guidance');
+
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/scripts/project-bootstrap-preflight.sh`, [
+  'PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH',
+  'guidance_artifacts',
+  'not_enforced_by_preflight',
+], 'project bootstrap organizations guidance');
 
 requireTerms(errors, `${podNativeRoot}/pod-role-bootstrap/SKILL.md`, [
   'POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true',

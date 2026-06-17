@@ -5,6 +5,7 @@
 | Source | Use |
 | --- | --- |
 | `AGENTS.md` | Required repo rules, runtime paths, gate expectations, constraints |
+| `ORGANIZATIONS.md` | Root discoverability stub pointing to the canonical runtime organizations guidance source |
 | `REPO_OPERATIONS.md` | Root-owned repo-wide operating policy, policy ownership map, source/archive rules, validator responsibility model |
 | `PROJECT_ENVIRONMENT.md` | Current Expo/RN/API/Codex runtime facts |
 | `.agents/skills/<slug>/SKILL.md` | Active repo-local skill contracts |
@@ -19,6 +20,7 @@
 | `mobile-app-dev-team/workflows/native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
 | `mobile-app-dev-team/governance/human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md` | Current `.agents/skills` and `.codex/agents` mapping, active read-only reviewer/researcher matrix, and pod-native skill crosswalk |
+| `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md` | Canonical organizations and reporting guidance source copied to `/workspace/ORGANIZATIONS.md`; guidance only, not a SOUL or approval-enforcement policy |
 | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/projects/Wondermove-Inc/new-mobile-app` and pod-native skills |
 | `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
 | `mobile-app-dev-team/workflows/entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |

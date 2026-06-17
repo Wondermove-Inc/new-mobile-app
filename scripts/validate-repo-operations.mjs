@@ -288,6 +288,9 @@ requireTerms('mobile-app-dev-team/README.md', [
 requireTerms('mobile-app-dev-team/source-map.md', [
   'REPO_OPERATIONS.md',
   'repo-wide operating policy',
+  'ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  '/workspace/ORGANIZATIONS.md',
 ]);
 
 requireTerms('scripts/validate-team-doc-archive.mjs', [

@@ -5,6 +5,7 @@ REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_CLONE_URL="${REPO_CLONE_URL:-https://github.com/Wondermove-Inc/new-mobile-app.git}"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
 SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
+WORKSPACE_ORGANIZATIONS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH:-/workspace/ORGANIZATIONS.md}"
 REPORT_PATH="${PROJECT_BOOTSTRAP_REPORT_PATH:-${REPORT_PATH:-/workspace/state/project-bootstrap-report.json}}"
 POD_ROLE_BOOTSTRAP_REPORT="${POD_ROLE_BOOTSTRAP_REPORT:-/workspace/state/pod-role-bootstrap-report.json}"
 PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT="${PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH:-/workspace/state/project-bootstrap-agent-setup-report.json}"
@@ -30,6 +31,16 @@ command_status() {
 file_status() {
   if [[ -e "$1" ]]; then
     printf 'present'
+  else
+    printf 'missing'
+  fi
+}
+
+readable_file_status() {
+  if [[ -f "$1" && -r "$1" ]]; then
+    printf 'present'
+  elif [[ -e "$1" ]]; then
+    printf 'unreadable'
   else
     printf 'missing'
   fi
@@ -231,6 +242,8 @@ node - "$REPORT_PATH" \
   "$(status_from_env_ref "${GOOGLE_CLOUD_PROJECT:-}")" \
   "$(status_from_env_ref "${API_SECRET_REF:-${DATABASE_URL_SECRET_NAME:-}}")" \
   "$(status_from_env_ref "${HUMAN_GATE_V1_PATH:-}")" \
+  "$WORKSPACE_ORGANIZATIONS_PATH" \
+  "$(readable_file_status "${WORKSPACE_ORGANIZATIONS_PATH}")" \
   "${PROJECT_BOOTSTRAP_USER_LANGUAGE:-auto}" \
   "${PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE:-}" <<'NODE'
 const fs = require('node:fs');
@@ -294,6 +307,8 @@ const [
   googleCloudProject,
   apiSecretRef,
   humanGate,
+  workspaceOrganizationsPath,
+  workspaceOrganizationsStatus,
   userLanguageRequestedRaw,
   currentUserLanguageHintRaw,
 ] = process.argv.slice(2);
@@ -935,6 +950,7 @@ if (blockers.length) {
     `- Required CLI gcloud: ${gcloudCli}`,
     `- EAS CLI baseline exception: ${easCli}`,
     `- Pod role bootstrap report: ${podRoleBootstrapReport}`,
+    `- /workspace/ORGANIZATIONS.md: ${workspaceOrganizationsStatus}`,
     `- Next required routing skill: ${routing.next_skill}`,
     `- Next routing runtime path: ${routing.next_runtime_path}`,
     `- Routing required before role work: ${routing.required_before_role_work}`,
@@ -984,6 +1000,14 @@ const report = {
     requires_eas: roleRequiresEas === 'true',
   },
   repo_sot_files: requiredSotFiles,
+  guidance_artifacts: {
+    workspace_organizations: {
+      path: workspaceOrganizationsPath,
+      status: workspaceOrganizationsStatus,
+      guidance_only: true,
+      enforcement: 'not_enforced_by_preflight',
+    },
+  },
   pod_skills: {
     project_bootstrap: projectBootstrapSkill,
     codex_cli_auth_setup: codexCliAuthSetupSkill,

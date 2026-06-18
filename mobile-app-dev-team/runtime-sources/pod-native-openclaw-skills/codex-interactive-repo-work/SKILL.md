@@ -14,18 +14,22 @@ scoped Codex CLI interactive PTY session for the already-routed work.
 
 ## Responsibility
 
-Use this skill only after:
+Use this skill only after this non-skippable pre-launch gate is complete:
 
 - `project-bootstrap` has passed or reported no role-work blocker;
-- `/workspace/skills/codex-role-workflow/SKILL.md` returned `status: ready`;
+- the `codex-role-workflow/v1` routing artifact path is recorded;
+- the routing artifact has `status: ready`;
 - `codex-role-workflow/v1` set `codex_interactive_required: true`;
 - the output points `codex_execution_contract` to
   `/workspace/skills/codex-interactive-repo-work/SKILL.md`;
-- the role work has an accepted scope, owner role, allowed repo-local Codex
-  skill, required reviewer, durable artifact stage, and no unresolved human gate.
+- the routing artifact records the resolved role, allowed repo-local Codex
+  skill, actual `required_reviewers`, durable artifact stage, and human gate
+  state.
 
-If any item is missing, stop and return a status-only blocked report. Do not
-edit files directly to compensate for missing routing.
+The routing artifact is the source of truth for allowed skill and reviewer
+selection. If any item is missing, Codex launch is forbidden and the only output
+is a status-only blocked report. Do not edit files directly to compensate for
+missing routing.
 
 ## Managed Repo Boundary
 
@@ -72,14 +76,17 @@ private keys, or full secret-bearing config contents.
 
 The role pod gives Codex a scoped instruction that includes:
 
-- use `$wm` for the repo-scoped implementation workflow;
-- follow the `codex-role-workflow/v1` routing output;
-- use only the resolved repo-local Codex skill for the owner role;
+- literally invoke `$wm` or `/wm` for the repo-scoped implementation workflow;
+- reference the recorded `codex-role-workflow/v1` routing artifact path;
+- name the allowed repo-local Codex skill from the routing artifact;
+- name the actual `required_reviewers` from the routing artifact;
 - keep changes inside the approved scope and affected paths;
 - write or update the narrowest eval/test/validator fixture first;
 - preserve human gates, external proof boundaries, and secret safety;
 - do not make unrelated refactors or metadata churn;
 - run the applicable verification and capture evidence;
+- state that final read-only reviewer evidence from the actual
+  `required_reviewers` is mandatory before Done or PR handoff;
 - leave `git diff` and `git status --short` ready for supervising review.
 
 The prompt must not ask Codex to self-approve, merge, bypass a failed gate,
@@ -93,14 +100,41 @@ After the Codex interactive session stops, the supervising role pod must:
 2. Run the applicable verification from `AGENTS.md` and `$wm`.
 3. Record command output with exit status under `.evidence/` or the applicable
    eval result path.
-4. Obtain final read-only `.codex/agents` reviewer evidence against the approved
-   plan, diff, command output, and evidence path.
+4. Obtain final read-only `.codex/agents` reviewer evidence from each actual
+   reviewer listed in the routing artifact `required_reviewers`. Supervising
+   validation is not a substitute. Each required reviewer must check the
+   approved plan, diff, validation output, and evidence path.
 5. Run `git status --short`.
 6. Use the branch/PR handoff workflow. Do not push directly to `main`.
 7. Do not self-approve, merge, delete the branch, or claim external proof.
 
 If a checkpoint review fails or blocks, address it before continuing to the next
 checkpoint.
+
+Supported review evidence path:
+
+```text
+node scripts/codex-headless-review.mjs --json-envelope --agent <reviewer-from-codex-role-workflow-required_reviewers> --prompt <review-request-file> --out <evidence-file>
+```
+
+`<reviewer-from-codex-role-workflow-required_reviewers>` must be read from the
+recorded routing artifact for the actual resolved role. Do not choose a reviewer
+from supervisor preference, examples, or a fixed default.
+
+PR or handoff evidence must include at minimum:
+
+- routing artifact path;
+- Codex prompt path or prompt text evidence path;
+- changed paths;
+- validation commands and outputs with exit status;
+- reviewer evidence path for each required reviewer;
+- reviewer verdict for each required reviewer;
+- residual risks and external proof limits.
+
+Before commit or PR handoff, run a supervisor self-audit. If routing, literal
+`$wm` or `/wm` prompt invocation, validation output, or evidence from every
+required reviewer is missing, the work is blocked unless an explicit human
+override is recorded with scope, reason, owner, and timestamp.
 
 ## Preflight Helper
 
@@ -125,8 +159,15 @@ Return status-only execution guidance with:
 - `launcher_used_or_required`;
 - `wrapper_fallback_reason`;
 - `scope_source`;
-- `required_reviewer`;
+- `routing_artifact_path`;
+- `allowed_repo_local_codex_skill`;
+- `required_reviewers`;
+- `durable_artifact_stage`;
+- `human_gate_state`;
 - `evidence_path`;
+- `reviewer_evidence_paths`;
+- `reviewer_verdicts`;
+- `residual_risks`;
 - `blocked_reason` when blocked;
 - `secret_safety_statement`;
 - `external_proof_boundary`.

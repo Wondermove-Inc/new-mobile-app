@@ -63,6 +63,9 @@ function requirePackageScripts() {
   if (scripts['validate:work-units'] !== 'node scripts/validate-work-units.mjs --self-test && node scripts/validate-work-units.mjs') {
     fail('package.json missing validate:work-units runtime validator script');
   }
+  if (scripts['validate:runtime-routing-support'] !== 'node scripts/validate-runtime-routing-support.mjs') {
+    fail('package.json missing validate:runtime-routing-support focused runtime routing validator script');
+  }
   if (scripts['validate:work-unit-next'] !== 'node scripts/work-unit-next.mjs --self-test') {
     fail('package.json missing validate:work-unit-next runtime validator script');
   }
@@ -121,6 +124,7 @@ function requireConfluenceDependencyBoundary() {
 
 requireTerms('AGENTS.md', [
   'REPO_OPERATIONS.md',
+  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.',
 ]);
 
 requireTerms('REPO_OPERATIONS.md', [
@@ -178,6 +182,12 @@ requireTerms('REPO_OPERATIONS.md', [
   'not a skill and not a custom agent',
 ]);
 
+requireTerms('REPO_OPERATIONS.md', [
+  'openclaw-pod-skills-sync',
+  'repo SoT',
+  'runtime snapshot',
+]);
+
 requirePackageScripts();
 requireConfluenceDependencyBoundary();
 
@@ -198,16 +208,17 @@ requireTerms('DESIGN.md', [
   'runtime and skills do not consume this corpus',
 ]);
 
-requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 
-requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
   'name: project-bootstrap',
   '/workspace/skills/project-bootstrap/SKILL.md',
+  'openclaw-pod-skills-sync',
   'project-bootstrap-agent-setup.sh',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
@@ -232,7 +243,21 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
   'status only',
 ]);
 
-requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/SKILL.md', [
+  'name: openclaw-pod-skills-sync',
+  '/workspace/skills/openclaw-pod-skills-sync/SKILL.md',
+  '/workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'repo SoT',
+  'runtime snapshot',
+  'copy sync',
+  'not symlink',
+  'git clone',
+  'git pull',
+  'project-bootstrap',
+  'status only',
+]);
+
+requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md', [
   'Project Bootstrap Blocker Resolution Guide',
   'Blocker Classification',
   'missing role identity',
@@ -249,7 +274,7 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
   'Do not print token values',
 ]);
 
-forbidTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+forbidTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'Recommended AGENTS.md policy wording:',
   'Allowed direct actions by this agent:',
   'This agent MUST NOT directly use read/edit/write for Codex-managed repo/path content',
@@ -260,9 +285,12 @@ requireTerms('mobile-app-dev-team/README.md', [
   'team/role/process/reference',
 ]);
 
-requireTerms('mobile-app-dev-team/99-source-map.md', [
+requireTerms('mobile-app-dev-team/source-map.md', [
   'REPO_OPERATIONS.md',
   'repo-wide operating policy',
+  'ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  '/workspace/ORGANIZATIONS.md',
 ]);
 
 requireTerms('scripts/validate-team-doc-archive.mjs', [

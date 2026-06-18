@@ -2,10 +2,20 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh"
-PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh"
+SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh"
+PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh"
+POD_BOOTSTRAP_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh"
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 NO_CODEX_PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin"
+DEFAULT_WORKSPACE_ORGANIZATIONS_FIXTURE_DIR="$(mktemp -d)"
+PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH:-${DEFAULT_WORKSPACE_ORGANIZATIONS_FIXTURE_DIR}/ORGANIZATIONS.md}"
+export PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH
+mkdir -p "$(dirname "${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH}")"
+cat > "${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH}" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
 
 make_node_only_bin() {
   local bin_dir="$1"
@@ -30,6 +40,293 @@ fi
 exit 1
 SH
   chmod +x "${bin_dir}/codex"
+}
+
+make_fake_codex_expo_auth_split() {
+  local bin_dir="$1"
+  cat > "${bin_dir}/codex" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+state="${FAKE_CODEX_MCP_STATE}"
+if [[ "$1" == "mcp" && "$2" == "list" ]]; then
+  [[ -f "$state" ]] && cat "$state"
+  exit 0
+fi
+if [[ "$1" == "mcp" && "$2" == "get" && "${3:-}" == "expo" ]]; then
+  printf 'expo https://mcp.expo.dev/mcp authenticated\n'
+  exit 0
+fi
+if [[ "$1" == "mcp" && "$2" == "add" ]]; then
+  printf '%s\n' "$3" >> "$state"
+  exit 0
+fi
+exit 1
+SH
+  chmod +x "${bin_dir}/codex"
+}
+
+make_fake_basic_cli() {
+  local bin_dir="$1"
+  local cli_name="$2"
+  cat > "${bin_dir}/${cli_name}" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+case "${1:-}" in
+  --version|version)
+    printf 'fake version\n'
+    ;;
+  whoami)
+    printf 'fake-user\n'
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+SH
+  chmod +x "${bin_dir}/${cli_name}"
+}
+
+make_fake_corepack_and_pnpm_loggers() {
+  local bin_dir="$1"
+  local corepack_log_path="$2"
+  local pnpm_log_path="$3"
+  cat > "${bin_dir}/corepack" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${corepack_log_path}"
+exit 0
+SH
+  chmod +x "${bin_dir}/corepack"
+
+  cat > "${bin_dir}/pnpm" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${pnpm_log_path}"
+exit 64
+SH
+  chmod +x "${bin_dir}/pnpm"
+}
+
+make_fake_railway_unauthorized() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/railway" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+case "\${1:-}" in
+  --version|version)
+    printf 'railway fake version\n'
+    ;;
+  whoami)
+    printf 'Unauthorized\n' >&2
+    exit 1
+    ;;
+  login)
+    exit 0
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+SH
+  chmod +x "${bin_dir}/railway"
+}
+
+make_fake_gcloud_logged_out() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/gcloud" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+case "\${1:-} \${2:-}" in
+  "--version ")
+    printf 'Google Cloud SDK fake\n'
+    ;;
+  "auth list")
+    printf 'No credentialed accounts.\n'
+    exit 0
+    ;;
+  "auth login")
+    exit 0
+    ;;
+  "auth application-default")
+    exit 0
+    ;;
+  "config get-value")
+    printf '(unset)\n'
+    exit 0
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+SH
+  chmod +x "${bin_dir}/gcloud"
+}
+
+make_fake_gcloud_authenticated() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/gcloud" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+case "\${1:-} \${2:-}" in
+  "--version ")
+    printf 'Google Cloud SDK fake\n'
+    ;;
+  "auth list")
+    printf 'agent@example.test\n'
+    ;;
+  "config get-value")
+    printf 'wm-test-project\n'
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+SH
+  chmod +x "${bin_dir}/gcloud"
+}
+
+make_fake_npx_expo_logged_out() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/npx" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+if [[ "\$*" == "--no-install expo whoami" ]]; then
+  printf 'Not logged in\n' >&2
+  exit 1
+fi
+if [[ "\$*" == "expo login"* ]]; then
+  exit 0
+fi
+exit 64
+SH
+  chmod +x "${bin_dir}/npx"
+}
+
+make_fake_npx_expo_logged_in() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/npx" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+if [[ "\$*" == "--no-install expo whoami" ]]; then
+  printf 'expo-user\n'
+  exit 0
+fi
+exit 0
+SH
+  chmod +x "${bin_dir}/npx"
+}
+
+make_fake_git_clone_logger() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/git" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+if [[ "\${1:-}" == "clone" ]]; then
+  mkdir -p "\${3:?target path required}"
+  exit 0
+fi
+exec /usr/bin/git "\$@"
+SH
+  chmod +x "${bin_dir}/git"
+}
+
+make_fake_pod_skill_sources() {
+  local repo_path="$1"
+  local skill_root="${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
+  mkdir -p "${repo_path}/mobile-app-dev-team/runtime-sources"
+  cat > "${repo_path}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
+  for slug in \
+    openclaw-pod-skills-sync \
+    project-bootstrap \
+    codex-cli-auth-setup \
+    pod-role-bootstrap \
+    eas-robot-auth-setup \
+    stitch-adc-setup \
+    codex-role-workflow
+  do
+    mkdir -p "${skill_root}/${slug}/scripts"
+    printf '# skill\n' > "${skill_root}/${slug}/SKILL.md"
+    printf '#!/usr/bin/env bash\nset -euo pipefail\n' > "${skill_root}/${slug}/scripts/${slug}.sh"
+    chmod +x "${skill_root}/${slug}/scripts/${slug}.sh"
+  done
+  cat > "${skill_root}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+
+source_root="${OPENCLAW_POD_SKILLS_SOURCE_ROOT:?source root required}"
+target_root="${OPENCLAW_POD_SKILLS_ROOT:?target root required}"
+agents_path="${OPENCLAW_WORKSPACE_AGENTS_PATH:?workspace AGENTS path required}"
+organizations_source_path="${OPENCLAW_ORGANIZATIONS_SOURCE_PATH:?organizations source path required}"
+workspace_organizations_path="${OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH:?workspace ORGANIZATIONS path required}"
+report_path="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:?sync report path required}"
+marker_path="${OPENCLAW_POD_SKILLS_SYNC_MARKER_PATH:-${STATE_DIR:-$(dirname "${report_path}")}/openclaw-pod-skills-sync-called}"
+
+mkdir -p "${target_root}" "$(dirname "${agents_path}")" "$(dirname "${workspace_organizations_path}")" "$(dirname "${report_path}")" "$(dirname "${marker_path}")"
+for source_dir in "${source_root}"/*; do
+  [[ -d "${source_dir}" ]] || continue
+  slug="$(basename "${source_dir}")"
+  [[ -f "${source_dir}/SKILL.md" ]] || continue
+  rm -rf "${target_root}/${slug}"
+  cp -R "${source_dir}" "${target_root}/${slug}"
+done
+cat > "${agents_path}" <<'AGENTS'
+## Project Workspace Defaults
+
+After git clone or git pull, use openclaw-pod-skills-sync before project-bootstrap.
+
+- Repository: https://github.com/Wondermove-Inc/new-mobile-app.git
+- Local path: /workspace/projects/Wondermove-Inc/new-mobile-app
+AGENTS
+cp "${organizations_source_path}" "${workspace_organizations_path}"
+node - "${report_path}" "${workspace_organizations_path}" <<'NODE'
+const fs = require('node:fs');
+const [reportPath, workspaceOrganizationsPath] = process.argv.slice(2);
+const report = {
+  schema: 'openclaw-pod-skills-sync/v1',
+  status: 'completed',
+  paths: {
+    workspace_organizations: workspaceOrganizationsPath,
+  },
+  workspace_organizations: {
+    status: 'copied',
+    guidance_only: true,
+  },
+};
+fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+NODE
+printf 'called\n' > "${marker_path}"
+SH
+  chmod +x "${skill_root}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+  cat > "${skill_root}/stitch-adc-setup/scripts/stitch-adc-precheck.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "$(dirname "${REPORT_PATH}")"
+printf '{"schema":"stitch-adc-setup/v1","status":"blocked"}\n' > "${REPORT_PATH}"
+SH
+  chmod +x "${skill_root}/stitch-adc-setup/scripts/stitch-adc-precheck.sh"
+  cat > "${skill_root}/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "$(dirname "${REPORT_PATH}")"
+printf '{"schema":"eas-robot-auth-setup/v1","status":"blocked"}\n' > "${REPORT_PATH}"
+SH
+  chmod +x "${skill_root}/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh"
 }
 
 make_fake_gh_authenticated() {
@@ -115,6 +412,19 @@ SH
   chmod +x "${script_path}"
 }
 
+make_fake_required_cli_installer_failure() {
+  local script_path="$1"
+  local marker_path="$2"
+  mkdir -p "$(dirname "${script_path}")"
+  cat > "${script_path}" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "ran" > "${marker_path}"
+exit 70
+SH
+  chmod +x "${script_path}"
+}
+
 make_fake_npm_railway_installer() {
   local bin_dir="$1"
   local command_log_path="$2"
@@ -147,6 +457,18 @@ CLI
   exit 0
 fi
 exit 64
+SH
+  chmod +x "${bin_dir}/npm"
+}
+
+make_fake_npm_railway_installer_failure() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/npm" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+exit 70
 SH
   chmod +x "${bin_dir}/npm"
 }
@@ -445,22 +767,1170 @@ for (const blocker of rawBlockers) {
 NODE
 }
 
-case_design_full_setup() {
-  local tmpdir
-  tmpdir="$(mktemp -d)"
-  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+setup_project_preflight_ready_fixture() {
+  local tmpdir="$1"
+  local repo_path="${tmpdir}/repo"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/openclaw-pod-skills-sync" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${tmpdir}/skills/stitch-adc-setup" \
+    "${tmpdir}/skills/eas-robot-auth-setup" \
+    "${tmpdir}/skills/codex-role-workflow" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gh_unauthenticated "${tmpdir}/bin"
-  make_report_precheck "${tmpdir}/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh" "stitch-adc-setup/v1"
+  make_fake_basic_cli "${tmpdir}/bin" "gh"
+  make_fake_basic_cli "${tmpdir}/bin" "railway"
+  make_fake_basic_cli "${tmpdir}/bin" "gcloud"
+  make_fake_basic_cli "${tmpdir}/bin" "eas"
+  make_fake_basic_cli "${tmpdir}/bin" "pnpm"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  cat > "${tmpdir}/state/pod-role-bootstrap-report.json" <<'JSON'
+{
+  "schema": "pod-role-bootstrap/v1",
+  "status": "ready",
+  "preflight": {
+    "status": "available",
+    "blockers": [],
+    "result": { "blockers": [] }
+  }
+}
+JSON
+}
 
-  PATH="${tmpdir}/bin:${PATH}" \
+write_ready_agent_setup_report() {
+  local report_path="$1"
+  mkdir -p "$(dirname "${report_path}")"
+  cat > "${report_path}" <<'JSON'
+{
+  "schema": "project-bootstrap-agent-setup/v1",
+  "status": "completed",
+  "repo_checkout": {
+    "clone_url_status": "canonical_https",
+    "local_path": "/workspace/projects/Wondermove-Inc/new-mobile-app",
+    "status": "present"
+  },
+  "workspace_skills": {
+    "root": "/workspace/skills",
+    "sync": {
+      "status": "completed",
+      "report": "/workspace/state/openclaw-pod-skills-sync-report.json"
+    },
+    "openclaw-pod-skills-sync": "present",
+    "project-bootstrap": "present",
+    "codex-cli-auth-setup": "present",
+    "pod-role-bootstrap": "present",
+    "eas-robot-auth-setup": "present",
+    "stitch-adc-setup": "present",
+    "codex-role-workflow": "present"
+  },
+  "workspace_agents": {
+    "path": "/workspace/AGENTS.md",
+    "project_workspace_defaults": "present"
+  },
+  "guidance_artifacts": {
+    "workspace_organizations": {
+      "path": "/workspace/ORGANIZATIONS.md",
+      "status": "present",
+      "guidance_only": true,
+      "enforcement": "not_enforced_by_this_report"
+    }
+  },
+  "tool_readiness": {
+    "railway": {
+      "command_status": "available",
+      "auth_status": "available",
+      "install_decision": "already_available"
+    },
+    "gcloud": {
+      "command_status": "available",
+      "auth_status": "available",
+      "adc_status": "available",
+      "project_status": "available",
+      "install_decision": "already_available"
+    },
+    "expo_mcp": {
+      "auth_status": "available"
+    },
+    "expo_cli": {
+      "auth_status": "available"
+    }
+  },
+  "install_plan": [],
+  "installed_exact": []
+}
+JSON
+}
+
+write_failed_sync_agent_setup_report() {
+  local report_path="$1"
+  write_ready_agent_setup_report "${report_path}"
+  node - "${report_path}" <<'NODE'
+const fs = require('node:fs');
+const reportPath = process.argv[2];
+const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+report.status = 'blocked';
+report.blockers = ['workspace-skills-sync-blocked'];
+report.workspace_skills.sync.status = 'blocked';
+fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+NODE
+}
+
+write_missing_auth_agent_setup_report() {
+  local report_path="$1"
+  mkdir -p "$(dirname "${report_path}")"
+  cat > "${report_path}" <<'JSON'
+{
+  "schema": "project-bootstrap-agent-setup/v1",
+  "status": "blocked",
+  "tool_readiness": {
+    "railway": {
+      "command_status": "available",
+      "auth_status": "missing"
+    },
+    "gcloud": {
+      "command_status": "available",
+      "auth_status": "missing",
+      "adc_status": "missing",
+      "project_status": "missing"
+    },
+    "expo_mcp": {
+      "auth_status": "missing"
+    },
+    "expo_cli": {
+      "auth_status": "missing"
+    }
+  }
+}
+JSON
+}
+
+write_workspace_organizations_fixture() {
+  local tmpdir="$1"
+  mkdir -p "${tmpdir}/workspace"
+  cat > "${tmpdir}/workspace/ORGANIZATIONS.md" <<'EOF'
+# ORGANIZATIONS.md - Organizations and Reporting
+
+Guidance only.
+EOF
+}
+
+run_ready_preflight() {
+  local tmpdir="$1"
+  local report_path="$2"
+  local setup_report_path="$3"
+  write_workspace_organizations_fixture "${tmpdir}"
+  run_ready_preflight_with_organizations_path "${tmpdir}" "${report_path}" "${setup_report_path}" "${tmpdir}/workspace/ORGANIZATIONS.md"
+}
+
+run_ready_preflight_with_organizations_path() {
+  local tmpdir="$1"
+  local report_path="$2"
+  local setup_report_path="$3"
+  local workspace_organizations_path="$4"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${tmpdir}/repo" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${workspace_organizations_path}" \
+  PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH="${setup_report_path}" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+}
+
+case_preflight_blocks_missing_agent_setup_report() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.reports.project_bootstrap_agent_setup === 'missing'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing project-bootstrap-agent-setup report')"
+}
+
+case_preflight_blocks_unreadable_agent_setup_report() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  printf '{not-json\n' > "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.reports.project_bootstrap_agent_setup === 'unreadable'"
+  assert_json_field "${report_path}" "r.blockers.includes('unreadable project-bootstrap-agent-setup report')"
+}
+
+case_preflight_blocks_failed_skill_sync() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_failed_sync_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('project-bootstrap-agent-setup blocked')"
+  assert_json_field "${report_path}" "r.blockers.includes('workspace-skills-sync-blocked')"
+}
+
+case_preflight_blocks_auth_absent_from_agent_setup_report() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  cat > "${setup_report_path}" <<'JSON'
+{
+  "schema": "project-bootstrap-agent-setup/v1",
+  "status": "completed",
+  "tool_readiness": {}
+}
+JSON
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.reports.project_bootstrap_agent_setup === 'present'"
+  assert_json_field "${report_path}" "r.blockers.includes('project-bootstrap-agent-setup auth readiness missing')"
+}
+
+case_preflight_auth_ready_passes_auth_gate() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'completed'"
+  assert_json_field "${report_path}" "r.reports.project_bootstrap_agent_setup === 'present'"
+  assert_json_field "${report_path}" "r.tool_auth.railway.auth_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_auth.gcloud.adc_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_auth.expo_mcp.auth_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_auth.expo_cli.auth_status === 'available'"
+  assert_json_field "${report_path}" "r.routing.next_skill === 'codex-role-workflow'"
+  assert_json_field "${report_path}" "r.routing.next_runtime_path === '/workspace/skills/codex-role-workflow/SKILL.md'"
+  assert_json_field "${report_path}" "r.routing.required_before_role_work === true"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/SOUL.md')"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/IDENTITY')"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/state/project-bootstrap-role.env')"
+  assert_json_field "${report_path}" "r.routing.repo_sot_root === '/workspace/projects/Wondermove-Inc/new-mobile-app'"
+}
+
+case_preflight_missing_workspace_organizations_is_status_only() {
+  local tmpdir report_path setup_report_path workspace_organizations_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  workspace_organizations_path="${tmpdir}/workspace/ORGANIZATIONS.md"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight_with_organizations_path "${tmpdir}" "${report_path}" "${setup_report_path}" "${workspace_organizations_path}"
+
+  assert_json_field "${report_path}" "r.status === 'completed'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'missing'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && !r.blockers.includes('workspace-organizations-guidance-missing')"
+}
+
+case_agent_setup_detects_unauthorized_provider_state() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+  make_fake_codex "${tmpdir}/bin"
+  make_fake_railway_unauthorized "${tmpdir}/bin" "${tmpdir}/railway-command-log"
+  make_fake_gcloud_logged_out "${tmpdir}/bin" "${tmpdir}/gcloud-command-log"
+  make_fake_npx_expo_logged_out "${tmpdir}/bin" "${tmpdir}/npx-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
   STATE_DIR="${tmpdir}/state" \
   IDENTITY_PATH="${tmpdir}/IDENTITY" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
-  WM_POD_SELECTOR="boram-design" \
+  PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/railway-command-log" "whoami"
+  assert_file_contains "${tmpdir}/gcloud-command-log" "auth list"
+  assert_file_contains "${tmpdir}/npx-command-log" "--no-install expo whoami"
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.auth_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.auth_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.expo_cli.auth_status === 'missing'"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_expo_mcp_and_expo_cli_are_separate() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+  make_fake_codex_expo_auth_split "${tmpdir}/bin"
+  make_fake_basic_cli "${tmpdir}/bin" "railway"
+  make_fake_basic_cli "${tmpdir}/bin" "gcloud"
+  make_fake_npx_expo_logged_out "${tmpdir}/bin" "${tmpdir}/npx-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.tool_readiness.expo_mcp.auth_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_readiness.expo_cli.auth_status === 'missing'"
+  assert_json_field "${report_path}" "r.blockers.includes('expo-cli-auth-missing')"
+}
+
+case_explicit_role_slug_writes_all_role_surfaces() {
+  local role tmpdir report_path
+  for role in \
+    product-planning \
+    design \
+    mobile-architect \
+    mobile-app-dev \
+    backend-api-integrator \
+    qa-release
+  do
+    tmpdir="$(mktemp -d)"
+    report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+    mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+    make_fake_codex "${tmpdir}/bin"
+    printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+    HOME="${tmpdir}/home" \
+    PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+    FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+    STATE_DIR="${tmpdir}/state" \
+    IDENTITY_PATH="${tmpdir}/IDENTITY" \
+    CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+    REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_ROLE_SLUG="${role}" \
+    PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+    /bin/bash "${SCRIPT}" >/dev/null
+
+    [[ "$(cat "${tmpdir}/IDENTITY")" == "${role}" ]]
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_ROLE=${role}"
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_EXPECTED_ROLE=${role}"
+    assert_json_field "${report_path}" "r.role.resolved === '${role}'"
+    assert_json_field "${report_path}" "r.role.status === 'configured'"
+    assert_json_field "${report_path}" "r.role.env_path.endsWith('/project-bootstrap-role.env')"
+  done
+}
+
+case_role_soul_files_map_to_canonical_bootstrap_roles() {
+  local soul_path expected_operating_role expected_role tmpdir report_path actual_slug
+
+  while IFS='|' read -r soul_path expected_operating_role expected_role; do
+    [[ -n "${soul_path}" ]] || continue
+    [[ -f "${ROOT_DIR}/${soul_path}" ]]
+    assert_file_contains "${ROOT_DIR}/${soul_path}" "Operating Role: ${expected_operating_role}"
+
+    case "$(basename "${soul_path}")" in
+      product-planning-soul.md) actual_slug="product-planning" ;;
+      design-soul.md) actual_slug="design" ;;
+      mobile-architect-soul.md) actual_slug="mobile-architect" ;;
+      mobile-app-dev-soul.md) actual_slug="mobile-app-dev" ;;
+      backend-api-integrator-soul.md) actual_slug="backend-api-integrator" ;;
+      qa-release-soul.md) actual_slug="qa-release" ;;
+      *) actual_slug="missing" ;;
+    esac
+    [[ "${actual_slug}" == "${expected_role}" ]]
+
+    tmpdir="$(mktemp -d)"
+    report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+    mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+    make_fake_codex "${tmpdir}/bin"
+    printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+    HOME="${tmpdir}/home" \
+    PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+    FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+    STATE_DIR="${tmpdir}/state" \
+    IDENTITY_PATH="${tmpdir}/IDENTITY" \
+    CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+    REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_ROLE_SLUG="${expected_role}" \
+    PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+    /bin/bash "${SCRIPT}" >/dev/null
+
+    [[ "$(cat "${tmpdir}/IDENTITY")" == "${expected_role}" ]]
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_ROLE=${expected_role}"
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_EXPECTED_ROLE=${expected_role}"
+    assert_json_field "${report_path}" "r.role.resolved === '${expected_role}'"
+    assert_json_field "${report_path}" "r.role.status === 'configured'"
+  done <<'ROLE_SOULS'
+mobile-app-dev-team/runtime-sources/role-souls/product-planning-soul.md|Product/Planning|product-planning
+mobile-app-dev-team/runtime-sources/role-souls/design-soul.md|Design|design
+mobile-app-dev-team/runtime-sources/role-souls/mobile-architect-soul.md|Mobile Architect|mobile-architect
+mobile-app-dev-team/runtime-sources/role-souls/mobile-app-dev-soul.md|Mobile App Dev|mobile-app-dev
+mobile-app-dev-team/runtime-sources/role-souls/backend-api-integrator-soul.md|Backend/API Integrator|backend-api-integrator
+mobile-app-dev-team/runtime-sources/role-souls/qa-release-soul.md|QA/Release|qa-release
+ROLE_SOULS
+}
+
+case_explicit_role_slug_blocks_invalid_or_conflicting_identity() {
+  local tmpdir report_path
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="sales" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_invalid'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-invalid')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_invalid'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-invalid')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_ROLE="design" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_EXPECTED_ROLE="design" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  printf '%s\n' design > "${tmpdir}/IDENTITY"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "design" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_EXPECTED_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  printf '%s\n' "Product/Planning" > "${tmpdir}/IDENTITY"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "Product/Planning" ]]
+}
+
+case_role_identity_requires_explicit_slug_or_existing_canonical_surface() {
+  local tmpdir report_path
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/product-planning-soul.md" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_ROLE="product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.role.status === 'configured'"
+  assert_json_field "${report_path}" "r.role.resolved === 'product-planning'"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "product-planning" ]]
+}
+
+case_auth_blocker_markdown_ko_en_user_friendly() {
+  local tmpdir report_path setup_report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_missing_auth_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('railway-auth-missing')"
+  assert_json_field "${report_path}" "r.blockers.includes('gcloud-auth-missing')"
+  assert_json_field "${report_path}" "r.blockers.includes('gcloud-adc-missing')"
+  assert_json_field "${report_path}" "r.blockers.includes('expo-mcp-auth-missing')"
+  assert_json_field "${report_path}" "r.blockers.includes('expo-cli-auth-missing')"
+  assert_file_contains "${blockers_md_path}" "Railway login"
+  assert_file_contains "${blockers_md_path}" "Google Cloud login"
+  assert_file_contains "${blockers_md_path}" "Expo MCP"
+  assert_file_contains "${blockers_md_path}" "Expo CLI"
+  assert_primary_guidance_not_contains "${blockers_md_path}" "railway-auth-missing"
+
+  report_path="${tmpdir}/state/project-bootstrap-report-ko.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers-ko.md"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${tmpdir}/repo" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH="${setup_report_path}" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="ko" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="ko-KR" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'ko'"
+  assert_file_contains "${blockers_md_path}" "Railway 로그인"
+  assert_file_contains "${blockers_md_path}" "Google Cloud 로그인"
+  assert_file_contains "${blockers_md_path}" "Expo MCP"
+  assert_file_contains "${blockers_md_path}" "Expo CLI"
+  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "railway-auth-missing"
+}
+
+case_install_requires_explicit_approval() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_npm_railway_installer "${tmpdir}/bin" "${tmpdir}/npm-command-log" "${tmpdir}/railway-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  if [[ -e "${tmpdir}/npm-command-log" ]]; then
+    printf 'assertion failed: npm installer ran without PROJECT_BOOTSTRAP_INSTALL_APPROVED=true\n' >&2
+    exit 1
+  fi
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_blocked_needs_approval'"
+  assert_json_field "${report_path}" "r.install_plan.some((entry) => entry.package === '@railway/cli' && entry.command === 'npm i -g @railway/cli')"
+  assert_json_field "${report_path}" "Array.isArray(r.installed_exact) && r.installed_exact.length === 0"
+}
+
+case_system_installer_requires_explicit_approval() {
+  local tmpdir report_path installer_dir tool_bin
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  installer_dir="${tmpdir}/approved-installers"
+  tool_bin="${tmpdir}/state/project-bootstrap-tools/bin"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${installer_dir}"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_required_cli_installer "${installer_dir}/install-railway.sh" "railway" "${tmpdir}/railway-installer-ran" "${tmpdir}/railway-command-log"
+  make_fake_required_cli_installer "${installer_dir}/install-gcloud.sh" "gcloud" "${tmpdir}/gcloud-installer-ran" "${tmpdir}/gcloud-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR="${tool_bin}" \
+  PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
+  PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  [[ ! -f "${tmpdir}/railway-installer-ran" ]]
+  [[ ! -f "${tmpdir}/gcloud-installer-ran" ]]
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_blocked_needs_approval'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_blocked_needs_approval'"
+  assert_json_field "${report_path}" "r.install_plan.some((entry) => entry.tool === 'railway' && entry.approval_required === true)"
+  assert_json_field "${report_path}" "r.install_plan.some((entry) => entry.tool === 'gcloud' && entry.approval_required === true)"
+  assert_json_field "${report_path}" "Array.isArray(r.installed_exact) && r.installed_exact.length === 0"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_failed_npm_install_is_not_reported_as_installed() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_npm_railway_installer_failure "${tmpdir}/bin" "${tmpdir}/npm-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/npm-command-log" "i -g @railway/cli"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'npm_global_install_failed'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.installer_status === 'failed'"
+  assert_json_field "${report_path}" "Array.isArray(r.installed_exact) && r.installed_exact.length === 0"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_failed_system_installer_is_not_reported_as_installed() {
+  local tmpdir report_path installer_dir tool_bin
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  installer_dir="${tmpdir}/approved-installers"
+  tool_bin="${tmpdir}/state/project-bootstrap-tools/bin"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${installer_dir}"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_required_cli_installer_failure "${installer_dir}/install-railway.sh" "${tmpdir}/railway-installer-ran"
+  make_fake_required_cli_installer_failure "${installer_dir}/install-gcloud.sh" "${tmpdir}/gcloud-installer-ran"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR="${tool_bin}" \
+  PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
+  PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  [[ -f "${tmpdir}/railway-installer-ran" ]]
+  [[ -f "${tmpdir}/gcloud-installer-ran" ]]
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_failed'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.installer_status === 'failed'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_failed'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.installer_status === 'failed'"
+  assert_json_field "${report_path}" "Array.isArray(r.installed_exact) && r.installed_exact.length === 0"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
+  local tmpdir report_path repo_path skills_root workspace_agents_path workspace_organizations_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  repo_path="${tmpdir}/workspace/projects/Wondermove-Inc/new-mobile-app"
+  skills_root="${tmpdir}/workspace/skills"
+  workspace_agents_path="${tmpdir}/workspace/AGENTS.md"
+  workspace_organizations_path="${tmpdir}/workspace/ORGANIZATIONS.md"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/source-repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_fake_git_clone_logger "${tmpdir}/bin" "${tmpdir}/git-command-log"
+  make_fake_pod_skill_sources "${tmpdir}/source-repo"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${repo_path}" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${repo_path}" \
+  PROJECT_BOOTSTRAP_REPO_SOURCE_PATH="${tmpdir}/source-repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${skills_root}" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${workspace_agents_path}" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${workspace_organizations_path}" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/git-command-log" "clone https://github.com/Wondermove-Inc/new-mobile-app.git ${repo_path}"
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
+  [[ -e "${skills_root}/openclaw-pod-skills-sync/SKILL.md" ]]
+  [[ -e "${skills_root}/project-bootstrap/SKILL.md" ]]
+  [[ -e "${skills_root}/codex-cli-auth-setup/SKILL.md" ]]
+  [[ -e "${skills_root}/pod-role-bootstrap/SKILL.md" ]]
+  [[ -e "${skills_root}/eas-robot-auth-setup/SKILL.md" ]]
+  [[ -e "${skills_root}/stitch-adc-setup/SKILL.md" ]]
+  [[ -e "${skills_root}/codex-role-workflow/SKILL.md" ]]
+  assert_file_contains "${workspace_agents_path}" "## Project Workspace Defaults"
+  assert_file_contains "${workspace_agents_path}" "openclaw-pod-skills-sync"
+  assert_file_contains "${workspace_agents_path}" "git clone"
+  assert_file_contains "${workspace_agents_path}" "git pull"
+  assert_text_order "${workspace_agents_path}" "openclaw-pod-skills-sync" "project-bootstrap"
+  assert_file_contains "${workspace_agents_path}" "https://github.com/Wondermove-Inc/new-mobile-app.git"
+  assert_file_contains "${workspace_agents_path}" "/workspace/projects/Wondermove-Inc/new-mobile-app"
+  assert_file_contains "${workspace_organizations_path}" "Organizations and Reporting"
+  assert_json_field "${report_path}" "r.repo_checkout.status === 'cloned'"
+  assert_json_field "${report_path}" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${report_path}" "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_skills['project-bootstrap'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_skills['codex-role-workflow'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_agents.project_workspace_defaults === 'present'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'present'"
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.guidance_only === true"
+}
+
+case_agent_setup_missing_workspace_organizations_is_status_only() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/skills/openclaw-pod-skills-sync/scripts"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  cat > "${tmpdir}/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "${OPENCLAW_POD_SKILLS_ROOT}" "$(dirname "${OPENCLAW_WORKSPACE_AGENTS_PATH}")" "$(dirname "${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}")"
+for slug in openclaw-pod-skills-sync project-bootstrap codex-cli-auth-setup pod-role-bootstrap eas-robot-auth-setup stitch-adc-setup codex-role-workflow; do
+  mkdir -p "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}"
+  printf '# %s\n' "${slug}" > "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}/SKILL.md"
+done
+printf '## Project Workspace Defaults\n' > "${OPENCLAW_WORKSPACE_AGENTS_PATH}"
+printf '{"schema":"openclaw-pod-skills-sync/v1","status":"completed"}\n' > "${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}"
+SH
+  chmod +x "${tmpdir}/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH="${tmpdir}/workspace/ORGANIZATIONS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'missing'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && !r.blockers.includes('workspace-organizations-guidance-missing')"
+}
+
+case_agent_setup_blocks_failed_skill_sync() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('workspace-skills-sync-blocked')"
+  assert_json_field "${report_path}" "r.workspace_skills.sync.status === 'missing_source'"
+}
+
+case_project_preflight_blocks_missing_codex_role_workflow_skill() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  rm -rf "${tmpdir}/skills/codex-role-workflow"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.pod_skills.codex_role_workflow === 'missing'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing /workspace/skills/codex-role-workflow')"
+}
+
+case_token_bearing_clone_url_rejected_in_both_paths() {
+  local tmpdir report_path setup_report_path pod_report_path token_url
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-direct-report.json"
+  token_url="https://ghp_exampleSECRET@github.com/Wondermove-Inc/new-mobile-app.git"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  REPO_CLONE_URL="${token_url}" run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.repo.clone_url_status === 'token_bearing_or_rejected'"
+  assert_json_field "${report_path}" "r.blockers.includes('token-bearing REPO_CLONE_URL rejected')"
+  assert_file_not_contains "${report_path}" "ghp_exampleSECRET"
+
+  rm -rf "${tmpdir}/repo"
+  make_fake_git_clone_logger "${tmpdir}/bin" "${tmpdir}/git-command-log"
+  set +e
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  REPORT_PATH="${pod_report_path}" \
+  REPO_PATH="${tmpdir}/repo" \
+  REPO_CLONE_URL="${token_url}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${POD_BOOTSTRAP_SCRIPT}" >/dev/null 2>/dev/null
+  local status=$?
+  set -e
+  [[ "${status}" -ne 0 ]]
+  if [[ -e "${tmpdir}/git-command-log" ]]; then
+    assert_file_not_contains "${tmpdir}/git-command-log" "clone"
+  fi
+  assert_json_field "${pod_report_path}" "r.status === 'blocked'"
+  assert_json_field "${pod_report_path}" "r.repo_acquisition === 'token_bearing_or_rejected'"
+  assert_json_field "${pod_report_path}" "r.preflight.blockers.includes('token-bearing REPO_CLONE_URL rejected')"
+  assert_file_not_contains "${pod_report_path}" "ghp_exampleSECRET"
+}
+
+case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted() {
+  local tmpdir report_path setup_report_path pod_report_path token_url
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-existing-report.json"
+  token_url="https://github_pat_exampleSECRET@github.com/Wondermove-Inc/new-mobile-app.git"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  REPO_CLONE_URL="${token_url}" run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.repo.path_status === 'present'"
+  assert_json_field "${report_path}" "r.repo.clone_url_status === 'token_bearing_or_rejected'"
+  assert_json_field "${report_path}" "r.blockers.includes('token-bearing REPO_CLONE_URL rejected')"
+  assert_file_not_contains "${report_path}" "github_pat_exampleSECRET"
+  assert_json_no_secret_like "${report_path}"
+
+  make_fake_git_clone_logger "${tmpdir}/bin" "${tmpdir}/git-existing-command-log"
+  set +e
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  REPORT_PATH="${pod_report_path}" \
+  REPO_PATH="${tmpdir}/repo" \
+  REPO_CLONE_URL="${token_url}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${POD_BOOTSTRAP_SCRIPT}" >/dev/null 2>/dev/null
+  local status=$?
+  set -e
+  [[ "${status}" -ne 0 ]]
+  if [[ -e "${tmpdir}/git-existing-command-log" ]]; then
+    assert_file_not_contains "${tmpdir}/git-existing-command-log" "clone"
+  fi
+  assert_json_field "${pod_report_path}" "r.status === 'blocked'"
+  assert_json_field "${pod_report_path}" "r.repo_acquisition === 'token_bearing_or_rejected'"
+  assert_json_field "${pod_report_path}" "r.preflight.blockers.includes('token-bearing REPO_CLONE_URL rejected')"
+  assert_file_not_contains "${pod_report_path}" "github_pat_exampleSECRET"
+  assert_json_no_secret_like "${pod_report_path}"
+}
+
+case_pod_bootstrap_requires_install_approval_before_pnpm_install() {
+  local tmpdir pod_report_path
+  tmpdir="$(mktemp -d)"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-install-approval-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/repo" "${tmpdir}/state"
+  printf '# Codex-managed Paths\n\n- %s/\n' "${tmpdir}/repo" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  make_fake_corepack_and_pnpm_loggers "${tmpdir}/bin" "${tmpdir}/corepack-command-log" "${tmpdir}/pnpm-command-log"
+
+  set +e
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  REPORT_PATH="${pod_report_path}" \
+  REPO_PATH="${tmpdir}/repo" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${POD_BOOTSTRAP_SCRIPT}" >/dev/null 2>"${tmpdir}/pod-bootstrap-stderr"
+  local status=$?
+  set -e
+
+  [[ "${status}" -ne 0 ]]
+  assert_file_contains "${tmpdir}/pod-bootstrap-stderr" "pnpm install requires explicit approval"
+  assert_file_contains "${tmpdir}/corepack-command-log" "prepare pnpm@9.15.9 --activate"
+  [[ ! -f "${tmpdir}/pnpm-command-log" ]]
+  assert_json_field "${pod_report_path}" "r.status === 'blocked'"
+  assert_json_field "${pod_report_path}" "r.preflight.status === 'skipped'"
+  assert_json_field "${pod_report_path}" "r.preflight.blockers.includes('pod-role-bootstrap install approval required')"
+}
+
+case_design_full_setup() {
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home/.config/gcloud"
+  make_fake_pod_skill_sources "${tmpdir}/repo"
+  make_fake_codex_expo_auth_split "${tmpdir}/bin"
+  make_fake_gh_unauthenticated "${tmpdir}/bin"
+  make_fake_basic_cli "${tmpdir}/bin" "railway"
+  make_fake_gcloud_authenticated "${tmpdir}/bin" "${tmpdir}/gcloud-command-log"
+  make_fake_npx_expo_logged_in "${tmpdir}/bin" "${tmpdir}/npx-command-log"
+  make_report_precheck "${tmpdir}/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh" "stitch-adc-setup/v1"
+  : > "${tmpdir}/home/.config/gcloud/application_default_credentials.json"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${PATH}" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+	  STATE_DIR="${tmpdir}/state" \
+	  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+	  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+	  REPO_PATH="${tmpdir}/repo" \
+	  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+	  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+	  PROJECT_BOOTSTRAP_ROLE_SLUG="design" \
+	  WM_POD_SELECTOR="boram-design" \
   STITCH_ADC_PRECHECK="${tmpdir}/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh" \
   STITCH_ADC_REPORT="${tmpdir}/state/stitch-adc-setup-report.json" \
   /bin/bash "${SCRIPT}" >/dev/null
@@ -468,10 +1938,14 @@ case_design_full_setup() {
   [[ "$(cat "${tmpdir}/IDENTITY")" == "design" ]]
   grep -Fx -- "- ${tmpdir}/repo/" "${tmpdir}/CODEX_MANAGED_PATHS.md" >/dev/null
   for name in mobile-mcp serena stitch; do grep -Fx -- "${name}" "${tmpdir}/mcps.txt" >/dev/null; done
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
   [[ -f "${tmpdir}/state/stitch-adc-setup-report.json" ]]
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.status === 'completed'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.managed_path.status === 'repaired'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.mcp.mobile_mcp === 'registered' && r.mcp.serena === 'registered' && r.mcp.stitch === 'registered'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['stitch-adc-setup'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.stitch_adc_setup === 'generated'"
 }
 
@@ -489,6 +1963,7 @@ case_wrong_repo_path_blocks_repair() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/canonical" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="design" \
   WM_POD_SELECTOR="boram-design" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -517,6 +1992,9 @@ SH
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="qa-release" \
   WM_POD_SELECTOR="boram-qa-release" \
   CODEX_CLI_PRECHECK="${tmpdir}/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh" \
   /bin/bash "${SCRIPT}" >/dev/null
@@ -530,6 +2008,7 @@ case_qa_role_report_generation() {
   local tmpdir
   tmpdir="$(mktemp -d)"
   mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_pod_skill_sources "${tmpdir}/repo"
   make_fake_codex "${tmpdir}/bin"
   make_fake_gh_unauthenticated "${tmpdir}/bin"
   make_report_precheck "${tmpdir}/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" "eas-robot-auth-setup/v1"
@@ -541,13 +2020,20 @@ case_qa_role_report_generation() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="qa-release" \
   WM_POD_SELECTOR="boram-qa-release" \
   EAS_ROBOT_AUTH_PRECHECK="${tmpdir}/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" \
   EAS_ROBOT_AUTH_REPORT="${tmpdir}/state/eas-robot-auth-setup-report.json" \
   /bin/bash "${SCRIPT}" >/dev/null
 
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
   [[ -f "${tmpdir}/state/eas-robot-auth-setup-report.json" ]]
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.role.resolved === 'qa-release'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['eas-robot-auth-setup'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.eas_robot_auth_setup === 'generated'"
 }
 
@@ -569,6 +2055,7 @@ case_git_identity_from_approved_env() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="WonderMove Pod Agent" \
   PROJECT_BOOTSTRAP_GIT_USER_EMAIL="pod-agent@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -595,6 +2082,7 @@ case_git_identity_from_wm_env() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   WM_GIT_USER_NAME="WonderMove WM Pod" \
   WM_GIT_USER_EMAIL="wm-pod@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -624,6 +2112,7 @@ case_git_identity_from_approved_file() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH="${tmpdir}/git-identity.env" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -648,6 +2137,7 @@ case_missing_git_identity_does_not_invent_values() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -674,6 +2164,7 @@ case_git_identity_rejects_mixed_approved_sources() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="Project Name Only" \
   WM_GIT_USER_EMAIL="wm-email-only@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -698,6 +2189,7 @@ case_git_identity_rejects_mixed_approved_sources() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="Project Env Name Only" \
   PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH="${tmpdir}/git-identity.env" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -721,6 +2213,7 @@ case_github_auth_setup_git_when_authenticated() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -744,6 +2237,7 @@ case_github_auth_missing_skips_setup_git() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -768,9 +2262,13 @@ case_required_tool_readiness_without_approved_installers() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('railway-cli-unavailable')"
+  assert_json_field "${report_path}" "r.blockers.includes('gcloud-cli-unavailable')"
   assert_json_field "${report_path}" "r.tool_readiness.node_repl.required === false"
   assert_json_field "${report_path}" "r.tool_readiness.node_repl.owner === 'codex_app_plugin_optional'"
   assert_json_field "${report_path}" "r.tool_readiness.node_repl.status === 'app_environment_missing'"
@@ -809,6 +2307,8 @@ case_railway_npm_install_and_login_flow_are_attempted() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER="true" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -819,6 +2319,7 @@ case_railway_npm_install_and_login_flow_are_attempted() {
   assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'npm_global_install_attempted'"
   assert_json_field "${report_path}" "r.tool_readiness.railway.command_status === 'available'"
   assert_json_field "${report_path}" "r.tool_readiness.railway.version_status === 'checked'"
+  assert_json_field "${report_path}" "r.installed_exact.some((entry) => entry.tool === 'railway' && entry.package === '@railway/cli' && entry.command === 'npm i -g @railway/cli')"
   assert_json_field "${report_path}" "r.tool_readiness.railway.login_flow === 'railway_login_started'"
   assert_json_field "${report_path}" "r.credential_storage.railway.path.endsWith('/.railway')"
   assert_json_field "${report_path}" "r.credential_storage.railway.contents_checked === false"
@@ -853,6 +2354,8 @@ case_credential_file_explorer_is_opt_in() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -887,6 +2390,8 @@ case_railway_browserless_fallback_is_attempted() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -918,6 +2423,7 @@ case_gcloud_false_positive_auth_and_project_are_rejected() {
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC="true" \
   PROJECT_BOOTSTRAP_GCLOUD_PROJECT_ID="wm-test-project" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -956,6 +2462,8 @@ case_required_cli_approved_installers_are_attempted() {
   PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR="${tool_bin}" \
   PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
   PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
+  PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -971,6 +2479,8 @@ case_required_cli_approved_installers_are_attempted() {
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_attempted'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.command_status === 'available'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.version_status === 'checked'"
+  assert_json_field "${report_path}" "r.installed_exact.some((entry) => entry.tool === 'railway' && entry.command === 'approved railway installer')"
+  assert_json_field "${report_path}" "r.installed_exact.some((entry) => entry.tool === 'gcloud' && entry.package === 'google-cloud-cli' && entry.command === 'approved Google Cloud CLI installer')"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.project_command === 'gcloud config get-value project'"
   assert_json_field "${report_path}" "r.credential_storage.gcloud.path.endsWith('/.config/gcloud')"
   assert_json_field "${report_path}" "r.credential_storage.gcloud.contents_checked === false"
@@ -992,7 +2502,7 @@ case_product_planning_status_only_missing_preflight() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   make_node_only_bin "${tmpdir}/node-bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
@@ -1003,7 +2513,7 @@ case_product_planning_status_only_missing_preflight() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1075,7 +2585,7 @@ case_project_preflight_blocks_on_pod_role_report_blocked() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -1085,7 +2595,7 @@ case_project_preflight_blocks_on_pod_role_report_blocked() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1171,7 +2681,7 @@ case_project_preflight_guides_missing_sot_and_mcp() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   : > "${tmpdir}/mcps.txt"
   for file in \
@@ -1180,7 +2690,7 @@ case_project_preflight_guides_missing_sot_and_mcp() {
     PROJECT_ENVIRONMENT.md \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1226,7 +2736,7 @@ case_project_preflight_guides_missing_codex_cli() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   for file in \
     AGENTS.md \
     REPO_OPERATIONS.md \
@@ -1234,7 +2744,7 @@ case_project_preflight_guides_missing_codex_cli() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1276,7 +2786,7 @@ case_project_preflight_guides_role_specific_secure_sources() {
     "${tmpdir}/skills/stitch-adc-setup" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -1286,7 +2796,7 @@ case_project_preflight_guides_role_specific_secure_sources() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1335,7 +2845,7 @@ case_project_preflight_korean_language_contract() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -1345,7 +2855,7 @@ case_project_preflight_korean_language_contract() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1433,7 +2943,7 @@ case_project_preflight_korean_language_fallbacks() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -1443,7 +2953,7 @@ case_project_preflight_korean_language_fallbacks() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1632,7 +3142,7 @@ case_project_preflight_korean_full_blocker_matrix() {
 	    "${tmpdir}/skills/stitch-adc-setup" \
 	    "${repo_path}/.codex" \
 	    "${repo_path}/docs" \
-	    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+	    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   : > "${tmpdir}/mcps.txt"
   for file in \
@@ -1641,7 +3151,7 @@ case_project_preflight_korean_full_blocker_matrix() {
     PROJECT_ENVIRONMENT.md \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -1739,6 +3249,7 @@ case_railway_browserless_fallback_is_attempted
 case_gcloud_false_positive_auth_and_project_are_rejected
 case_required_cli_approved_installers_are_attempted
 case_product_planning_status_only_missing_preflight
+case_project_preflight_blocks_missing_codex_role_workflow_skill
 case_project_preflight_blocks_on_pod_role_report_blocked
 case_project_preflight_guides_missing_sot_and_mcp
 case_project_preflight_guides_missing_codex_cli
@@ -1746,5 +3257,28 @@ case_project_preflight_guides_role_specific_secure_sources
 case_project_preflight_korean_language_contract
 case_project_preflight_korean_language_fallbacks
 case_project_preflight_korean_full_blocker_matrix
+case_preflight_blocks_missing_agent_setup_report
+case_preflight_blocks_unreadable_agent_setup_report
+case_preflight_blocks_failed_skill_sync
+case_preflight_blocks_auth_absent_from_agent_setup_report
+case_preflight_auth_ready_passes_auth_gate
+case_preflight_missing_workspace_organizations_is_status_only
+case_agent_setup_detects_unauthorized_provider_state
+case_expo_mcp_and_expo_cli_are_separate
+case_explicit_role_slug_writes_all_role_surfaces
+case_role_soul_files_map_to_canonical_bootstrap_roles
+case_explicit_role_slug_blocks_invalid_or_conflicting_identity
+case_role_identity_requires_explicit_slug_or_existing_canonical_surface
+case_auth_blocker_markdown_ko_en_user_friendly
+case_install_requires_explicit_approval
+case_system_installer_requires_explicit_approval
+case_failed_npm_install_is_not_reported_as_installed
+case_failed_system_installer_is_not_reported_as_installed
+case_default_clone_runtime_skill_registration_workspace_agents_defaults
+case_agent_setup_missing_workspace_organizations_is_status_only
+case_agent_setup_blocks_failed_skill_sync
+case_token_bearing_clone_url_rejected_in_both_paths
+case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted
+case_pod_bootstrap_requires_install_approval_before_pnpm_install
 
 printf 'project-bootstrap-agent-setup smoke passed\n'

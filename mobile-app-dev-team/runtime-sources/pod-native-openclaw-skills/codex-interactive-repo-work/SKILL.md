@@ -93,8 +93,12 @@ private keys, or full secret-bearing config contents.
 The role pod gives Codex a scoped instruction that includes:
 
 - literally invoke `$wm` or `/wm` for the repo-scoped implementation workflow;
-- set the bounded work goal at session start with the supported `/goal` command;
 - reference the recorded `codex-role-workflow/v1` routing artifact path;
+- state whether the work is a specific-goal session or a progressive-improvement loop;
+- for a specific-goal session, set the bounded target with the supported `/goal`
+  command;
+- for a progressive-improvement loop, name the loop objective and checkpoints
+  without replacing the required `$wm` planning and review sequence;
 - name the allowed repo-local Codex skill from the routing artifact;
 - name the actual `required_reviewers` from the routing artifact;
 - keep changes inside the approved scope and affected paths;
@@ -112,8 +116,10 @@ accept human-gate risk, expose secrets, or change external platform state.
 ## Codex PTY Operations
 
 Each Codex PTY must have a distinguishable title or task label and evidence
-path. The `/goal` must name the smallest approved work unit and must not broaden
-scope.
+path. Use `/goal` only when the session is pursuing a specific bounded target;
+the `/goal` must name the smallest approved work unit and must not broaden
+scope. For progressive improvement work, use an explicit loop objective and
+checkpoint list instead of treating `/goal` as the loop itself.
 
 If new bounded work appears while Codex is already working, do not idle waiting
 on the old PTY when the new work can proceed independently. Launch a separate
@@ -122,21 +128,34 @@ Close finished PTYs promptly to preserve Codex context and operator attention.
 
 Concurrent PTYs do not relax scope, reviewer, human gate, external proof, or
 secret safety rules. Each PTY must keep its own routing artifact, Workboard
-claim, wake guard, goal, reviewer evidence, validation output, and evidence
-path.
+claim, wake guard, goal or loop objective, reviewer evidence, validation
+output, and evidence path.
 
-## Codex Operating Loop
+## Goal And Loop Semantics
 
-Run each interactive role-work session as a concise loop:
+Use `/goal` for work with one specific bounded target. Use a loop for
+progressive improvement work with repeated checkpoints. Do not collapse these
+concepts into each other.
+
+Both specific-goal and progressive-loop work must plan and execute the same
+required repo workflow:
 
 1. Check the current source of truth and routing artifact.
-2. Set `/goal` for the smallest approved work unit.
-3. Choose `$wm` or the resolved repo-local role skill.
-4. Run tests, evals, validators, or checks first.
+2. Invoke `$wm` or `/wm` and include its plan in the session plan.
+3. Identify the allowed repo-local role skill and required reviewers from the
+   routing artifact.
+4. Put tests, evals, validators, or other verification before implementation.
 5. Make the minimal scoped change.
-6. Inspect `/diff`.
-7. Obtain the required checkpoint reviewer evidence.
-8. Continue the next loop or prepare commit or PR handoff.
+6. Inspect `/diff` for the changed paths.
+7. Obtain required checkpoint reviewer evidence.
+8. Continue the next bounded loop iteration, or prepare commit or PR handoff.
+
+For a specific-goal session, set `/goal` after the SoT check and before the
+`$wm` plan. The goal must describe the smallest approved target.
+
+For progressive improvement work, define the loop objective, checkpoint, and
+stop condition before invoking `$wm`. Each iteration still follows the required
+plan, verification, minimal-change, `/diff`, and reviewer sequence above.
 
 ## Post-Session Review
 

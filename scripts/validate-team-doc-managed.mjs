@@ -331,6 +331,7 @@ for (const relativePath of [
   `${stitchAdcSetupSkillRoot}/SKILL.md`,
   `${stitchAdcSetupSkillRoot}/scripts/stitch-adc-precheck.sh`,
   `${stitchAdcSetupSkillRoot}/references/report-template.md`,
+  'evals/skills/stitch-adc-setup-smoke.sh',
   `${codexRoleWorkflowSkillRoot}/SKILL.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: ${relativePath}`);
@@ -475,12 +476,12 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'QA/Release',
   'Design',
   'Do not place repo-local Codex CLI artifacts here',
-  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
+  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
   '| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
-  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
-  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
-  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `eas-robot-auth-setup`, `codex-role-workflow` |',
+  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow` |',
 ]);
 
 function requirePodNativeSkill(relativePath, slug, scriptName, requiredTerms = []) {
@@ -1320,9 +1321,25 @@ requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-r
 requirePodNativeSkill(stitchAdcSetupSkillRoot, 'stitch-adc-setup', 'stitch-adc-precheck.sh', [
   'Google ADC',
   'gcloud auth application-default',
+  'STITCH_ADC_HUMAN_PRESENT',
+  'STITCH_ADC_ENABLE_STITCH_API',
+  'gcloud services enable stitch.googleapis.com',
   'codex mcp list',
   'stitch',
   'human-gate/v1',
+]);
+
+requireDocTerms('evals/skills/stitch-adc-setup-smoke.sh', [
+  'case_missing_gcloud_reports_installer_source_needed',
+  'case_installer_requires_explicit_approval',
+  'case_approved_installer_runs_and_records_exact_install',
+  'case_auth_and_adc_login_require_human_present',
+  'case_human_present_starts_browser_auth_flows',
+  'case_service_enable_requires_explicit_opt_in',
+  'case_project_set_and_service_enable_recheck_ready',
+  'case_service_enable_failure_does_not_overclaim_ready',
+  'STITCH_ADC_ENABLE_STITCH_API',
+  'stitch-adc-setup smoke passed',
 ]);
 
 requireDocTerms(`${codexCliAuthSetupSkillRoot}/scripts/codex-cli-precheck.sh`, [

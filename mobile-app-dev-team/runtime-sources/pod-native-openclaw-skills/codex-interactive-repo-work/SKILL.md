@@ -47,6 +47,19 @@ this contract. File changes for implementation work must come from the scoped
 Codex CLI interactive session. The supervising role pod may inspect files, run
 read-only checks, collect command output, and record evidence.
 
+## Workboard And Wake Guard
+
+Before Codex launch, a Workboard card, claim, or equivalent work ownership guard
+must exist for the bounded work. Register a wake guard before launch and keep it
+active until a complete commit or PR handoff is ready.
+
+Record the Workboard card or claim id, wake guard id, Codex PTY task label, and
+evidence path. If work is not complete when a wake fires, register the next wake
+guard with a 5 minute larger interval: `+5m`, `+10m`, `+15m`, `+20m`, and so on.
+
+If the Workboard or wake guard cannot be registered, do not launch Codex. Return
+a blocked status with the missing guard and evidence path.
+
 ## Launch Contract
 
 Use the configured Codex hook wrapper when it is available and compatible with
@@ -62,8 +75,11 @@ PTY `codex` only after recording the reason in evidence.
 Required launch evidence:
 
 - working directory;
+- Workboard card or claim id;
+- wake guard id and active interval;
 - launcher used: `/workspace/codex-hooks/codex-run` or raw `codex`;
 - wrapper fallback reason when raw `codex` is used;
+- Codex PTY title or task label;
 - scoped prompt text or prompt file path, without secrets;
 - Codex session start and stop status;
 - command output with exit status when available.
@@ -77,6 +93,7 @@ private keys, or full secret-bearing config contents.
 The role pod gives Codex a scoped instruction that includes:
 
 - literally invoke `$wm` or `/wm` for the repo-scoped implementation workflow;
+- set the bounded work goal at session start with the supported `/goal` command;
 - reference the recorded `codex-role-workflow/v1` routing artifact path;
 - name the allowed repo-local Codex skill from the routing artifact;
 - name the actual `required_reviewers` from the routing artifact;
@@ -91,6 +108,35 @@ The role pod gives Codex a scoped instruction that includes:
 
 The prompt must not ask Codex to self-approve, merge, bypass a failed gate,
 accept human-gate risk, expose secrets, or change external platform state.
+
+## Codex PTY Operations
+
+Each Codex PTY must have a distinguishable title or task label and evidence
+path. The `/goal` must name the smallest approved work unit and must not broaden
+scope.
+
+If new bounded work appears while Codex is already working, do not idle waiting
+on the old PTY when the new work can proceed independently. Launch a separate
+titled Codex PTY for the new bounded work, up to a maximum of 3 concurrent PTYs.
+Close finished PTYs promptly to preserve Codex context and operator attention.
+
+Concurrent PTYs do not relax scope, reviewer, human gate, external proof, or
+secret safety rules. Each PTY must keep its own routing artifact, Workboard
+claim, wake guard, goal, reviewer evidence, validation output, and evidence
+path.
+
+## Codex Operating Loop
+
+Run each interactive role-work session as a concise loop:
+
+1. Check the current source of truth and routing artifact.
+2. Set `/goal` for the smallest approved work unit.
+3. Choose `$wm` or the resolved repo-local role skill.
+4. Run tests, evals, validators, or checks first.
+5. Make the minimal scoped change.
+6. Inspect `/diff`.
+7. Obtain the required checkpoint reviewer evidence.
+8. Continue the next loop or prepare commit or PR handoff.
 
 ## Post-Session Review
 
@@ -160,6 +206,10 @@ Return status-only execution guidance with:
 - `wrapper_fallback_reason`;
 - `scope_source`;
 - `routing_artifact_path`;
+- `workboard_card_or_claim_id`;
+- `wake_guard_id`;
+- `wake_guard_interval`;
+- `codex_pty_title_or_task_label`;
 - `allowed_repo_local_codex_skill`;
 - `required_reviewers`;
 - `durable_artifact_stage`;

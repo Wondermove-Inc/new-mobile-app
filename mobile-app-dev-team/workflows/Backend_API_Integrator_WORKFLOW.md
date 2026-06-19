@@ -160,6 +160,17 @@ Before reporting Done, include:
 - `git diff` material summary;
 - `git status --short`.
 
+Backend/API Integrator workflow Review meetings follow the accepted
+`wm-meeting-process` baseline and the Product/Planning meeting-process
+reference in `Product_Planning_WORKFLOW.md`. If in-scope `change-required`
+feedback is raised, the Review meeting stops and the correction proceeds through
+1:1 corrective follow-up. The next Review meeting may resume only after the
+corrective PR/review/merge is complete or a recorded no-change decision exists.
+
+This reference does not change Backend/API ownership, Mobile Architect
+co-review boundary, Design/Mobile App Dev/QA handoff ownership, reviewer gates,
+human approval, Codex execution contracts, or release approval.
+
 ## 0D. Secret, Human-Gate, Production, And External-Proof Boundaries
 
 Do not print, persist, request, or commit tokens, credentials, private `.env`

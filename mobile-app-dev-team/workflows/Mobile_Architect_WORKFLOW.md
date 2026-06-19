@@ -28,8 +28,8 @@ Relative repository paths resolve from:
 
 Use `codex-role-workflow/v1` routing before Mobile Architect work. The expected
 repo-local skill for this role is `mobile-architect-workflow`; `$wm` or `/wm`
-must be invoked in repo-scoped Codex execution plans when the work proceeds
-through the WonderMove workflow.
+refers to work manage, not a WonderMove abbreviation. Invoke it in repo-scoped
+Codex execution plans when the work proceeds through the WonderMove workflow.
 
 Do not replace current repository source of truth with memory, generic Expo/RN
 advice, or stale runtime snapshots.

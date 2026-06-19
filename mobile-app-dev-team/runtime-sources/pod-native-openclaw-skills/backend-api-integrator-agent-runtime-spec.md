@@ -390,14 +390,15 @@ smallest applicable local verification set:
 
 - `git diff --check -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/backend-api-integrator-agent-runtime-spec.md`;
 - `node scripts/validate-runtime-sources.mjs`;
-- `pnpm run validate:team-doc`;
-- `pnpm run test:runtime`.
+- `pnpm run validate:team-doc`.
 
-Add contract/API tests, `pnpm turbo run lint test`, `pnpm run test:local-harness`,
-targeted pod-native smoke, or validator-retention checks only when the same
-change also touches `packages/contracts`, `apps/api`, migrations, mocks,
-fixtures, deployment or runtime behavior, package or lockfile state, Codex
-runtime or harness paths, or runtime validator scripts.
+Add `pnpm run test:runtime`, contract/API tests, `pnpm turbo run lint test`,
+`pnpm run test:local-harness`, targeted pod-native smoke, or
+validator-retention checks only when the same change also touches package or
+lockfile state, validators or scripts, Codex runtime or harness paths, runtime
+behavior, `packages/contracts`, `apps/api`, migrations, mocks, fixtures,
+deployment or backend service behavior, or when PR/CI/reviewer policy requires
+broader gate evidence.
 
 Local validation does not prove live API behavior, Railway/deployment state,
 production credentials, GitHub branch protection, EAS/store state, QA release

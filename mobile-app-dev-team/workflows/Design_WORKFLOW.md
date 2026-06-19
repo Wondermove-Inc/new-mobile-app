@@ -172,6 +172,14 @@ reviewed scope/path, verdict, findings, checks reviewed, residual risks, and
 next action. Reviews do not replace Product/Planning P0/P1 approvals, human
 approval, deterministic gates, merge approval, or release/production approval.
 
+Design workflow Review meetings, `change-required` feedback, 1:1 corrective
+follow-up, corrective PR/review/merge or recorded no-change decisions, and next
+Review meeting resume rules follow the accepted pod-native
+`wm-meeting-process` skill and the Product/Planning meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference
+only governs meeting operation and does not change Design gates, Design quality
+ownership, reviewer evidence, human approvals, or release approval.
+
 ## 0D. Safety And Approval Boundaries
 
 Secret safety is mandatory. Do not print, persist, or transmit auth tokens,
@@ -399,6 +407,14 @@ A Design handoff is not ready for Mobile App Dev until it includes:
 - accessibility notes;
 - implementation constraints for Expo Router, React Native primitives,
   NativeWind, semantic tokens, and stable `testID` values;
+- backend/API dependency status in the Design package and
+  `01-design/handoff-index.md`, including whether the design depends on
+  API-backed data, auth/session behavior, error states, or permission-denied
+  states; whether API contract status is known, unknown, not-applicable, or
+  blocked; the Backend/API Integrator handoff target when uncertainty exists;
+  and the relevant `03-contract-api` artifact pointer when applicable. Design
+  records dependency and routing status only and must not define or change API
+  contracts;
 - UX acceptance criteria and measurable acceptance signals;
 - open decisions and next responsible role;
 - `design-reviewer` evidence.

@@ -20,7 +20,7 @@ not a hook). Hooks split into two kinds:
 | --- | --- | --- | --- |
 | `mobile-pretool-policy.mjs` | PreToolUse (`Bash\|apply_patch`) | Enforcement | Deny: destructive git (incl. quoted); `expo prebuild --clean` (incl. quoted `--clean`); production `eas build/submit/update` (incl. quoted, `npx eas-cli`, `pnpm dlx eas-cli` wrappers); package-manager mixing (incl. shell-wrapper, `eval`-wrapper, quoted-verb variants); `.env` reads via `cat`/`sed`/`rg`/`grep` (incl. quoted and `eval`-wrapper variants); `rm -rf` on protected repo paths (incl. reordered/split flags, option terminator). Allow: `npm test`, policy-text search. |
 | `mobile-stop-gatekeeper-advisory.mjs` | Stop | Enforcement | Deny: completion claims without verification evidence (verbs: implemented/updated/added/completed/reviewed/finished/shipped/ready). Allow: final message containing evidence keywords (pnpm/jest/lint/test/passed). `stop_hook_active` guard prevents re-block loops. |
-| `mobile-stop-call-check.mjs` | Stop | Enforcement (opt-in) | No-op pass-through unless `WM_STOP_CALL_CHECK_ENABLE=1`. When enabled: block on MCP/HTTP connectivity failure; allow when configured check succeeds. |
+| `mobile-stop-call-check.mjs` | Stop | Enforcement (opt-in) | No-op pass-through unless `WM_STOP_CALL_CHECK_ENABLE=1` or `WM_STOP_COMPLETION_DM_ENABLE=1`. Existing check path blocks on MCP/HTTP connectivity failure and allows configured successes. Completion DM path validates supported role pods, requires task/run identifier, supports dry-run, and covers local POST payload shape without external calls. |
 | `mobile-posttool-evidence-reminder.mjs` | PostToolUse (`Bash\|apply_patch`) | Informational | Allow only: emits an evidence reminder when a patch touches mobile/runtime paths; no deny/block path by design. |
 | `mobile-subagent-context.mjs` | SessionStart (`startup\|resume`) | Informational | Allow only: always emits narrow-agent runtime context; no deny/block path by design. |
 
@@ -30,6 +30,6 @@ not a hook). Hooks split into two kinds:
   have **zero** deny/block fixtures **by design** — they cannot block. Their
   absence of deny coverage is correct, not a gap.
 - Enforcement hooks each have at least one allow and one deny/block scenario.
-  `mobile-stop-call-check` is opt-in (env-gated) and defaults to pass-through.
+  `mobile-stop-call-check` is opt-in (env-gated) and defaults to pass-through. Its completion DM path is also opt-in, so pods without local config, including Kim Tae-won's environment, keep skipping DM delivery.
 - To regenerate/verify coverage, run `pnpm run test:hooks` and inspect
   `evals/hooks/fixtures/` against `scripts/test-hooks.mjs`.

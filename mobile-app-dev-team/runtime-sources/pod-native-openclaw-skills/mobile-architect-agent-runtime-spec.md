@@ -391,19 +391,18 @@ external_proof_boundary: local evidence does not prove live OpenClaw pod executi
 
 ## Other Role Runtime Reports
 
-This Mobile Architect report is the third one-document checkpoint after
-Product/Planning and Design received reviewer GO. It is one document in the
-role-by-role report sequence. Do not create Mobile App Dev,
-Backend/API Integrator, or QA/Release runtime reports until this Mobile
-Architect report has passed validation and received reviewer GO.
+Historical note: this Mobile Architect runtime specification was originally
+written as one checkpoint in a role-by-role report sequence after
+Product/Planning and Design received reviewer GO. That sequencing note is not a
+current gate for other role workflow documents.
 
-Each later report must cite the relevant role SOUL, pod-native skill matrix,
-`codex-role-workflow`, work-process and gate SoT, role-specific repo-local
-skills, required reviewers, durable artifact stage, evidence requirements, stop
-conditions, external proof boundary, and any problem found under the current
-configuration.
+Current reference: each role runtime report or workflow reference should cite the
+relevant role SOUL, pod-native skill matrix, `codex-role-workflow`, work-process
+and gate SoT, role-specific repo-local skills, required reviewers, durable
+artifact stage, evidence requirements, stop conditions, external proof boundary,
+and any problem found under the current configuration.
 
-Do not treat the future role reports as pod-native skills unless a later SoT
+Do not treat role runtime reports as pod-native skills unless a later SoT
 explicitly creates a `/workspace/skills/<slug>/SKILL.md` runtime shape for them.
 They are analysis/report documents unless separately promoted through an
 approved skill-creation workflow.

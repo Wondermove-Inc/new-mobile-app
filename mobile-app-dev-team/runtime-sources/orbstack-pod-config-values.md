@@ -14,8 +14,8 @@ this file.
 | Key | Current Value | Use | Source |
 | --- | --- | --- | --- |
 | `REPO_CLONE_URL` | `https://github.com/Wondermove-Inc/new-mobile-app.git` | Clone URL only when the repo is absent from the target pod. Must stay token-free. | `git remote get-url origin` |
-| `REPO_REF` | `docs/role-title-display-identity` | Repeatable checkout branch for canary use when a commit pin is not required. | `git rev-parse --abbrev-ref HEAD` |
-| `REPO_COMMIT` | `907d52b26fdd7ba959b59c597fb774f74828884e` | Stronger repeatability pin for canary checkout. This is the current committed `HEAD` before uncommitted doc cleanup changes; update after the final commit if the pod must reproduce this document revision exactly. | `git rev-parse HEAD` |
+| Example canary `REPO_REF` | `docs/role-title-display-identity` | Historical example branch for canary handoff shape. It is not the current repo ref. | Snapshot example, not live proof |
+| Example canary `REPO_COMMIT` | `907d52b26fdd7ba959b59c597fb774f74828884e` | Historical example commit pin for canary handoff shape. It is not the current repo commit and must not be used as freshness evidence. | Snapshot example, not live proof |
 | `REPO_PATH` | `/workspace/projects/Wondermove-Inc/new-mobile-app` | Default pod checkout path expected by bootstrap docs. Target pod may override it explicitly. | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` |
 | `CODEX_MANAGED_PATHS` | `/workspace/CODEX_MANAGED_PATHS.md` | Default managed-path registry path. Target pod may override it only for scripts that support the override. | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` |
 | Managed path entry | `- /workspace/projects/Wondermove-Inc/new-mobile-app/` | Owner-approved entry required before Codex-managed repo work. | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` |

@@ -9,6 +9,32 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 `TEAM_DOC_ARCHIVE_MANIFEST.json`와 `TEAM_DOC_ARCHIVE_BUNDLE.jsonl` 기준으로
 검증한다. 이 폴더는 실제 운영자가 읽고 유지할 current SoT이다.
 
+## Pod Role Runtime Entrypoint
+
+Actual OpenClaw role pods must not treat this README as a standalone execution
+runbook. For pod runtime work, use this required entry chain after clone or
+pull:
+
+```text
+openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specification -> codex-role-workflow
+```
+
+- `openclaw-pod-skills-sync` copy-syncs the repo-authored pod-native skill source
+  from `runtime-sources/pod-native-openclaw-skills/` into the runtime snapshot
+  at `/workspace/skills/<slug>/SKILL.md`.
+- `project-bootstrap` is the standard readiness entry point. If project-bootstrap is blocked, role work is forbidden.
+- After bootstrap is ready, read only the matching role runtime specification,
+  then apply `/workspace/skills/codex-role-workflow/SKILL.md` to resolve the
+  allowed repo-local Codex skill, reviewer, durable artifact stage, stop
+  conditions, and next action.
+- Pod-isolated role handoff must use GitHub branch/commit/PR artifacts under
+  `docs/plans/work-units/<work-unit-id>/`. Each role artifact must include a
+  PRD acceptance line or explicit non-goal reference before downstream
+  execution.
+- `human-gate/v1` is required for production-submit, payment-money-movement,
+  pii-privacy, external-messaging, legal-compliance, business-budget-owner,
+  irreversible-scope-tradeoff, and failed-gate-risk decisions. Gatekeeper, reviewer, pod, or LLM role cannot replace human approval.
+
 ## 문서 구조
 
 | 파일 | 역할 |

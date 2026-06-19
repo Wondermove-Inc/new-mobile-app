@@ -314,6 +314,7 @@ Backend/API Integrator coordinates with:
 | Role | Handoff purpose |
 | --- | --- |
 | Product/Planning | approved API/backend scope, non-goals, human gates, risk acceptance, and work-unit readiness |
+| Design | API-backed data, auth/session behavior, error states, permission-denied states, API contract status uncertainty, and `01-design/handoff-index.md` dependency notes flow into Backend/API-owned `03-contract-api` contract/status artifacts or equivalent contract/status pointers. Design does not define or change API contracts; Backend/API Integrator does not approve Design quality. |
 | Mobile Architect | contract impact, route/state impact, runtime/dependency risk, API co-sign, and route/service/db boundary |
 | Mobile App Dev | stable contract, mock/fixture paths, compatibility notes, loading/retry/error behavior, and API-backed implementation readiness |
 | QA/Release | runtime smoke expectations, deployment config note, rollback note, service evidence, and release-readiness evidence planning |

@@ -173,10 +173,12 @@ or other secrets.
 
 ## Stop Rules When Project Bootstrap Is Blocked
 
-If `project-bootstrap is blocked`, role work is forbidden. Do not begin role
-planning, design work, implementation, EAS work, Stitch work, QA execution,
-external publication, or repo-local role skills as a substitute for a ready
-bootstrap result.
+If `project-bootstrap is blocked`, role work is forbidden for implementation,
+live/external work, Design generation, EAS work, Stitch work, QA execution,
+external publication, and repo-local role skills as a substitute for a ready
+bootstrap result. Docs-only or review-only work may proceed only when
+Product/Planning records an explicit reclassification or approval that the
+bootstrap blocker is not relevant to that bounded non-live scope.
 
 When setup is blocked, pod agents must give a user-understandable translated
 blocker instead of raw blocker names. The result must explain:

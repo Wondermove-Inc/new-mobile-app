@@ -229,7 +229,11 @@ available or explicitly marked not applicable by the owning role:
 - accepted non-goals and scope boundaries from Product/Planning;
 - Design handoff when layout, interaction, or visual hierarchy matters;
 - selected Design option and five-state matrix for UI work;
+- `01-design/handoff-index.md` backend/API dependency status for UI or
+  API-backed work;
 - API contract, approved mocks/fixtures, or explicit API non-goal;
+- applicable `03-contract-api` contract/status artifact pointer when the Design
+  handoff identifies backend/API dependency, or an explicit API non-goal;
 - Mobile Architect handoff when route/state/runtime/dependency/releaseability
   risk exists;
 - evidence requirement and expected commands;
@@ -252,10 +256,16 @@ Required Design readiness for UI work:
 - selected Design option;
 - default, loading, empty, error, and permission-denied states in the five-state
   matrix;
-- design-reviewer evidence.
+- design-reviewer evidence;
+- backend/API dependency status from `01-design/handoff-index.md`.
 
-Missing Design handoff blocks UI implementation. Missing selected Design option
-or five-state matrix blocks UI implementation.
+Missing Design handoff blocks UI implementation. Missing selected Design option,
+five-state matrix, or backend/API dependency status blocks UI implementation.
+When the Design handoff marks a backend/API dependency as applicable, Mobile App
+Dev must confirm the relevant `03-contract-api` contract/status artifact pointer
+or an explicit API non-goal before implementation. This check does not make
+Design the owner of API contracts and does not make Mobile App Dev the approver
+of Design quality or API contract ownership.
 
 ## Contract Boundary
 
@@ -271,8 +281,9 @@ Contract rules:
 - Backend/API Integrator owns mobile-facing API contracts, service/API behavior,
   mocks, fixtures, auth/session, and error mapping.
 - API-backed implementation must stop or route back when the API contract,
-  fixture, auth/session behavior, error mapping, or mock-vs-real alignment is
-  missing or ambiguous.
+  fixture, auth/session behavior, error mapping, mock-vs-real alignment, or
+  applicable `03-contract-api` contract/status artifact pointer is missing or
+  ambiguous.
 - Contract drift discovered during implementation must route to
   Backend/API Integrator and `wm-contract-reviewer`, not be silently fixed in
   app code.
@@ -330,6 +341,15 @@ Expected evidence depends on scope:
 QA/Release owns achieved evidence later. Mobile App Dev records implementation
 evidence and handoff, but does not self-approve release readiness.
 
+Mobile App Dev workflow Review meetings follow the accepted pod-native
+`wm-meeting-process` skill and the meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. In-scope
+`change-required` feedback stops the Review meeting and proceeds through 1:1
+corrective follow-up. The next Review meeting, and any downstream Mobile App
+Dev implementation readiness that depends on the reviewed handoff, cannot start
+or resume until the corrective path is resolved through PR/review/merge or a
+recorded no-change decision.
+
 ## Runtime Status And Output Contract
 
 Mobile App Dev routing status uses the `codex-role-workflow/v1` contract.
@@ -367,8 +387,8 @@ blockers and failure modes:
 | --- | --- |
 | Missing accepted execution task or durable next action | missing accepted task blocks Mobile App Dev work. |
 | UI work without committed Design handoff | missing Design handoff blocks UI implementation. |
-| UI work without selected option or states | missing selected Design option or five-state matrix blocks UI implementation. |
-| API-backed work without contract SoT | missing API contract blocks API-backed implementation. |
+| UI work without selected option, states, or backend/API dependency status | missing selected Design option, five-state matrix, or `01-design/handoff-index.md` backend/API dependency status blocks UI implementation. |
+| API-backed work without contract SoT or applicable artifact pointer | missing API contract or applicable `03-contract-api` contract/status artifact pointer blocks API-backed implementation. |
 | No test-first proof exists | missing test-first evidence blocks implementation. |
 | Selector change lacks aligned app/Jest/Maestro updates | selector changes without app, Jest, and Maestro alignment block handoff. |
 | Route/state/runtime/dependency/releaseability risk lacks architecture handoff | route/state/runtime risk without Mobile Architect handoff blocks implementation. |
@@ -383,10 +403,12 @@ The Mobile App Dev agent must stop when:
 - role identity is missing or mismatched;
 - required pod-native skills are missing;
 - accepted Product/Planning task or durable work-unit handoff is missing;
-- Design handoff, selected option, state matrix, or `design-reviewer` evidence is
-  missing for UI work;
-- API contract, approved mock/fixture, auth/session behavior, error mapping, or
-  mock-vs-real alignment is missing for API-backed work;
+- Design handoff, selected option, state matrix, `01-design/handoff-index.md`
+  backend/API dependency status, or `design-reviewer` evidence is missing for UI
+  work;
+- API contract, approved mock/fixture, auth/session behavior, error mapping,
+  mock-vs-real alignment, or applicable `03-contract-api` contract/status
+  artifact pointer is missing for API-backed work;
 - route/state/runtime/dependency/releaseability risk lacks Mobile Architect
   handoff;
 - test-first evidence is missing;

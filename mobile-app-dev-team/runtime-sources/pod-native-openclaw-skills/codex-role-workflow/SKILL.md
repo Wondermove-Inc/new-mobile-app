@@ -296,7 +296,9 @@ resolved_role: Mobile App Dev
 entry_case: direct_implementation_language
 readiness_state_or_required_gate: accepted task packet plus READY_FOR_EXECUTION
 allowed_repo_local_codex_skills: mobile-app-dev-workflow
-required_reviewers: wm-implementation-reviewer
+required_reviewers:
+  - wm-implementation-reviewer
+  - wm-contract-reviewer # conditional when API/contract boundaries are changed or adjudicated
 durable_artifact_stage: 04-mobile-app
 codex_interactive_required: true
 codex_execution_contract: /workspace/skills/codex-interactive-repo-work/SKILL.md

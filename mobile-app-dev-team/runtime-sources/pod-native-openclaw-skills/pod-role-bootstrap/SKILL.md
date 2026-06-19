@@ -69,8 +69,9 @@ status-only blocker report and exits non-zero instead of claiming readiness.
 
 2. Align package manager selection with the repo SoT.
 
-The repo declares `pnpm@9.15.9` in `package.json`. The bootstrap uses corepack
-to activate that pin before `pnpm install --frozen-lockfile`. Before dependency
+The repo declares its package-manager pin in `package.json` `packageManager`.
+The bootstrap uses corepack to activate that repo-declared pin before
+`pnpm install --frozen-lockfile`. Before dependency
 installation, the agent must report the exact dependency install plan and wait
 for explicit approval unless the user already approved that install. In
 automation, set
@@ -78,7 +79,8 @@ automation, set
 the script writes a blocked readiness report with `pod-role-bootstrap install
 approval required` and exits before `pnpm install --frozen-lockfile`.
 
-A pod with pnpm `10.33.3` must not proceed as ready until the pin is corrected.
+A pod whose active pnpm version does not match the repo-declared
+`packageManager` pin must not proceed as ready until the pin is corrected.
 
 3. Run repo-local pod preflight.
 
@@ -144,7 +146,7 @@ whose `/workspace/CODEX_MANAGED_PATHS.md` policy is not ready.
 - the repo checkout exists at `/workspace/projects/Wondermove-Inc/new-mobile-app`
 - the checkout came from an existing directory or explicit `REPO_CLONE_URL`
 - `/workspace/CODEX_MANAGED_PATHS.md` contains the managed path entry
-- pnpm is aligned to `pnpm@9.15.9`
+- pnpm is aligned to the repo-declared `packageManager` pin
 - repo dependency installation was explicitly approved with
   `POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true`
 - `pnpm install --frozen-lockfile` exits 0

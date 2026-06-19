@@ -302,8 +302,6 @@ native checks are HUMAN-GATE evidence with residual risk; they do not replace
 Maestro or mobile-mcp automation requirements. A bare human approval is not
 enough for L3.
 
-do not replace Maestro or mobile-mcp automation requirements.
-
 Simulator, emulator, physical device, Maestro, and `mobile-mcp` operations must
 run serially. Do not parallelize simulator/device operations.
 
@@ -379,8 +377,6 @@ A role, reviewer, pod, LLM, or Release Gatekeeper cannot become the human
 approver. A bare human approval is not enough when the SoT requires a
 machine-readable decision envelope.
 
-a role, reviewer, pod, LLM, or Release Gatekeeper cannot become the human approver.
-
 ## Failure Routing
 
 QA/Release classifies failures and routes them to the owner:
@@ -427,13 +423,18 @@ QA/Release evidence depends on the requested surface:
 - Railway evidence proves only the Railway/API/RN Web scope that was actually
   checked.
 
-Required local verification for this runtime-spec document is:
+For docs-only or role-runtime-source wording changes to this document, use the
+smallest applicable local verification set:
 
+- `git diff --check -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/qa-release-agent-runtime-spec.md`;
+- `node scripts/validate-runtime-sources.mjs`;
 - `pnpm run validate:team-doc`;
-- `pnpm run test:runtime`;
-- `pnpm turbo run lint test`;
-- `pnpm run test:local-harness`;
-- post-harness validator retention check for `qaReleaseRuntimeSpec`.
+- `pnpm run test:runtime`.
+
+Add `pnpm turbo run lint test`, `pnpm run test:local-harness`, targeted
+pod-native smoke, or validator-retention checks only when the same change also
+touches app/API code, package or lockfile state, Codex runtime or harness paths,
+runtime validator scripts, or runtime behavior.
 
 Local validation does not prove RN Web E2E, native behavior, live EAS, Maestro,
 mobile-mcp, Railway/deployment state, production credentials, GitHub branch

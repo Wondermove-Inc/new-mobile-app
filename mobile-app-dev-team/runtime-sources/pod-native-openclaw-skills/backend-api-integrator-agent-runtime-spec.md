@@ -385,13 +385,19 @@ Backend/API Integrator evidence depends on the approved scope:
   contract implementation tests when no `packages/contracts`, `apps/api`,
   migration, mock, fixture, deployment, or runtime behavior changes.
 
-Required local verification for this runtime-spec document is:
+For docs-only or role-runtime-source wording changes to this document, use the
+smallest applicable local verification set:
 
+- `git diff --check -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/backend-api-integrator-agent-runtime-spec.md`;
+- `node scripts/validate-runtime-sources.mjs`;
 - `pnpm run validate:team-doc`;
-- `pnpm run test:runtime`;
-- `pnpm turbo run lint test`;
-- `pnpm run test:local-harness`;
-- post-harness validator retention check for `backendApiIntegratorRuntimeSpec`.
+- `pnpm run test:runtime`.
+
+Add contract/API tests, `pnpm turbo run lint test`, `pnpm run test:local-harness`,
+targeted pod-native smoke, or validator-retention checks only when the same
+change also touches `packages/contracts`, `apps/api`, migrations, mocks,
+fixtures, deployment or runtime behavior, package or lockfile state, Codex
+runtime or harness paths, or runtime validator scripts.
 
 Local validation does not prove live API behavior, Railway/deployment state,
 production credentials, GitHub branch protection, EAS/store state, QA release

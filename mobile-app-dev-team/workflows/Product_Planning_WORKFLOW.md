@@ -352,10 +352,19 @@ organization-level reporting guidance.
 6. Task packet completeness: every execution task must include owner, input
    artifact, output artifact, Done-when acceptance criteria, evidence
    requirement, dependencies, open decisions, next responsible role, and a
-   GitHub branch/PR handoff link when work leaves the current pod.
+   GitHub branch/PR handoff link when work leaves the current pod. Before any
+   future edit/archive/delete slice or practitioner execution starts, the packet
+   must also record QA applicability, required evidence level, QA artifact/owner,
+   QA not-applicable reason, and external-proof status.
 7. QA/Release inclusion: Product/Planning must include QA/Release tasks,
    evidence requirements, release-readiness tasks, and handoff paths when
-   relevant; not owning QA/Release execution is not permission to omit it.
+   relevant; not owning QA/Release execution is not permission to omit it. When
+   QA/Release is not applicable, Product/Planning records the reason and
+   external-proof status. Product/Planning sets required evidence and QA
+   applicability; QA/Release owns achieved evidence, failure classification, and
+   release-risk evidence when applicable. Use `QA_Release_WORKFLOW.md` and
+   `governance/gates-and-evidence.md` for the evidence ladder, QA-owned
+   artifacts, and external-proof boundaries.
 8. Design P0/P1 boundary: Product/Planning P0/P1 approval is scope/evidence
    approval for PRD fit, non-goals, evidence readiness, human-gate routing, and
    scope alignment. It is not Design quality approval, selected option approval,
@@ -406,11 +415,19 @@ CPO / Product Delivery Lead는 planning과 orchestration을 소유하며 실무 
 6. Task packet completeness: 모든 execution task는 owner, input artifact,
    output artifact, Done-when acceptance criteria, evidence requirement,
    dependency, open decision, next responsible role, 그리고 work가 현재 pod를
-   떠날 때 GitHub branch/PR handoff link를 포함해야 한다.
+   떠날 때 GitHub branch/PR handoff link를 포함해야 한다. 향후
+   edit/archive/delete slice 또는 실무 실행을 시작하기 전에 packet은 QA
+   applicability, required evidence level, QA artifact/owner, QA
+   not-applicable reason, external-proof status도 기록해야 한다.
 7. QA/Release inclusion: Product/Planning은 관련 있는 QA/Release task,
    evidence requirement, release-readiness task, handoff path를 누락하지 않는다.
    QA/Release 실행을 소유하지 않는다는 사실은 QA/Release 계획을 생략할 수
-   있다는 뜻이 아니다.
+   있다는 뜻이 아니다. QA/Release가 not applicable이면 Product/Planning은 그
+   reason과 external-proof status를 기록한다. Product/Planning은 required
+   evidence와 QA applicability를 정하고, QA/Release는 applicable한 경우 achieved
+   evidence, failure classification, release-risk evidence를 소유한다. Evidence
+   ladder, QA-owned artifact, external-proof boundary는 `QA_Release_WORKFLOW.md`와
+   `governance/gates-and-evidence.md`를 사용한다.
 8. Design P0/P1 boundary: Product/Planning P0/P1 approval은 PRD fit, non-goal,
    evidence readiness, human-gate routing, scope alignment에 대한 scope/evidence
    approval이다. Design quality, selected option quality, Stitch authorship,

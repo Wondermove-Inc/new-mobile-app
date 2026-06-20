@@ -129,6 +129,30 @@ Use the narrowest durable system of record:
 Workboard is not a replacement for Tasks, Jira, Confluence/wiki, GitHub, or
 durable work-unit source of truth. It tracks guard and wake state for the work.
 
+### 0B.1 QA Task Signal Follow-Through
+
+Tasks notifications with Action Guides, Workboard cards, wake-guards,
+reminders, or continuity messages are current QA/Release work signals when they
+reference a task, work-unit, PR, evidence path, blocker, rerun,
+release-risk summary, or stop condition.
+
+Before reporting status or closing the signal, QA/Release must check the
+relevant source of truth: Task, Workboard card, work-unit, PR, evidence record,
+or approved handoff. Handle repeated notifications when they include material
+updates, but avoid duplicate comments or room spam for self-echo or no-change
+signals.
+
+If QA evidence, a rerun, release-risk summary, blocker routing, or
+external-proof wait remains incomplete, update the source of truth and keep or
+register a wake-guard only when QA/Release is still waiting. The signal is
+complete only when the Task, Workboard card, work-unit, PR, or evidence record
+is done, blocked with owner and reason, explicitly cancelled, or handed off with
+active follow-up.
+
+Dependency installs, auth or live external actions, secret or environment value
+output, production or release approval, and failed-gate risk acceptance still
+require explicit approval or the required human gate.
+
 ## 0C. Reporting, Review, And Approval
 
 QA/Release status reports must state done, in progress, blocked, risks, and next

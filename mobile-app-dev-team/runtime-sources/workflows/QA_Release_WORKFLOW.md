@@ -175,8 +175,8 @@ replace a required human owner.
 
 QA/Release workflow Review meetings follow the accepted pod-native
 `wm-meeting-process` baseline and the meeting-process reference in
-`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. Each Review
-meeting has one target and an allowed-role feedback scope. In-scope
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`.
+Each Review meeting has one target and an allowed-role feedback scope. In-scope
 `change-required` feedback stops the meeting and moves correction to 1:1
 corrective follow-up. The next step, final sync, or next Review meeting cannot
 start until the corrective PR/review/merge or recorded no-change decision is
@@ -250,7 +250,7 @@ proof:
 | --- | --- | --- |
 | L0 | `jest` | Unit, component, contract, and runtime checks that do not exercise a user flow. |
 | L1 | `rn-web` | Browser-reproducible UI, navigation, state, and business-flow checks with Playwright evidence. |
-| L2 | `eas-maestro` | Native package plus approved EAS/Maestro evidence for native modules, permissions, navigation container behavior, or release-candidate touching work. |
+| L2 | `eas-maestro` | Native package plus approved EAS/Maestro evidence for native modules, permissions, navigation behavior, or release-candidate work. |
 | L3 | `human-device` | Linked device or mobile-mcp evidence plus a `human-gate/v1` residual-risk decision. |
 
 Product/Planning sets `status.json.evidence_ladder.required_level`.

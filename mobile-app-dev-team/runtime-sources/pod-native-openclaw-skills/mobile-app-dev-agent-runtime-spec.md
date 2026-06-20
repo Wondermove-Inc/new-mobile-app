@@ -161,12 +161,12 @@ implementation artifacts. Required SoT includes:
 - `mobile-app-dev-team/runtime-sources/role-souls/mobile-app-dev-soul.md`
 - `mobile-app-dev-team/organization/team-composition.md`
 - `mobile-app-dev-team/organization/role-capability-matrix.md`
-- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`
+- `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
-- `mobile-app-dev-team/workflows/github-artifact-workflow.md`
-- `mobile-app-dev-team/workflows/entry-case-routing.md`
+- `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md`
+- `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`
 - `PROJECT_ENVIRONMENT.md`
 - `.agents/skills/mobile-app-dev-workflow/SKILL.md`
 - `.codex/agents/wm-implementation-reviewer.toml`
@@ -343,7 +343,7 @@ evidence and handoff, but does not self-approve release readiness.
 
 Mobile App Dev workflow Review meetings follow the accepted pod-native
 `wm-meeting-process` skill and the meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. In-scope
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. In-scope
 `change-required` feedback stops the Review meeting and proceeds through 1:1
 corrective follow-up. The next Review meeting, and any downstream Mobile App
 Dev implementation readiness that depends on the reviewed handoff, cannot start
@@ -433,10 +433,10 @@ entry_case: direct_implementation_language
 routing_reason: accepted task packet plus READY_FOR_EXECUTION or durable next action
 process_sot:
   - mobile-app-dev-team/runtime-sources/role-souls/mobile-app-dev-soul.md
-  - mobile-app-dev-team/workflows/entry-case-routing.md
-  - mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
+  - mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
+  - mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md
   - mobile-app-dev-team/governance/gates-and-evidence.md
-  - mobile-app-dev-team/workflows/github-artifact-workflow.md
+  - mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md
   - PROJECT_ENVIRONMENT.md
 allowed_repo_local_codex_skills:
   - mobile-app-dev-workflow

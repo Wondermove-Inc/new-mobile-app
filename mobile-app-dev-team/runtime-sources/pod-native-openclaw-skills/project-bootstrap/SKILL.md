@@ -166,7 +166,7 @@ Raw blockers must appear only in support details and JSON.
 - Managed-path registry: `/workspace/CODEX_MANAGED_PATHS.md`
 - Workspace organizations guidance: `/workspace/ORGANIZATIONS.md`
 - Organizations guidance source:
-  `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md`
+  `mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md`
 - Runtime environment SoT: `PROJECT_ENVIRONMENT.md`
 - Required managed path entry:
 

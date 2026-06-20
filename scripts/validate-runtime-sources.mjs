@@ -21,7 +21,7 @@ const legacyPodNativeRoot = `${teamRoot}/09-pod-native-openclaw-skills`;
 const roleSoulRoot = `${teamRoot}/runtime-sources/role-souls`;
 const legacyRoleSoulRoot = `${teamRoot}/02-role-souls`;
 const skillMatrixPath = `${teamRoot}/runtime-sources/codex-skill-agent-matrix.md`;
-const organizationsPath = `${teamRoot}/runtime-sources/ORGANIZATIONS.md`;
+const organizationsPath = `${teamRoot}/runtime-sources/organizations/ORGANIZATIONS.md`;
 const podEnvironmentBootstrapPath = `${teamRoot}/runtime-sources/pod-environment-bootstrap.md`;
 const orbstackPodConfigValuesPath = `${teamRoot}/runtime-sources/orbstack-pod-config-values.md`;
 
@@ -80,7 +80,7 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"',
   'bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
   'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
   'fresh pod',
   'role_slug="<canonical-role-slug>"',
@@ -271,7 +271,7 @@ requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/scripts/sync-pod
 
 requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
   '/workspace/ORGANIZATIONS.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   'guidance only',
   'must not block bootstrap or preflight by itself',
   'must not parse reporting lines, approval boundaries, or role contracts',

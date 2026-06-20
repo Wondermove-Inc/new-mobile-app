@@ -27,10 +27,10 @@ Product/Planning uses this substrate from intake. Implementation is only one pos
 
 Use these SoT files before recommending a repo-local Codex skill:
 
-- `mobile-app-dev-team/workflows/entry-case-routing.md` for the operational routing overlay, input taxonomy, C1-C5 convenience mapping, E1-E16 expanded cases, Design relevance, prioritization, hotfix, and gap decisions.
-- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` for intake, planning, Design readiness, API readiness, implementation, QA/release evidence, and failure loop.
+- `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md` for the operational routing overlay, input taxonomy, C1-C5 convenience mapping, E1-E16 expanded cases, Design relevance, prioritization, hotfix, and gap decisions.
+- `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md` for intake, planning, Design readiness, API readiness, implementation, QA/release evidence, and failure loop.
 - `mobile-app-dev-team/governance/gates-and-evidence.md` for required gates, evidence ladder, human gates, and external proof boundaries.
-- `mobile-app-dev-team/workflows/github-artifact-workflow.md` for durable work-unit handoff and role artifact ownership.
+- `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md` for durable work-unit handoff and role artifact ownership.
 - `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` for app/EAS/OTA rollback ownership and production-submit rollback requirements.
 - The relevant repo-local `po-*`, `design-*`, `mobile-*`, `e2e-test`, and `qa-railway-workflow` skills for role-specific workflow details.
 
@@ -60,10 +60,10 @@ Do not resolve repo SoT paths relative to `/workspace/skills/codex-role-workflow
 Resolve repo-local SoT from the managed project repository root. In the standard pod runtime, the project repository root is `/workspace/projects/Wondermove-Inc/new-mobile-app`, so the entry routing SoT is:
 
 ```text
-/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md
+/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 ```
 
-If the managed repository root differs, use the root declared by project-bootstrap, pod-role-bootstrap, or the pod managed-path registry, then append `mobile-app-dev-team/workflows/entry-case-routing.md`.
+If the managed repository root differs, use the root declared by project-bootstrap, pod-role-bootstrap, or the pod managed-path registry, then append `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`.
 
 If `workflows/entry-case-routing.md` cannot be read from the managed repository root, return `blocked` with `blocked_reason: missing accepted entry-case routing SoT`. Do not infer the routing overlay from memory or from a stale copy under `/workspace/skills`.
 
@@ -235,7 +235,7 @@ entry_case: unclear
 allowed_repo_local_codex_skills: po-requirement-office-hours
 required_reviewers: po-planning-reviewer
 durable_artifact_stage: 00-product-planning
-process_sot: mobile-app-dev-team/workflows/entry-case-routing.md
+process_sot: mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 next_action: clarify facts, assumptions, unknowns, non-goals, and readiness state
 codex_interactive_required: false
 ```

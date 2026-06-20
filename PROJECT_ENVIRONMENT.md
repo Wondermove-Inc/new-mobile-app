@@ -87,7 +87,7 @@ This file is the root source for the current project environment and runtime set
 
 ## Mobile Native Evidence Ladder
 
-- Strategy doc: `mobile-app-dev-team/workflows/native-e2e-strategy.md`.
+- Strategy doc: `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md`.
 - Work-unit field: `status.json.evidence_ladder`.
 - L0 `jest`: unit/component/contract/runtime checks.
 - L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.

@@ -20,7 +20,7 @@ Schema:
     "source_root": "/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills",
     "runtime_root": "/workspace/skills",
     "workspace_agents": "/workspace/AGENTS.md",
-    "organizations_source": "/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md",
+    "organizations_source": "/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md",
     "workspace_organizations": "/workspace/ORGANIZATIONS.md"
   },
   "skills": {

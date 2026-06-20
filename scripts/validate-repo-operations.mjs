@@ -289,7 +289,7 @@ requireTerms('mobile-app-dev-team/source-map.md', [
   'REPO_OPERATIONS.md',
   'repo-wide operating policy',
   'ORGANIZATIONS.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
 ]);
 

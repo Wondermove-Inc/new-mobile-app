@@ -33,13 +33,13 @@ The skill now explicitly states that when it runs from `/workspace/skills/codex-
 Standard pod path for the entry routing SoT:
 
 ```text
-/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md
+/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 ```
 
 If the managed repository root differs, the pod must use the root declared by project-bootstrap, pod-role-bootstrap, or the managed-path registry, then append:
 
 ```text
-mobile-app-dev-team/workflows/entry-case-routing.md
+mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 ```
 
 ## Blocked External Proof

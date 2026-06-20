@@ -153,7 +153,7 @@ runtime, that root is:
 /workspace/projects/Wondermove-Inc/new-mobile-app
 ```
 
-If `mobile-app-dev-team/workflows/entry-case-routing.md`, root `DESIGN.md`, or the
+If `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`, root `DESIGN.md`, or the
 approved work-unit artifacts cannot be read from the managed project repository
 root, return `blocked` with a source-backed reason instead of inferring from a
 stale runtime snapshot.
@@ -341,7 +341,7 @@ Design workflow Review meetings, `change-required` feedback, 1:1 corrective
 follow-up, corrective PR/review/merge or recorded no-change decisions, and next
 Review meeting resume rules follow the accepted pod-native `wm-meeting-process`
 skill and the Product/Planning meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference only
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This reference only
 governs meeting operation and does not change Design gates, Design quality
 ownership, reviewer evidence, human approvals, or release approval.
 
@@ -423,10 +423,10 @@ entry_case: design_relevance
 routing_reason: <source-backed reason>
 process_sot:
   - DESIGN.md
-  - mobile-app-dev-team/workflows/entry-case-routing.md
-  - mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
+  - mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
+  - mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md
   - mobile-app-dev-team/governance/gates-and-evidence.md
-  - mobile-app-dev-team/workflows/github-artifact-workflow.md
+  - mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md
 allowed_repo_local_codex_skills:
   - design-mobile-design-handoff
   - design-stitch-mcp-operating-rules

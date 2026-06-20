@@ -6,8 +6,8 @@ import path from 'node:path';
 const root = process.cwd();
 const readmePath = 'mobile-app-dev-team/README.md';
 const codexRoleWorkflowPath = 'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md';
-const managedRepoEntryCasePath = '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md';
-const forbiddenRuntimeRelativePath = '/workspace/skills/codex-role-workflow/mobile-app-dev-team/workflows/entry-case-routing.md';
+const managedRepoEntryCasePath = '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
+const forbiddenRuntimeRelativePath = '/workspace/skills/codex-role-workflow/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
 
 const readmeRequiredTerms = [
   '# Mobile App Dev Team',
@@ -24,13 +24,13 @@ const readmeRequiredTerms = [
 ];
 
 const supportSotRequiredTerms = {
-  'mobile-app-dev-team/workflows/entry-case-routing.md': [
+  'mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md': [
     '# Entry Case Routing',
     'human-gate/v1',
     'SoT-Named Input Categories',
     'not-applicable',
   ],
-  'mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md': [
+  'mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md': [
     '# Product Planning Workflow',
     'Design Readiness',
     'API Readiness',
@@ -42,7 +42,7 @@ const supportSotRequiredTerms = {
     'Durable GitHub Handoff',
     'Railway Boundary',
   ],
-  'mobile-app-dev-team/workflows/github-artifact-workflow.md': [
+  'mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md': [
     '# GitHub Artifact Workflow',
     'docs/plans/work-units/<work-unit-id>/',
     'role artifact',

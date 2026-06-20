@@ -10,7 +10,7 @@ The organizations and reporting guidance source for pod work lives next to the
 runtime sources:
 
 ```text
-mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md
+mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md
 ```
 
 `openclaw-pod-skills-sync` copies that guidance to:
@@ -41,7 +41,7 @@ such as `ko-KR` or `en-US`; do not copy that placeholder literally.
 export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"
 export REPO_PATH="/workspace/projects/Wondermove-Inc/new-mobile-app"
 export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
-export OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${REPO_PATH}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md"
+export OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${REPO_PATH}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md"
 export OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH="/workspace/ORGANIZATIONS.md"
 export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.json"
 export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="/workspace/state/project-bootstrap-blockers.md"
@@ -212,7 +212,7 @@ Every pod setup report based on this README must include:
 - `/workspace/skills` sync status and the report path
   `/workspace/state/openclaw-pod-skills-sync-report.json`;
 - `/workspace/ORGANIZATIONS.md` sync status, source path
-  `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md`, and guidance-only
+  `mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md`, and guidance-only
   boundary;
 - selected canonical `role_slug` and matching runtime spec source path;
 - role setup report path:

@@ -17,7 +17,7 @@ This document records how the Product/Planning operating guardrails improve Spri
 | Leaving `blocked` as an endpoint | Blocked work must record owner, reason, next action, and follow-up/wake condition; Product/Planning routes by decide/consult/delegate/ask | Backend/API earlier unblocked through QA-guided narrower validation and reviewer re-review, then PR #76 was merged and Workboard closed |
 | Confusing docs-only PR merge with release/live action | Product/Planning may merge role-reviewed, quality-success, forbidden-action-clean, non-production docs-only PRs only; human gates remain for release/live/risk/secret/access/payment/legal | PR #77 was docs/runtime-source only, Quality gate success, no live/auth/external/secret/destructive/release/production/dependency install action |
 | Treating system continuity or heartbeat with empty Active Items as no-op | Named Workboard/Task/PR/wake-guard continuity is current work and requires source-of-truth re-check | PR #77 wake-guard named the card and PR; Spring read Workboard, checked PR, and resolved instead of replying `HEARTBEAT_OK` |
-| Skill/playbook creation without review boundary | The skill remains in `pod-native-openclaw-skills-candidate/` as candidate/proposed-only until separate review and approval | Candidate skill exists only under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills-candidate/` |
+| Skill/playbook creation without review boundary | The skill remains in `skills-candidate/` as candidate/proposed-only until separate review and approval | Candidate skill exists only under `mobile-app-dev-team/runtime-sources/skills-candidate/` |
 
 ## Minimum proof checklist for future regressions
 

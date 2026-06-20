@@ -22,6 +22,9 @@ GCLOUD_INSTALLER_PATH="${PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH:-}"
 INSTALL_APPROVED="${PROJECT_BOOTSTRAP_INSTALL_APPROVED:-false}"
 SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
 WORKSPACE_AGENTS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH:-/workspace/AGENTS.md}"
+WORKSPACE_WORKFLOW_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_WORKFLOW_PATH:-/workspace/WORKFLOW.md}"
+WORKSPACE_HEARTBEAT_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_HEARTBEAT_PATH:-/workspace/HEARTBEAT.md}"
+WORKSPACE_TOOLS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_TOOLS_PATH:-/workspace/TOOLS.md}"
 REPO_SOURCE_PATH="${PROJECT_BOOTSTRAP_REPO_SOURCE_PATH:-${REPO_PATH}}"
 ORGANIZATIONS_SOURCE_PATH="${PROJECT_BOOTSTRAP_ORGANIZATIONS_SOURCE_PATH:-${REPO_SOURCE_PATH%/}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md}"
 WORKSPACE_ORGANIZATIONS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH:-/workspace/ORGANIZATIONS.md}"
@@ -296,7 +299,7 @@ workspace_skill_status() {
 }
 
 seed_openclaw_pod_skills_sync() {
-  local source_dir="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync"
+  local source_dir="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync"
   local target_dir="${SKILLS_ROOT%/}/openclaw-pod-skills-sync"
   if [[ -x "${OPENCLAW_POD_SKILLS_SYNC}" ]]; then
     printf '%s\n' "present"
@@ -322,11 +325,16 @@ run_workspace_skills_sync() {
     printf '%s\n' "${seed_status}"
     return
   fi
-  if OPENCLAW_POD_SKILLS_SOURCE_ROOT="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills" \
+  if OPENCLAW_POD_SKILLS_SOURCE_ROOT="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/runtime-sources/skills" \
     OPENCLAW_POD_SKILLS_ROOT="${SKILLS_ROOT%/}" \
     OPENCLAW_WORKSPACE_AGENTS_PATH="${WORKSPACE_AGENTS_PATH}" \
+    OPENCLAW_WORKSPACE_WORKFLOW_PATH="${WORKSPACE_WORKFLOW_PATH}" \
+    OPENCLAW_WORKSPACE_HEARTBEAT_PATH="${WORKSPACE_HEARTBEAT_PATH}" \
+    OPENCLAW_WORKSPACE_TOOLS_PATH="${WORKSPACE_TOOLS_PATH}" \
     OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${ORGANIZATIONS_SOURCE_PATH}" \
     OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH="${WORKSPACE_ORGANIZATIONS_PATH}" \
+    OPENCLAW_ROLE_SLUG="${resolved_role}" \
+    OPENCLAW_EXPECTED_ROLE_SLUG="${resolved_role}" \
     OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}" \
     STATE_DIR="${STATE_DIR}" \
     bash "${OPENCLAW_POD_SKILLS_SYNC}" 2> >(redact >&2) >/dev/null; then
@@ -336,8 +344,8 @@ run_workspace_skills_sync() {
   fi
 }
 
-workspace_agents_defaults_status() {
-  if [[ -e "${WORKSPACE_AGENTS_PATH}" ]] && grep -F "## Project Workspace Defaults" "${WORKSPACE_AGENTS_PATH}" >/dev/null 2>&1; then
+workspace_agents_file_status() {
+  if [[ -s "${WORKSPACE_AGENTS_PATH}" ]]; then
     printf '%s\n' "present"
   else
     printf '%s\n' "missing"
@@ -724,18 +732,6 @@ configure_github_auth() {
 mkdir -p "${STATE_DIR}" "$(dirname "${REPORT_PATH}")"
 
 repo_checkout_status="$(ensure_repo_checkout)"
-workspace_skills_sync_status="$(run_workspace_skills_sync)"
-openclaw_pod_skills_sync_skill_status="$(workspace_skill_status openclaw-pod-skills-sync)"
-project_bootstrap_skill_status="$(workspace_skill_status project-bootstrap)"
-codex_cli_auth_setup_skill_status="$(workspace_skill_status codex-cli-auth-setup)"
-pod_role_bootstrap_skill_status="$(workspace_skill_status pod-role-bootstrap)"
-eas_robot_auth_setup_skill_status="$(workspace_skill_status eas-robot-auth-setup)"
-stitch_adc_setup_skill_status="$(workspace_skill_status stitch-adc-setup)"
-codex_role_workflow_skill_status="$(workspace_skill_status codex-role-workflow)"
-codex_interactive_repo_work_skill_status="$(workspace_skill_status codex-interactive-repo-work)"
-workspace_agents_status="$(workspace_agents_defaults_status)"
-workspace_organizations_status="$(workspace_organizations_guidance_status)"
-
 role_status="not_resolved"
 resolved_role=""
 if resolved_role="$(resolve_agent_role)"; then
@@ -749,6 +745,18 @@ else
       ;;
   esac
 fi
+
+workspace_skills_sync_status="$(run_workspace_skills_sync)"
+openclaw_pod_skills_sync_skill_status="$(workspace_skill_status openclaw-pod-skills-sync)"
+project_bootstrap_skill_status="$(workspace_skill_status project-bootstrap)"
+codex_cli_auth_setup_skill_status="$(workspace_skill_status codex-cli-auth-setup)"
+pod_role_bootstrap_skill_status="$(workspace_skill_status pod-role-bootstrap)"
+eas_robot_auth_setup_skill_status="$(workspace_skill_status eas-robot-auth-setup)"
+stitch_adc_setup_skill_status="$(workspace_skill_status stitch-adc-setup)"
+codex_role_workflow_skill_status="$(workspace_skill_status codex-role-workflow)"
+codex_interactive_repo_work_skill_status="$(workspace_skill_status codex-interactive-repo-work)"
+workspace_agents_status="$(workspace_agents_file_status)"
+workspace_organizations_status="$(workspace_organizations_guidance_status)"
 
 repair_managed_path_registry
 
@@ -1075,7 +1083,7 @@ const report = {
   },
   workspace_agents: {
     path: workspaceAgentsPath,
-    project_workspace_defaults: workspaceAgentsStatus === 'present' || workspaceAgentsStatus === 'created_default' ? 'present' : workspaceAgentsStatus,
+    status: workspaceAgentsStatus,
   },
   guidance_artifacts: {
     workspace_organizations: {

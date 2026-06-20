@@ -2,7 +2,7 @@
 
 status: blocked-external
 owner: Product/Planning for procedure; human/ops for live pod mutation
-input artifact: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
+input artifact: `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`
 output artifact: this runtime publication status
 acceptance criteria: source-managed skill is ready for publication without claiming live pod proof
 evidence requirement: redacted status-only runtime publication proof or blocked reason
@@ -17,7 +17,7 @@ Live publication was not performed in this repo-scoped implementation.
 The source-managed skill is:
 
 ```text
-mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md
+mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md
 ```
 
 The intended pod runtime shape remains:

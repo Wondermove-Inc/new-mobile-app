@@ -46,7 +46,7 @@ preflight report. That report has this shape:
   },
   "workspace_agents": {
     "path": "/workspace/AGENTS.md",
-    "project_workspace_defaults": "present | created_default | blocked"
+    "status": "present | missing"
   },
   "guidance_artifacts": {
     "workspace_organizations": {
@@ -304,7 +304,7 @@ enforcement policy.
     ".codex/config.toml": "present | missing",
     "docs/TEMPLATE_VARIABLES.md": "present | missing",
     "docs/CREDENTIALS.md": "present | missing",
-    "mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md": "present | missing"
+    "mobile-app-dev-team/runtime-sources/skills/README.md": "present | missing"
   },
   "guidance_artifacts": {
     "workspace_organizations": {

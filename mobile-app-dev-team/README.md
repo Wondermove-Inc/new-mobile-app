@@ -20,7 +20,7 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 ```
 
 - `openclaw-pod-skills-sync` copy-syncs the repo-authored pod-native skill source
-  from `runtime-sources/pod-native-openclaw-skills/` into the runtime snapshot
+  from `runtime-sources/skills/` into the runtime snapshot
   at `/workspace/skills/<slug>/SKILL.md`.
 - `project-bootstrap` is the standard readiness entry point. If project-bootstrap is blocked, role work is forbidden.
 - After bootstrap is ready, read only the matching role runtime specification,
@@ -68,7 +68,7 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 - 현재 repo 기준 사실은 `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, `.agents/skills`, `.codex/agents`를 우선한다.
 - historical corpus 감사와 migration traceability는 root archive 파일
   `TEAM_DOC_ARCHIVE_MANIFEST.json`와 `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`을 우선한다.
-- OpenClaw pod-native skill source는 `runtime-sources/pod-native-openclaw-skills/`에서 관리한다.
+- OpenClaw pod-native skill source는 `runtime-sources/skills/`에서 관리한다.
 - Pod-isolated role agent 산출물은 `workflows/github-artifact-workflow.md`에 따라 GitHub branch/commit/PR과 `docs/plans/work-units/<work-unit-id>/`로 handoff한다.
 - Gatekeeper는 non-LLM deterministic required check이다. Gatekeeper SOUL.md는 만들지 않는다.
 - Reference organization 문서는 `ref-organization/`에서 관리하며, future team 재사용 가이드와 current-project example을 분리한다.

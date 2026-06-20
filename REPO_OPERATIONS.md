@@ -96,13 +96,13 @@ from a repo validation perspective.
 ## OpenClaw And Codex Operational Boundaries
 
 Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime
-and are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`.
+and are authored under `mobile-app-dev-team/runtime-sources/skills/`.
 Repo-local Codex skills and agents use `.agents/skills/<skill-name>/SKILL.md`
 and `.codex/agents/<agent-name>.toml`.
 
 `openclaw-pod-skills-sync` is the required bridge from repo SoT to runtime
 snapshot: after clone or pull, it copy-syncs
-`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`.
+`mobile-app-dev-team/runtime-sources/skills` into `/workspace/skills`.
 It does not replace the repo SoT, and `/workspace/skills` remains only a
 runtime snapshot.
 
@@ -149,7 +149,7 @@ is deployed in three locations:
 - Codex CLI repo skill: `.agents/skills/<name>/SKILL.md`
 - Claude Code skill: `.claude/skills/<name>/SKILL.md`
 - Pod-native OpenClaw skill: `/workspace/skills/<slug>/SKILL.md` at runtime, authored
-  under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`
+  under `mobile-app-dev-team/runtime-sources/skills/<slug>/`
 
 Claude Code ports are deferred unless an approved porting plan creates them. The
 Codex CLI repo skill path remains authoritative for active local runtime
@@ -272,7 +272,7 @@ also touches Codex runtime or harness paths. They do not trigger the active
 `validate:team-doc` runtime gate unless a directly managed runtime source or
 routing-support dependency is also changed.
 
-Changes under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`
+Changes under `mobile-app-dev-team/runtime-sources/skills/**`
 use targeted pod-native smoke plus `test:runtime`; local harness is not required
 unless the same change also touches Codex runtime or harness paths.
 

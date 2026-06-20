@@ -147,7 +147,7 @@ the standard pod runtime, that skill is synced to:
 The durable source for that runtime snapshot lives in this repository under:
 
 ```text
-mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/wm-meeting-process/SKILL.md
+mobile-app-dev-team/runtime-sources/skills/wm-meeting-process/SKILL.md
 ```
 
 A Review meeting must review exactly one target artifact, handoff, topic, or

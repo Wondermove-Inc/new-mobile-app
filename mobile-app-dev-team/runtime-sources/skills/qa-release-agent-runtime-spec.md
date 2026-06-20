@@ -4,7 +4,7 @@ Date: 2026-06-15
 
 This document specifies how an OpenClaw/Codex agent that has
 `mobile-app-dev-team/runtime-sources/role-souls/qa-release-soul.md` must set itself up and
-operate after reading `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`.
+operate after reading `mobile-app-dev-team/runtime-sources/skills/README.md`.
 
 The scope is QA/Release only.
 
@@ -23,7 +23,7 @@ configuration.
 
 ```text
 repo source of pod-native skills
-  mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/SKILL.md
+  mobile-app-dev-team/runtime-sources/skills/<slug>/SKILL.md
         |
         | openclaw-pod-skills-sync
         v
@@ -39,7 +39,7 @@ Rules:
 
 - Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime.
 - Their source of truth is under
-  `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
+  `mobile-app-dev-team/runtime-sources/skills/<slug>/`.
 - Repo-local Codex skills must remain under `.agents/skills/`.
 - Repo-local Codex custom agents must remain under `.codex/agents/`.
 - Do not put repo-local Codex skill or custom-agent artifacts in the pod-native
@@ -164,8 +164,8 @@ and release artifacts. Required SoT includes:
 - `mobile-app-dev-team/organization/role-capability-matrix.md`
 - `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
+- `mobile-app-dev-team/runtime-sources/skills/README.md`
+- `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`
 - `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md`
 - `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md`
 - `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`
@@ -426,7 +426,7 @@ QA/Release evidence depends on the requested surface:
 For docs-only or role-runtime-source wording changes to this document, use the
 smallest applicable local verification set:
 
-- `git diff --check -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/qa-release-agent-runtime-spec.md`;
+- `git diff --check -- mobile-app-dev-team/runtime-sources/skills/qa-release-agent-runtime-spec.md`;
 - `node scripts/validate-runtime-sources.mjs`;
 - `pnpm run validate:team-doc`;
 - `pnpm run test:runtime`.

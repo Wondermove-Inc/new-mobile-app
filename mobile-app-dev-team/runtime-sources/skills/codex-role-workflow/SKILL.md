@@ -44,7 +44,7 @@ Do not ask the user to choose the role. The pod must use the role assigned by bo
 
 ## Runtime Paths
 
-- Pod-native skill source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
+- Pod-native skill source: `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`
 - Pod runtime shape: `/workspace/skills/codex-role-workflow/SKILL.md`
 - repo-local Codex skills: `.agents/skills/<skill-name>/SKILL.md`
 - repo-local Codex agents: `.codex/agents/<agent-name>.toml`

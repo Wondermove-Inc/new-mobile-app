@@ -35,7 +35,7 @@
 | `scripts/validate-reference-docs.mjs` | Reference/source-map/archive validator for ref-organization and completed-plan crosswalks |
 | `scripts/validate-team-doc-managed.mjs` | Parity backstop preserving the previous detailed managed-doc term checks during the surface-validator split |
 | `evals/team-doc-structure/fixtures/` | RED and valid fixtures for team-doc structure registry validation before any physical rename |
-| `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
+| `mobile-app-dev-team/runtime-sources/skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
 | `mobile-app-dev-team/ref-organization/` | Consolidated reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `mobile-app-dev-team/ref-organization/source-map-and-migration/README.md` | Migration source priority, active-vs-historical rules, old-to-new crosswalk, and validator requirements for historical `team-doc/10-structured/**` identifiers |
 | `mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md` | Historical P1 report path retained as a structure-registry term; archive/report path cleanup is outside this wording slice |
@@ -76,7 +76,7 @@ platform state.
 | `mobile-app-dev-team/05-work-processes.md` | `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md` | `W1` | Completed. |
 | `mobile-app-dev-team/06-gates-and-evidence.md` | `mobile-app-dev-team/governance/gates-and-evidence.md` | `G1` | Completed. |
 | `mobile-app-dev-team/07-new-team-template-guide.md` | `mobile-app-dev-team/organization/new-team-template-guide.md` | `O1` | Completed. |
-| `mobile-app-dev-team/09-pod-native-openclaw-skills/` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/` | `R1` | Completed. |
+| `mobile-app-dev-team/09-pod-native-openclaw-skills/` | `mobile-app-dev-team/runtime-sources/skills/` | `R1` | Completed. |
 | `mobile-app-dev-team/10-github-artifact-workflow.md` | `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md` | `W1` | Completed. |
 | `mobile-app-dev-team/14-native-e2e-strategy.md` | `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md` | `W1` | Completed. |
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | `mobile-app-dev-team/governance/human-ops-live-readiness-annex.md` | `G1` | Completed. |
@@ -115,7 +115,7 @@ platform state.
 | Change family | Required local commands | Local harness by path alone |
 | --- | --- | --- |
 | Codex runtime and harness paths (`.agents/**`, `.codex/**`, `evals/local-harness/**`, selected runtime scripts, workflow YAML, root runtime policy files, package metadata) | `pnpm run test:runtime`, `pnpm run test:local-harness` | Required. |
-| `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` | `pnpm run test:runtime`, targeted pod-native smoke such as `bash evals/skills/openclaw-pod-skills-sync-smoke.sh` and `bash evals/skills/project-bootstrap-agent-setup-smoke.sh` | Not required unless Codex runtime or harness paths also change. |
+| `mobile-app-dev-team/runtime-sources/skills/**` | `pnpm run test:runtime`, targeted pod-native smoke such as `bash evals/skills/openclaw-pod-skills-sync-smoke.sh` and `bash evals/skills/project-bootstrap-agent-setup-smoke.sh` | Not required unless Codex runtime or harness paths also change. |
 | `mobile-app-dev-team/ref-organization/**` | `pnpm run validate:reference-docs`; `pnpm run validate:team-doc` only when touched scope also affects runtime source or runtime routing support docs | Not required unless Codex runtime or harness paths also change. |
 
 ## Historical/Archive Crosswalk (Historical Source Crosswalk)
@@ -169,7 +169,7 @@ files point here instead of inlining page numbers.
 | `mobile-api-contract` | historical source name | Do not list as active unless `.agents/skills/mobile-api-contract/SKILL.md` exists. Current active path is `mobile-backend-api-integrator-workflow` plus `packages/contracts`. |
 | `mobile-qa-release` | historical source name | Do not list as active unless `.agents/skills/mobile-qa-release/SKILL.md` exists. Current active QA skills are `e2e-test` and `qa-railway-workflow`. |
 | `mobile-gatekeeper` | historical deterministic concept | Not an LLM skill in the current managed docs. Treat as deterministic required-check concept. |
-| `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Current pod-native handling is `project-bootstrap` under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`, with runtime shape `/workspace/skills/project-bootstrap/SKILL.md`; Case A still requires human/operator coordination for live pod and external-platform proof. |
+| `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Current pod-native handling is `project-bootstrap` under `mobile-app-dev-team/runtime-sources/skills/`, with runtime shape `/workspace/skills/project-bootstrap/SKILL.md`; Case A still requires human/operator coordination for live pod and external-platform proof. |
 
 
 ## External Proof Boundary

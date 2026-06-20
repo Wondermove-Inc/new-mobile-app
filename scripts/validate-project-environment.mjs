@@ -123,8 +123,8 @@ const requiredLocalHarnessTriggerPaths = [
 const notLocalHarnessOnlyTriggerPaths = [
   'mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md',
   'mobile-app-dev-team/ref-organization/source-map-and-migration/README.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'mobile-app-dev-team/runtime-sources/skills/project-bootstrap/SKILL.md',
+  'mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
   'evals/skills/openclaw-pod-skills-sync-smoke.sh',
   'evals/team-doc-structure/fixtures/valid-target-registry.json',
   'docs/plans/work-units/project-bootstrap-auth-gates/README.md',
@@ -363,7 +363,7 @@ export function validateProjectEnvironment(files = readFileMap()) {
     'Local harness is required for Codex runtime and harness changes',
     'mobile-app-dev-team/reports/**',
     'mobile-app-dev-team/ref-organization/**',
-    'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**',
+    'mobile-app-dev-team/runtime-sources/skills/**',
     'targeted pod-native smoke',
   ]) {
     if (!environment.includes(term)) {

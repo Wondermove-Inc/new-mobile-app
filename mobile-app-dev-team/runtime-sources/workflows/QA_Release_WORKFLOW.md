@@ -20,7 +20,7 @@ failure routing, release-risk summary, human gates, and Done criteria.
 Named workflow skills in this document are repo-local Codex skills under
 `.agents/skills/<skill-name>/SKILL.md` unless explicitly marked as pod-native.
 Pod-native OpenClaw runtime snapshots live under `/workspace/skills/<slug>/` and
-are sourced from `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`.
+are sourced from `mobile-app-dev-team/runtime-sources/skills/`.
 
 The QA/Release canonical pod/runtime slug is `qa-release`. The allowed
 repo-local Codex skills for QA/Release work are:

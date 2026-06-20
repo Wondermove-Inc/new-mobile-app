@@ -6,7 +6,7 @@ Upstream SoT:
 
 - `AGENTS.md`
 - `PROJECT_ENVIRONMENT.md`
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
+- `mobile-app-dev-team/runtime-sources/skills/README.md`
 - `mobile-app-dev-team/ref-organization/runtime-surfaces/README.md`
 
 Downstream consumers:
@@ -104,7 +104,7 @@ Pod-native OpenClaw skills use this runtime shape:
 Their source-only management location in this repository is:
 
 ```text
-mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/
+mobile-app-dev-team/runtime-sources/skills/<slug>/
 ```
 
 This surface is pod-native OpenClaw. It is not `.agents/skills/<skill-name>/SKILL.md`.

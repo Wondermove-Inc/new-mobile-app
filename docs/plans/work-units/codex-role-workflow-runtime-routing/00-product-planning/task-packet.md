@@ -25,7 +25,7 @@
 021. Correct concept: Codex is the repo-local role workflow substrate made of skills, custom agents, hooks, MCP config, validators, evidence, and policy.
 022. This definition is grounded in repo-local paths: `.agents/skills`, `.codex/agents`, `.codex/hooks.json`, `.codex/hooks`, `.codex/config.toml`, `scripts`, `evals`, and `.evidence`.
 023. The pod-native OpenClaw surface is a runtime shape under `/workspace/skills/<slug>/SKILL.md`.
-024. The source-managed pod-native skill lives under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
+024. The source-managed pod-native skill lives under `mobile-app-dev-team/runtime-sources/skills/<slug>/`.
 025. The plan treats `/workspace/skills/codex-role-workflow` as runtime publication output, not as the primary source to edit from this repo.
 026. The plan treats the root `AGENTS.md` as the source text for `/workspace/AGENTS.md`, based on the existing repo statement.
 027. Directly editing `/workspace/AGENTS.md` is not the default repo-scoped implementation path.
@@ -61,7 +61,7 @@
 051. Root execution rules: `AGENTS.md`.
 052. Repo policy ownership: `REPO_OPERATIONS.md`.
 053. Runtime facts and Codex substrate inventory: `PROJECT_ENVIRONMENT.md`.
-054. Current pod-native bridge: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
+054. Current pod-native bridge: `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`.
 055. Entry taxonomy and routing: `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`.
 056. Work process lifecycle: `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`.
 057. Gates and evidence: `mobile-app-dev-team/governance/gates-and-evidence.md`.
@@ -92,7 +92,7 @@
 ## 004. Key SoT Findings
 
 081. `AGENTS.md` says pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as runtime shape.
-082. `AGENTS.md` says pod-native OpenClaw skill sources are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
+082. `AGENTS.md` says pod-native OpenClaw skill sources are authored under `mobile-app-dev-team/runtime-sources/skills/<slug>/`.
 083. `AGENTS.md` says Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml`.
 084. `AGENTS.md` says `/workspace/AGENTS.md` source text is represented in the repo-local `AGENTS.md`.
 085. `AGENTS.md` says the default OpenClaw checkout path is `/workspace/projects/Wondermove-Inc/new-mobile-app`.
@@ -108,7 +108,7 @@
 095. `REPO_OPERATIONS.md` says `PROJECT_ENVIRONMENT.md` owns current runtime facts.
 096. `REPO_OPERATIONS.md` says `mobile-app-dev-team/` owns team, role, process, reference, and migration documentation.
 097. `REPO_OPERATIONS.md` says pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime.
-098. `REPO_OPERATIONS.md` says those skills are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`.
+098. `REPO_OPERATIONS.md` says those skills are authored under `mobile-app-dev-team/runtime-sources/skills/`.
 099. `REPO_OPERATIONS.md` says repo-local Codex skills and agents use `.agents/skills` and `.codex/agents`.
 100. `REPO_OPERATIONS.md` says OpenClaw pods operating on Codex-managed repositories should route repo work through Codex CLI.
 101. `REPO_OPERATIONS.md` says reports must not print or commit tokens or full secret-bearing config.
@@ -347,8 +347,8 @@
 322. Task A owner role: Product/Planning.
 323. Task A input artifact: this plan.
 324. Task A input artifact: `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`.
-325. Task A input artifact: current `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
-326. Task A output artifact: updated `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
+325. Task A input artifact: current `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`.
+326. Task A output artifact: updated `mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md`.
 327. Task A Done-when: skill includes Product/Planning common intake rule.
 328. Task A Done-when: skill includes Codex substrate definition.
 329. Task A Done-when: skill includes compact SoT-named routing categories.
@@ -356,7 +356,7 @@
 331. Task A Done-when: skill includes E1-E16 expanded route map or a compact equivalent.
 332. Task A Done-when: skill includes P-1/P-2/P-3/P-4 operational rules.
 333. Task A Done-when: skill preserves status-only behavior.
-334. Task A evidence requirement: future implementation diff recorded with `git diff -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md` and reviewer evidence linked from `.evidence/reviews/<YYYYMMDD>-codex-role-workflow-runtime-routing-final-review.md`.
+334. Task A evidence requirement: future implementation diff recorded with `git diff -- mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md` and reviewer evidence linked from `.evidence/reviews/<YYYYMMDD>-codex-role-workflow-runtime-routing-final-review.md`.
 335. Task A next responsible role: Product/Planning reviewer.
 336. Task A open decision: whether to quote all E1-E16 in table form or summarize them with source link and critical classes.
 337. Task B title: Output contract expansion.

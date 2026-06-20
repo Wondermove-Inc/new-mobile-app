@@ -12,6 +12,18 @@ repository work. It does not replace `codex-role-workflow`, `$wm`, or the
 repo-local role skills. It tells the role pod how to launch and supervise a
 scoped Codex CLI interactive PTY session for the already-routed work.
 
+## Success-case rollout packet
+
+For TASK-11.1 rollout/reproduction evidence, use the repo SoT packet at:
+
+```text
+mobile-app-dev-team/runtime-sources/skills/codex-interactive-repo-work/references/codex-run-success-case.md
+```
+
+It records the successful launch-gate flow, commands, inputs/outputs, generated
+evidence, fail-closed behavior, reviewer route, and the relationship between
+repo source and live `/workspace/codex-hooks/codex-run` materialization proof.
+
 ## Responsibility
 
 Use this skill only after this non-skippable pre-launch gate is complete:

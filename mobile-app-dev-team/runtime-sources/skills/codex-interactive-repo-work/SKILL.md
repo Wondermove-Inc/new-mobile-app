@@ -93,6 +93,12 @@ PTY interactive use:
 /workspace/codex-hooks/codex-run
 ```
 
+Repo-tracked source for the compatible launch-gate wrapper is maintained at:
+
+```text
+mobile-app-dev-team/runtime-sources/skills/codex-interactive-repo-work/scripts/codex-run
+```
+
 If the wrapper is missing or not compatible with PTY interactive use, use raw
 PTY `codex` only after recording the reason in evidence.
 

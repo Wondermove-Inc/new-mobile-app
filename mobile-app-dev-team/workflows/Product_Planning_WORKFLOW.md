@@ -231,6 +231,42 @@ and wake reminders are coordination evidence only until linked to the accepted
 system of record. Link Tasks, Jira, Confluence/wiki, GitHub PRs, Workboard
 cards, and work-unit artifacts rather than duplicating full content across them.
 
+### 0B.1 Mandatory Tasks, Workboard, Wake-Guard, And Reminder Handling
+
+Tasks notifications, Workboard cards, wake-guards, reminders, and runtime
+continuity messages are treated as current work signals when they identify a
+Task, milestone, Workboard card, PR, room, source of truth, or stop condition.
+They are not stale chat simply because similar messages appeared earlier.
+
+Product/Planning must handle these signals as follows:
+
+1. Read the referenced Task, milestone, Workboard card, PR, room, or source of
+   truth before reporting status when the signal asks for a check, update,
+   continuation, or closure decision.
+2. For Tasks notifications with an Action Guide, follow the Tasks skill: review
+   the notification, apply any safe in-scope instruction, and leave the required
+   Task or milestone comment with the result. If the notification is a pure
+   self-echo with no new instruction or state change, avoid noisy duplicate
+   comments only after confirming there is no material action to take.
+3. Treat Workboard, wake-guard, reminder, and continuity messages as evidence
+   of unfinished, delegated, blocked, waiting, or unclosed work until the
+   relevant source of truth is completed, explicitly cancelled, or blocked with
+   a recorded reason and follow-up owner.
+4. If work remains incomplete, continue the next safe foreground step when the
+   next action is clear. If waiting on another owner, record the waiting state
+   and keep or register a wake-guard. Do not stop solely because a room update
+   was sent.
+5. Remove stale wake-guards only after the recorded stop condition is satisfied
+   and the Task, Workboard card, PR, or milestone state has been updated.
+6. Never use these signals to bypass approval boundaries. Production,
+   external/live activation, secret-bearing work, release, destructive changes,
+   dependency installation, or accepting failed-gate risk still requires the
+   relevant approval.
+
+Status comments for these signals should be concise and evidence-backed: state
+what was checked, what changed, what remains blocked or waiting, who owns the
+next action, and what was not performed when forbidden actions were in scope.
+
 ## 0C. Reporting, Review, And Approval
 
 Status reports must state:

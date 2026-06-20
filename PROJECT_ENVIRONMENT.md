@@ -261,11 +261,11 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - MCP config: `.codex/config.toml`.
 - Codex MCP/CLI setup guide: `docs/CODEX_MCP_ENVIRONMENT.md`.
 - Pod-native project bootstrap:
-  - Sync source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/`.
+  - Sync source: `mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/`.
   - Sync runtime shape: `/workspace/skills/openclaw-pod-skills-sync/SKILL.md`.
   - Sync report: `/workspace/state/openclaw-pod-skills-sync-report.json`.
   - After clone or pull, run `openclaw-pod-skills-sync` before `project-bootstrap`.
-  - Source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/`.
+  - Source: `mobile-app-dev-team/runtime-sources/skills/project-bootstrap/`.
   - Runtime shape: `/workspace/skills/project-bootstrap/SKILL.md`.
   - Required routing bridge: `/workspace/skills/codex-role-workflow/SKILL.md`.
   - Required managed-repo execution contract:
@@ -479,7 +479,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   runtime or harness path also changes. They do not trigger active
   `validate:team-doc` unless a directly managed runtime source or
   routing-support dependency also changes.
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` changes
+- `mobile-app-dev-team/runtime-sources/skills/**` changes
   use targeted pod-native smoke plus `test:runtime`; local harness is not
   required unless a Codex runtime or harness path also changes.
 - `evals/skills/**`, `evals/team-doc-structure/**`, and durable

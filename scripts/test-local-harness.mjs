@@ -723,7 +723,7 @@ function validateHarnessApplicabilityReadme(readme) {
     'not required for `mobile-app-dev-team/reports/**`',
     'not required for `mobile-app-dev-team/ref-organization/**`',
     'targeted pod-native smoke',
-    '`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`',
+    '`mobile-app-dev-team/runtime-sources/skills/**`',
   ];
 
   for (const term of requiredTerms) {

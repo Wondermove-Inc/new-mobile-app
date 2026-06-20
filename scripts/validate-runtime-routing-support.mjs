@@ -5,7 +5,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const readmePath = 'mobile-app-dev-team/README.md';
-const codexRoleWorkflowPath = 'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md';
+const codexRoleWorkflowPath = 'mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md';
 const managedRepoEntryCasePath = '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
 const forbiddenRuntimeRelativePath = '/workspace/skills/codex-role-workflow/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
 

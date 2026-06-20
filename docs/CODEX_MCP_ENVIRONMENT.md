@@ -18,7 +18,7 @@ Source of truth inputs:
 
 - `AGENTS.md`
 - `PROJECT_ENVIRONMENT.md`
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md`
+- `mobile-app-dev-team/runtime-sources/skills/project-bootstrap/SKILL.md`
 - `.codex/config.toml`
 - `.agents/skills/qa-railway-workflow/SKILL.md`
 - `docs/SETUP.md`

@@ -204,7 +204,7 @@ node - "$REPORT_PATH" \
   "$(file_status "${REPO_PATH}/.codex/config.toml")" \
   "$(file_status "${REPO_PATH}/docs/TEMPLATE_VARIABLES.md")" \
   "$(file_status "${REPO_PATH}/docs/CREDENTIALS.md")" \
-  "$(file_status "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md")" \
+  "$(file_status "${REPO_PATH}/mobile-app-dev-team/runtime-sources/skills/README.md")" \
   "$REPO_CLONE_URL" \
   "$CODEX_MANAGED_PATHS" \
   "$managed_path_status" \
@@ -412,7 +412,7 @@ const requiredSotFiles = {
   '.codex/config.toml': codexConfigFile,
   'docs/TEMPLATE_VARIABLES.md': templateVariablesFile,
   'docs/CREDENTIALS.md': credentialsFile,
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md': podSkillMatrixFile,
+  'mobile-app-dev-team/runtime-sources/skills/README.md': podSkillMatrixFile,
 };
 if (repoPathStatus === 'present') {
   for (const [name, status] of Object.entries(requiredSotFiles)) {

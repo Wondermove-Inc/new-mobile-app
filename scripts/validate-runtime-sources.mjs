@@ -16,7 +16,7 @@ import {
 } from './lib/team-doc-validation-helpers.mjs';
 
 const errors = [];
-const podNativeRoot = `${teamRoot}/runtime-sources/pod-native-openclaw-skills`;
+const podNativeRoot = `${teamRoot}/runtime-sources/skills`;
 const legacyPodNativeRoot = `${teamRoot}/09-pod-native-openclaw-skills`;
 const roleSoulRoot = `${teamRoot}/runtime-sources/role-souls`;
 const legacyRoleSoulRoot = `${teamRoot}/02-role-souls`;
@@ -79,7 +79,7 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   '## Copy-Paste Safe Setup Commands',
   'export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"',
   'bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
   'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
   'fresh pod',
@@ -88,12 +88,12 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh',
   '<current-user-language> placeholder',
   '## Role Slug Resolution Table',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/product-planning-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/design-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-architect-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-app-dev-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/backend-api-integrator-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/qa-release-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/product-planning-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/design-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/mobile-architect-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/mobile-app-dev-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/backend-api-integrator-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/qa-release-agent-runtime-spec.md',
   '## Where To Read Runtime Specs',
   '/workspace/skills/codex-role-workflow/SKILL.md',
   'matching role runtime specification',
@@ -253,9 +253,14 @@ requirePodNativeSkill(`${podNativeRoot}/codex-interactive-repo-work`, 'codex-int
 
 requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
   '/workspace/ORGANIZATIONS.md',
+  '/workspace/WORKFLOW.md',
+  '/workspace/HEARTBEAT.md',
+  '/workspace/TOOLS.md',
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
-  'workspace_organizations.status',
+  'OPENCLAW_ROLE_SLUG',
+  'openclaw-pod-skills-sync/v2',
+  'role_mismatch',
   'must not block skill sync by themselves',
   'guidance only',
 ], 'pod-native organizations sync');
@@ -263,10 +268,16 @@ requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
 requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh`, [
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'OPENCLAW_WORKSPACE_WORKFLOW_PATH',
+  'OPENCLAW_WORKSPACE_HEARTBEAT_PATH',
+  'OPENCLAW_WORKSPACE_TOOLS_PATH',
+  'OPENCLAW_ROLE_SLUG',
+  'openclaw-pod-skills-sync/v2',
+  'positive_role_identifier_scan',
+  'negative_known_other_role_residue_scan',
+  'role_mismatch',
   'workspace_organizations',
   'guidance_only',
-  'copy_failed',
-  'workspace_organizations_status="$(copy_workspace_organizations)"',
 ], 'pod-native organizations sync');
 
 requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [

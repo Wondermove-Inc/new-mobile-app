@@ -71,8 +71,8 @@ else
   printf '%s\n' "GitHub CLI auth is unavailable; ask the Product Delivery Lead for the approved GitHub auth path before creating the role operator fork." >&2
 fi
 
-if [ -x "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" ]; then
-  bash "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+if [ -x "${REPO_PATH}/mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" ]; then
+  bash "${REPO_PATH}/mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
 elif [ -x /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh ]; then
   bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh
 else
@@ -113,12 +113,12 @@ path is the Source of Truth for what the role may read next after
 
 | Operating Role | Canonical role slug | Runtime spec source path |
 | --- | --- | --- |
-| Product/Planning | `product-planning` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/product-planning-agent-runtime-spec.md` |
-| Design | `design` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/design-agent-runtime-spec.md` |
-| Mobile Architect | `mobile-architect` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-architect-agent-runtime-spec.md` |
-| Mobile App Dev | `mobile-app-dev` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-app-dev-agent-runtime-spec.md` |
-| Backend/API Integrator | `backend-api-integrator` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/backend-api-integrator-agent-runtime-spec.md` |
-| QA/Release | `qa-release` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/qa-release-agent-runtime-spec.md` |
+| Product/Planning | `product-planning` | `mobile-app-dev-team/runtime-sources/skills/product-planning-agent-runtime-spec.md` |
+| Design | `design` | `mobile-app-dev-team/runtime-sources/skills/design-agent-runtime-spec.md` |
+| Mobile Architect | `mobile-architect` | `mobile-app-dev-team/runtime-sources/skills/mobile-architect-agent-runtime-spec.md` |
+| Mobile App Dev | `mobile-app-dev` | `mobile-app-dev-team/runtime-sources/skills/mobile-app-dev-agent-runtime-spec.md` |
+| Backend/API Integrator | `backend-api-integrator` | `mobile-app-dev-team/runtime-sources/skills/backend-api-integrator-agent-runtime-spec.md` |
+| QA/Release | `qa-release` | `mobile-app-dev-team/runtime-sources/skills/qa-release-agent-runtime-spec.md` |
 
 ## Where To Read Runtime Specs
 

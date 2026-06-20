@@ -35,7 +35,7 @@ mobile-app-dev-workflow
 ```
 
 Pod-native OpenClaw skills are runtime snapshots under `/workspace/skills` and
-are sourced from `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills`.
+are sourced from `mobile-app-dev-team/runtime-sources/skills`.
 Do not place repo-local Codex skills, agents, hooks, or validators in the
 pod-native skill tree.
 

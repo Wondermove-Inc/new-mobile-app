@@ -4,7 +4,7 @@ Date: 2026-06-15
 
 This document specifies how an OpenClaw/Codex agent that has
 `mobile-app-dev-team/runtime-sources/role-souls/product-planning-soul.md` must set itself up
-and operate after reading `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`.
+and operate after reading `mobile-app-dev-team/runtime-sources/skills/README.md`.
 
 The scope is Product/Planning only.
 
@@ -22,7 +22,7 @@ durable work-unit workflow.
 
 ```text
 repo source of pod-native skills
-  mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/SKILL.md
+  mobile-app-dev-team/runtime-sources/skills/<slug>/SKILL.md
         |
         | openclaw-pod-skills-sync
         v
@@ -38,7 +38,7 @@ Rules:
 
 - Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime.
 - Their source of truth is under
-  `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
+  `mobile-app-dev-team/runtime-sources/skills/<slug>/`.
 - Repo-local Codex skills must remain under `.agents/skills/`.
 - Repo-local Codex custom agents must remain under `.codex/agents/`.
 - Do not put repo-local Codex skill or custom-agent artifacts in the pod-native

@@ -199,7 +199,7 @@ Common setup:
 - `/workspace/skills/codex-interactive-repo-work/SKILL.md`
 
 `openclaw-pod-skills-sync` copy-syncs every
-`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>` directory
+`mobile-app-dev-team/runtime-sources/skills/<slug>` directory
 into `/workspace/skills/<slug>`. The `codex-interactive-repo-work` skill is a
 required common skill in that runtime snapshot so downstream managed-repo edits
 cannot proceed without the Codex CLI interactive PTY execution contract.
@@ -358,7 +358,7 @@ This script must:
 
 - repair the managed-path registry when the repo path is the known SoT path;
 - register the required pod-native skills from
-  `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md` into
+  `mobile-app-dev-team/runtime-sources/skills/README.md` into
   `/workspace/skills`;
 - register missing required MCPs from repo-pinned non-secret commands when the
   registration is agent-owned;

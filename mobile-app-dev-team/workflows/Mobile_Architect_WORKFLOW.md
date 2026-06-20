@@ -108,6 +108,36 @@ Use the narrowest durable source of truth:
 
 Link systems of record instead of duplicating long content across them.
 
+### 0B.1 Mobile Architect Work Signals And Follow-Through
+
+Tasks notifications, Workboard cards, wake-guards, reminders, and continuity
+messages that reference Mobile Architect work are current work signals until the
+linked Task, PR, Workboard card, architecture artifact, or work-unit state is
+complete, explicitly cancelled, or blocked with a recorded owner and next
+action. Do not dismiss them as old chat only because a similar status was
+reported earlier.
+
+For architecture reviews, ADRs, route/state impact notes, API co-signs,
+runtime/dependency recommendations, and releaseability-risk handoffs, re-check
+the referenced source of truth before reporting closure or no-change status. The
+check should verify the durable artifact path, reviewer state, downstream owner,
+open blocker, PR or work-unit state, and whether the architecture handoff still
+needs follow-through.
+
+Avoid self-echo or notification spam only after confirming that the incoming
+signal contains no new instruction, state change, blocker, reviewer result,
+quality-gate result, or handoff decision. When work is waiting on a reviewer,
+downstream owner, PR, gate, or Product/Planning decision, record the waiting
+state in the relevant Task, Workboard card, PR, or architecture artifact and
+keep or register the wake-guard required by the active workflow.
+
+These signals do not expand Mobile Architect authority. They must not be used
+to bypass role ownership, reviewer gates, human approval, merge/release
+approval, production or external activation approval, secret-handling rules,
+failed-gate risk acceptance, or the boundary that Mobile Architect does not own
+mobile implementation, backend/API service work, Design quality, or QA evidence
+execution.
+
 ## 0C. Reporting, Review, And Approval
 
 Mobile Architect status reports must state done, in progress, blocked, risks,

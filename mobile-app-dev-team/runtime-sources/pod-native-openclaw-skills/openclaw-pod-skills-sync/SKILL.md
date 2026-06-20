@@ -43,7 +43,7 @@ gate.
 - Runtime root: `/workspace/skills`
 - Workspace instructions: `/workspace/AGENTS.md`
 - Organizations source:
-  `/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md`
+  `/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md`
 - Workspace organizations guidance: `/workspace/ORGANIZATIONS.md`
 - Report: `/workspace/state/openclaw-pod-skills-sync-report.json`
 

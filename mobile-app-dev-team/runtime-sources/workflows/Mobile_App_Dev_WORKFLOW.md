@@ -2,7 +2,7 @@
 
 This is the repo-local workflow for WonderMove `new-mobile-app` Mobile App Dev
 role agents. It is English canonical, role-specific, and intentionally narrower
-than `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`.
+than `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`.
 
 Use Product/Planning as the common source of truth for intake, systems of
 record, cross-pod evidence rules, review semantics, human gates, and reporting
@@ -254,7 +254,7 @@ evidence from the PR body, work-unit artifact, or accepted task record.
 
 Mobile App Dev workflow Review meetings follow the accepted pod-native
 `wm-meeting-process` skill and the meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. In-scope
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. In-scope
 `change-required` feedback stops the Review meeting and proceeds through 1:1
 corrective follow-up. The next Review meeting, and any downstream Mobile App
 Dev implementation readiness that depends on the reviewed handoff, cannot start

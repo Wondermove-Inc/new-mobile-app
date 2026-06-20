@@ -14,7 +14,7 @@ repo-local skills and workflow documents referenced by this file.
 Agents that previously read `work-processes.md` must now read this file at:
 
 ```text
-mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
+mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md
 ```
 
 ## 0. Codex Skill And Path Resolution

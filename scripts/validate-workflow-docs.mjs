@@ -3,7 +3,7 @@ import { exists, finish, requireTerms, teamRoot } from './lib/team-doc-validatio
 
 const errors = [];
 
-requireTerms(errors, `${teamRoot}/workflows/Product_Planning_WORKFLOW.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/Product_Planning_WORKFLOW.md`, [
   '# Product Planning Workflow',
   'agent-consumed Product/Planning workflow',
   'not the workspace-neutral `/workspace/WORKFLOW.md`',
@@ -47,7 +47,7 @@ requireTerms(errors, `${teamRoot}/workflows/Product_Planning_WORKFLOW.md`, [
   'API Readiness',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/QA_Release_WORKFLOW.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/QA_Release_WORKFLOW.md`, [
   '# QA/Release Workflow',
   'agent-consumed QA/Release workflow',
   'not the workspace-neutral `/workspace/WORKFLOW.md`',
@@ -73,7 +73,7 @@ requireTerms(errors, `${teamRoot}/workflows/QA_Release_WORKFLOW.md`, [
   'Failure Loop',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/github-artifact-workflow.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/github-artifact-workflow.md`, [
   '# GitHub Artifact Workflow',
   'pod-isolated',
   'No shared storage',
@@ -82,7 +82,7 @@ requireTerms(errors, `${teamRoot}/workflows/github-artifact-workflow.md`, [
   'status: required | not-applicable | deferred/non-goal',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/native-e2e-strategy.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/native-e2e-strategy.md`, [
   '# Native E2E Strategy',
   'Evidence Ladder',
   'L0',
@@ -93,7 +93,7 @@ requireTerms(errors, `${teamRoot}/workflows/native-e2e-strategy.md`, [
   'mobile-mcp',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/entry-case-routing.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/entry-case-routing.md`, [
   '# Entry Case Routing',
   'Common Entry Point',
   'SoT-Named Input Categories',

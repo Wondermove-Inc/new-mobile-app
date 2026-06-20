@@ -2,7 +2,7 @@
 
 This is the repo-local workflow for Backend/API Integrator role work in the
 WonderMove `new-mobile-app` repository. It is a Backend/API-specific companion
-to `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`, not a
+to `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`, not a
 replacement for Product/Planning intake, scope approval, orchestration, human
 gates, or PR handoff.
 
@@ -358,7 +358,7 @@ replace Product/Planning evidence requirements, reviewer contracts, work-unit
 | Backend-service-delivery | Apply approved bounded `apps/api` service scope, route/service/db boundary, migration procedure, rollback note, runtime smoke, deployment config note, and service evidence. QA/Release still owns release evidence classification. | Contract packet, service diff, DB/migration note when relevant, runtime smoke result, deployment config note, rollback note, service evidence, reviewer evidence, applicable API/contract tests, `git diff`, `git status --short`. |
 
 For mobile QA evidence, use the existing evidence ladder from
-`mobile-app-dev-team/workflows/native-e2e-strategy.md` when the work unit
+`mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md` when the work unit
 requires QA/Release proof. RN Web, Railway, local harness, source review, or
 offline fixtures must not be overstated as native proof.
 

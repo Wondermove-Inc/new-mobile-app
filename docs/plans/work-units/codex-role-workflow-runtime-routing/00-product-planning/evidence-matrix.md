@@ -25,7 +25,7 @@ next responsible role: pod/bootstrap or human/ops owner for live runtime publica
 
 | Command | Status | Evidence |
 | --- | --- | --- |
-| `node scripts/validate-team-doc.mjs` before skill implementation | FAIL expected | Failed on missing `Codex Substrate`, `mobile-app-dev-team/workflows/entry-case-routing.md`, broader input language, Design/P0/P1, rollback, and output contract terms. |
+| `node scripts/validate-team-doc.mjs` before skill implementation | FAIL expected | Failed on missing `Codex Substrate`, `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`, broader input language, Design/P0/P1, rollback, and output contract terms. |
 | `node scripts/validate-team-doc.mjs` after skill implementation | PASS | `04-mobile-app/command-output.md` |
 | `pnpm run test:runtime` | PASS | `04-mobile-app/command-output.md` |
 | `pnpm run test:local-harness` | PASS | `04-mobile-app/command-output.md` |

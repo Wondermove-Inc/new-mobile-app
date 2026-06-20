@@ -246,7 +246,7 @@ make_fake_pod_skill_sources() {
   local repo_path="$1"
   local skill_root="${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   mkdir -p "${repo_path}/mobile-app-dev-team/runtime-sources"
-  cat > "${repo_path}/mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md" <<'EOF'
+  cat > "${repo_path}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md" <<'EOF'
 # ORGANIZATIONS.md - Organizations and Reporting
 
 Guidance only.

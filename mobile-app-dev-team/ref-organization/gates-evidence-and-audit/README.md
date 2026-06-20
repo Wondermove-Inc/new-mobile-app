@@ -5,7 +5,7 @@ Source class: index
 Upstream SoT:
 
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
-- `mobile-app-dev-team/workflows/github-artifact-workflow.md`
+- `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md`
 
 Downstream consumers:
 

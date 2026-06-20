@@ -15,7 +15,7 @@ documents referenced by this file.
 Agents that need the Design workflow must read this file at:
 
 ```text
-mobile-app-dev-team/workflows/Design_WORKFLOW.md
+mobile-app-dev-team/runtime-sources/workflows/Design_WORKFLOW.md
 ```
 
 ## 0. Codex Skill And Path Resolution
@@ -50,7 +50,7 @@ runtime snapshot under `/workspace/skills`.
 
 ### 0.1 Cross-Pod Evidence And Local Path Boundaries
 
-Follow `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` section
+Follow `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md` section
 `0.1 Cross-Pod Evidence And Local Path Boundaries` for the common rule: one
 agent's local `/workspace/...` path is not reviewer-accessible evidence for
 another agent unless the artifact is reproducible or fetchable through an
@@ -200,7 +200,7 @@ Design workflow Review meetings, `change-required` feedback, 1:1 corrective
 follow-up, corrective PR/review/merge or recorded no-change decisions, and next
 Review meeting resume rules follow the accepted pod-native
 `wm-meeting-process` skill and the Product/Planning meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This reference
 only governs meeting operation and does not change Design gates, Design quality
 ownership, reviewer evidence, human approvals, or release approval.
 
@@ -463,7 +463,7 @@ Before reporting Design work ready:
 For Design workflow-document changes, the minimum local checks are:
 
 ```text
-git diff --check -- mobile-app-dev-team/workflows/Design_WORKFLOW.md
+git diff --check -- mobile-app-dev-team/runtime-sources/workflows/Design_WORKFLOW.md
 node scripts/validate-workflow-docs.mjs
 node scripts/validate-runtime-sources.mjs
 ```

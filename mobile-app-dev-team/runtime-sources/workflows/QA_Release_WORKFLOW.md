@@ -7,7 +7,7 @@ hands reviewer-accessible artifacts back to Product/Planning and Gatekeeper.
 
 This file is not the workspace-neutral `/workspace/WORKFLOW.md` and must not be
 copied there as-is. Common intake, reporting, approval, and cross-pod mechanics
-remain in `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`; this
+remain in `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`; this
 document is the QA/Release specialization.
 
 Use this file when a WonderMove QA/Release pod, repo-local Codex skill, or
@@ -175,7 +175,7 @@ replace a required human owner.
 
 QA/Release workflow Review meetings follow the accepted pod-native
 `wm-meeting-process` baseline and the meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. Each Review
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. Each Review
 meeting has one target and an allowed-role feedback scope. In-scope
 `change-required` feedback stops the meeting and moves correction to 1:1
 corrective follow-up. The next step, final sync, or next Review meeting cannot
@@ -452,7 +452,7 @@ QA, EAS, Railway, Maestro, mobile-mcp, native, or device execution checks.
 Minimum docs-only validation after writing this workflow is:
 
 ```bash
-git diff --check -- mobile-app-dev-team/workflows/QA_Release_WORKFLOW.md
+git diff --check -- mobile-app-dev-team/runtime-sources/workflows/QA_Release_WORKFLOW.md
 node scripts/validate-workflow-docs.mjs
 node scripts/validate-runtime-sources.mjs
 ```

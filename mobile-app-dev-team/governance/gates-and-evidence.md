@@ -16,7 +16,7 @@
 ## Mobile Evidence Ladder
 
 Mobile work units use the evidence ladder in
-`mobile-app-dev-team/workflows/native-e2e-strategy.md`:
+`mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md`:
 
 - L0 `jest`: unit, component, contract, and runtime checks.
 - L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.

@@ -14,16 +14,16 @@
 | `mobile-app-dev-team/organization/team-composition.md` | Current team composition and role boundary source |
 | `mobile-app-dev-team/organization/role-capability-matrix.md` | Current operating role capability, output, and forbidden-scope matrix |
 | `mobile-app-dev-team/organization/new-team-template-guide.md` | Current guide for reusing the team structure for another development team |
-| `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` | Current repo-local work process and role handoff workflow |
+| `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md` | Current repo-local work process and role handoff workflow |
 | `mobile-app-dev-team/governance/gates-and-evidence.md` | Current gate, evidence, human-gate, and durable handoff policy |
-| `mobile-app-dev-team/workflows/github-artifact-workflow.md` | Current pod-isolated GitHub artifact handoff workflow |
-| `mobile-app-dev-team/workflows/native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
+| `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md` | Current pod-isolated GitHub artifact handoff workflow |
+| `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
 | `mobile-app-dev-team/governance/human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md` | Current `.agents/skills` and `.codex/agents` mapping, active read-only reviewer/researcher matrix, and pod-native skill crosswalk |
-| `mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md` | Canonical organizations and reporting guidance source copied to `/workspace/ORGANIZATIONS.md`; guidance only, not a SOUL or approval-enforcement policy |
+| `mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md` | Canonical organizations and reporting guidance source copied to `/workspace/ORGANIZATIONS.md`; guidance only, not a SOUL or approval-enforcement policy |
 | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/projects/Wondermove-Inc/new-mobile-app` and pod-native skills |
 | `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
-| `mobile-app-dev-team/workflows/entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |
+| `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |
 | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | Current app / EAS Update (OTA) / store rollback ownership, decision, gate, and evidence runbook (P-4 managed-doc governance) building on the 15-annex rollback rules |
 | `mobile-app-dev-team/governance/secret-store-and-atlassian-connectivity-guide.md` | One-off operational guide for protected secret-store handling and status-only Jira/Confluence connectivity reporting |
 | `mobile-app-dev-team/source-map.md` | Current old-to-new path crosswalk, runtime surface class registry, validator responsibility map, harness applicability map, archive crosswalk, and external proof boundary |
@@ -73,16 +73,16 @@ platform state.
 | `mobile-app-dev-team/02-role-souls/` | `mobile-app-dev-team/runtime-sources/role-souls/` | `R2` | Completed. |
 | `mobile-app-dev-team/03-role-capability-matrix.md` | `mobile-app-dev-team/organization/role-capability-matrix.md` | `O1` | Completed. |
 | `mobile-app-dev-team/04-skills-and-agents-matrix.md` | `mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md` | `C1` | Completed; old numbered top-level file is rejected by validators. |
-| `mobile-app-dev-team/05-work-processes.md` | `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` | `W1` | Completed. |
+| `mobile-app-dev-team/05-work-processes.md` | `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md` | `W1` | Completed. |
 | `mobile-app-dev-team/06-gates-and-evidence.md` | `mobile-app-dev-team/governance/gates-and-evidence.md` | `G1` | Completed. |
 | `mobile-app-dev-team/07-new-team-template-guide.md` | `mobile-app-dev-team/organization/new-team-template-guide.md` | `O1` | Completed. |
 | `mobile-app-dev-team/09-pod-native-openclaw-skills/` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/` | `R1` | Completed. |
-| `mobile-app-dev-team/10-github-artifact-workflow.md` | `mobile-app-dev-team/workflows/github-artifact-workflow.md` | `W1` | Completed. |
-| `mobile-app-dev-team/14-native-e2e-strategy.md` | `mobile-app-dev-team/workflows/native-e2e-strategy.md` | `W1` | Completed. |
+| `mobile-app-dev-team/10-github-artifact-workflow.md` | `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md` | `W1` | Completed. |
+| `mobile-app-dev-team/14-native-e2e-strategy.md` | `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md` | `W1` | Completed. |
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | `mobile-app-dev-team/governance/human-ops-live-readiness-annex.md` | `G1` | Completed. |
 | `mobile-app-dev-team/16-pod-environment-bootstrap.md` | `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` | `R1` | Completed; old numbered top-level file is rejected by validators. |
 | `mobile-app-dev-team/17-orbstack-pod-config-values.md` | `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` | `R1` | Completed; old numbered top-level file is rejected by validators. |
-| `mobile-app-dev-team/19-entry-case-routing.md` | `mobile-app-dev-team/workflows/entry-case-routing.md` | `W1` | Completed. |
+| `mobile-app-dev-team/19-entry-case-routing.md` | `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md` | `W1` | Completed. |
 | `mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md` | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | `G1` | Completed. |
 | `mobile-app-dev-team/ref-organization/00-orientation-and-sot/` | `mobile-app-dev-team/ref-organization/orientation-and-sot/` | `H1` | Completed. |
 | `mobile-app-dev-team/ref-organization/01-organization-model/` | `mobile-app-dev-team/ref-organization/organization-model/` | `H1` | Completed. |

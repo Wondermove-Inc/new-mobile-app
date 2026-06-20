@@ -176,7 +176,7 @@ const roleSoulRuntimeHeadings = [
 const managedTeamDocRoot = 'mobile-app-dev-team';
 const governanceRoot = `${managedTeamDocRoot}/governance`;
 const organizationRoot = `${managedTeamDocRoot}/organization`;
-const workflowRoot = `${managedTeamDocRoot}/workflows`;
+const workflowRoot = `${managedTeamDocRoot}/runtime-sources/workflows`;
 const sotAndPrinciplesDoc = `${governanceRoot}/sot-and-principles.md`;
 const teamCompositionDoc = `${organizationRoot}/team-composition.md`;
 const roleCapabilityMatrixDoc = `${organizationRoot}/role-capability-matrix.md`;
@@ -189,7 +189,7 @@ const entryCaseRoutingDoc = `${workflowRoot}/entry-case-routing.md`;
 const githubArtifactWorkflowDoc = `${workflowRoot}/github-artifact-workflow.md`;
 const nativeE2eStrategyDoc = `${workflowRoot}/native-e2e-strategy.md`;
 const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/runtime-sources/pod-native-openclaw-skills`;
-const organizationsRuntimeSource = `${managedTeamDocRoot}/runtime-sources/ORGANIZATIONS.md`;
+const organizationsRuntimeSource = `${managedTeamDocRoot}/runtime-sources/organizations/ORGANIZATIONS.md`;
 const legacyPodNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
@@ -438,7 +438,7 @@ requireRootTerms('AGENTS.md', [
 
 requireRootTerms('ORGANIZATIONS.md', [
   'Canonical source:',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   'discoverability stub only',
   '/workspace/ORGANIZATIONS.md',
 ]);
@@ -456,7 +456,7 @@ requireDocTerms(organizationsRuntimeSource, [
 requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
   'Normal user-facing setup after clone or pull starts from `openclaw-pod-skills-sync`, then `project-bootstrap`',
   'user-understandable result',
@@ -887,7 +887,7 @@ requireDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
   'Process Routing Sources',
   'Runtime Repo Path Resolution',
   '/workspace/skills/codex-role-workflow/SKILL.md',
-  '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md',
   'Do not resolve repo SoT paths relative to `/workspace/skills/codex-role-workflow`',
   'workflows/entry-case-routing.md',
   'operational routing overlay',
@@ -1962,7 +1962,7 @@ requireDocTerms(productPlanningRuntimeSpec, [
   '/workspace/IDENTITY',
   'role mismatch',
   'managed project repository root',
-  'mobile-app-dev-team/workflows/entry-case-routing.md',
+  'mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md',
   '`codex-cli-auth-setup`, `pod-role-bootstrap`, and `codex-role-workflow`',
   'po-requirement-office-hours',
   'po-work-unit-planning-and-agent-sprint',

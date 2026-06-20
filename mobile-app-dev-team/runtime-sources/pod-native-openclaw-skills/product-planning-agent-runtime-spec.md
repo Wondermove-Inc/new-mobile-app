@@ -167,14 +167,14 @@ runtime, that root is:
 The accepted routing SoT path is therefore:
 
 ```text
-/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md
+/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 ```
 
 If the managed project repository root differs, use the root declared by
 `project-bootstrap`, `pod-role-bootstrap`, or the managed-path registry, then
-append `mobile-app-dev-team/workflows/entry-case-routing.md`.
+append `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`.
 
-If `mobile-app-dev-team/workflows/entry-case-routing.md` cannot be read from the
+If `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md` cannot be read from the
 managed project repository root, return `blocked` with
 `blocked_reason: missing accepted entry-case routing SoT`.
 
@@ -476,10 +476,10 @@ canonical_slug: product-planning
 entry_case: <classified-entry-case>
 routing_reason: <source-backed reason>
 process_sot:
-  - mobile-app-dev-team/workflows/entry-case-routing.md
-  - mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
+  - mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
+  - mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md
   - mobile-app-dev-team/governance/gates-and-evidence.md
-  - mobile-app-dev-team/workflows/github-artifact-workflow.md
+  - mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md
 allowed_repo_local_codex_skills:
   - <selected po-* skill>
 required_reviewers:

@@ -162,12 +162,12 @@ producing contract/API artifacts. Required SoT includes:
 - `mobile-app-dev-team/runtime-sources/role-souls/backend-api-integrator-soul.md`
 - `mobile-app-dev-team/organization/team-composition.md`
 - `mobile-app-dev-team/organization/role-capability-matrix.md`
-- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`
+- `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
-- `mobile-app-dev-team/workflows/github-artifact-workflow.md`
-- `mobile-app-dev-team/workflows/entry-case-routing.md`
+- `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md`
+- `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`
 - `PROJECT_ENVIRONMENT.md`
 - `AGENTS.md`
 - `.agents/skills/mobile-backend-api-integrator-workflow/SKILL.md`
@@ -415,7 +415,7 @@ resolved_role: Backend/API Integrator
 role_identity_source: <SOUL path or pod identity surface>
 entry_case: <classified entry case>
 routing_reason: <SoT-backed reason>
-process_sot: mobile-app-dev-team/workflows/entry-case-routing.md
+process_sot: mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md
 allowed_repo_local_codex_skills:
   - mobile-backend-api-integrator-workflow
 required_reviewers:

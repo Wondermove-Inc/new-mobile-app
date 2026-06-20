@@ -10,7 +10,7 @@ route/state impact, module boundaries, runtime/dependency policy, API co-sign
 impact, releaseability/EAS strategy risk, reviewer evidence, and handoff.
 
 Common intake, planning, reporting, review, and approval mechanics are defined
-in `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This workflow
+in `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This workflow
 only restates the Mobile Architect-specific application of those mechanics.
 
 ## 0. Codex Skill And Path Resolution
@@ -158,7 +158,7 @@ Mobile Architect workflow Review meetings, `change-required` feedback, 1:1
 corrective follow-up, corrective PR/review/merge or recorded no-change
 decisions, and next Review meeting resume rules follow the accepted pod-native
 `wm-meeting-process` skill and the Product/Planning meeting-process reference in
-`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This reference
 does not change role ownership, reviewer gates, human approval, Codex execution
 contracts, or release approval.
 
@@ -341,7 +341,7 @@ names.
 Minimum validation commands for this workflow document are:
 
 ```text
-git diff --check -- mobile-app-dev-team/workflows/Mobile_Architect_WORKFLOW.md
+git diff --check -- mobile-app-dev-team/runtime-sources/workflows/Mobile_Architect_WORKFLOW.md
 node scripts/validate-workflow-docs.mjs
 node scripts/validate-runtime-sources.mjs
 ```

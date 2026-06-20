@@ -206,11 +206,16 @@ Entry criteria:
 
 1. Product/Planning, deterministic work-unit state, or a ready routing artifact
    assigns Mobile Architect work.
-2. The request has architecture, runtime, API, route/state, dependency, or
+2. For PRD-based work, an accepted Product/Planning task packet, durable
+   work-unit source, Tasks/Jira field or comment, or GitHub/work-unit handoff
+   must record `READY_FOR_EXECUTION` or an equivalent durable readiness signal.
+   Chat-only PRD text is coordination evidence, not execution readiness.
+3. The request has architecture, runtime, API, route/state, dependency, or
    releaseability risk.
-3. The accepted scope, non-goals, expected output, evidence requirement, and
-   downstream owner are identifiable.
-4. Relevant SoT is readable. If not, report the missing source as blocked
+4. The accepted scope, PRD acceptance line or Done-when criteria, non-goals,
+   expected Mobile Architect output, evidence requirement, blockers or open
+   decisions, and downstream owner are identifiable.
+5. Relevant SoT is readable. If not, report the missing source as blocked
    instead of filling gaps from assumptions.
 
 ## 2. Architecture Planning
@@ -226,6 +231,17 @@ must identify:
 - assumptions and unknowns;
 - downstream owner and handoff artifact;
 - validation and reviewer expectation.
+
+For PRD-based work, also map the architecture question to:
+
+- the PRD acceptance line, accepted requirement bullet, or Done-when criterion
+  being answered;
+- the architecture-owned surface involved: route/state, module boundary,
+  runtime/dependency, API co-sign, releaseability/EAS, or not applicable;
+- any PRD request that is out of Mobile Architect scope and must route back to
+  Product/Planning as a non-goal or open question;
+- the downstream implementation, Backend/API, Design, or QA/Release owner that
+  consumes the architecture decision.
 
 Architecture plans serve approved scope. Do not create new product scope, new
 implementation work, or new backend/API obligations without Product/Planning
@@ -282,7 +298,11 @@ Document:
 
 Product/Planning sets required evidence level; QA/Release records achieved
 evidence and release-risk summary. Mobile Architect records risk and strategy
-implications only.
+implications only. For PRD-based work, carry the Product/Planning-required QA
+applicability and evidence level into the releaseability-risk handoff when
+runtime, dependency, native, EAS, or release behavior is affected; if it is
+missing, route the evidence decision back to Product/Planning or QA/Release
+instead of assuming it.
 
 ## 6. Design Advisory Boundary
 
@@ -313,6 +333,21 @@ Managed outputs are:
 - `api-contract-cosign.md`
 - `releaseability-risk.md`
 - `adr.md`
+
+For PRD-driven architecture work, choose the smallest artifact that matches the
+accepted architecture surface:
+
+- `route-state-impact.md` for navigation, state ownership, cross-screen data
+  flow, persistence, selector, or test implications.
+- `api-contract-cosign.md` when PRD acceptance depends on mobile/API contract
+  behavior, auth/session behavior, error mapping, mocks, fixtures, or
+  `packages/contracts`.
+- `releaseability-risk.md` when PRD acceptance affects runtime, dependency,
+  native, EAS, evidence-ladder, rollback, or releaseability risk.
+- `architecture-note.md` for a general architecture recommendation not covered
+  by a narrower artifact.
+- `adr.md` only when the decision has durable cross-role or release-behavior
+  consequences.
 
 Each artifact must include:
 
@@ -368,6 +403,9 @@ Stop and route instead of proceeding when:
 
 - role identity or routing artifact is missing, mismatched, or not ready;
 - accepted task, work-unit handoff, or deterministic next action is missing;
+- PRD acceptance line, Done-when criteria, non-goals, or Product/Planning
+  readiness source is missing or conflicts with the requested architecture
+  output;
 - the request lacks architecture, runtime, API, route/state, dependency, or
   releaseability risk;
 - relevant SoT cannot be read;

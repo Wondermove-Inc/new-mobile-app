@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 
 function usage() {
-  console.error(`Usage: send-room-text.mjs --room-id <number> --content <text> [--expected-room-id <number>] [--url <admin-api-url>] [--token-env <name>] [--dry-run]
+  console.error(`Usage: send-room-text.mjs --room-id <number> --content <text> [--expected-room-id <number>|--visible-report-destination <number>] [--result-kind report-delivery|transport-smoke] [--url <admin-api-url>] [--token-env <name>] [--dry-run]
 
 Sends visible Room text through /internal/messages and prints a normalized
 room-text-delivery-result/v1 JSON object. The wrapper is a convenience transport;
@@ -17,6 +17,7 @@ function parseArgs(argv) {
     else if (arg === '--expected-room-id') out.expectedRoomId = argv[++i];
     else if (arg === '--visible-report-destination') out.expectedRoomId = argv[++i];
     else if (arg === '--content') out.content = argv[++i];
+    else if (arg === '--result-kind') out.resultKind = argv[++i];
     else if (arg === '--url') out.url = argv[++i];
     else if (arg === '--token-env') out.tokenEnv = argv[++i];
     else if (arg === '--dry-run') out.dryRun = true;
@@ -31,10 +32,11 @@ function normalizeRoomId(value) {
   return Number(value);
 }
 
-function resultBase(roomId, content) {
+function resultBase(roomId, content, resultKind) {
   return {
     schema: 'room-text-delivery-result/v1',
     request_id: randomUUID(),
+    result_kind: resultKind,
     intended_room_id: roomId,
     actual_room_id: null,
     message_id: null,
@@ -51,9 +53,14 @@ function resultBase(roomId, content) {
 async function main() {
   const args = parseArgs(process.argv);
   const roomId = normalizeRoomId(args.roomId);
+  const resultKind = args.resultKind || (args.dryRun ? 'transport-smoke' : 'report-delivery');
+  if (!['report-delivery', 'transport-smoke'].includes(resultKind)) throw new Error('--result-kind must be report-delivery or transport-smoke');
+  if (resultKind === 'report-delivery' && !args.dryRun && args.expectedRoomId == null) {
+    throw new Error('report-delivery requires --expected-room-id or --visible-report-destination');
+  }
   const expectedRoomId = args.expectedRoomId == null ? roomId : normalizeRoomId(args.expectedRoomId);
   if (!String(args.content || '').trim()) throw new Error('--content must be non-empty');
-  const result = resultBase(expectedRoomId, args.content);
+  const result = resultBase(expectedRoomId, args.content, resultKind);
 
   if (args.dryRun) {
     result.actual_room_id = roomId;

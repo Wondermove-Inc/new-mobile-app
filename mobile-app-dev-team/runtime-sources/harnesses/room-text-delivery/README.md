@@ -66,3 +66,7 @@ Visible Room text without a normalized delivery result and validator PASS is not
 ## Access-boundary note
 
 A 403 from an unauthorized Room send is valid route-boundary evidence and should FAIL delivery proof. It is not by itself an implementation or validator bug.
+
+## Expected destination rule
+
+For report-delivery proof, `send-room-text.mjs` requires an explicit expected destination via `--expected-room-id` or `--visible-report-destination` unless the run is `--dry-run` or explicitly `--result-kind transport-smoke`. This prevents request Room ids from being silently reused as proof destinations.

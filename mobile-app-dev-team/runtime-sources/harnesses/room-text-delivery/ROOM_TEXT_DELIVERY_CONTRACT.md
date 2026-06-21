@@ -42,7 +42,7 @@ true:
 - `transport_ok` is `true`.
 - `http_status`, when present, is a 2xx status.
 - `raw_response_parse_ok`, when present, is `true`.
-- For report-delivery proof, `visible_report_destination_bound` is present and `true`. Pure transport smoke or dry-run results may omit it only when explicitly labeled with `result_kind: "transport-smoke"` or `dry_run: true`.
+- For report-delivery proof, `visible_report_destination_bound` is present and `true`. Pure transport smoke or dry-run results may omit it only when explicitly labeled with `result_kind: "transport-smoke"` or `dry_run: true`. Non-dry-run `report-delivery` wrapper sends must provide `--expected-room-id` or `--visible-report-destination`; silently defaulting the expected destination from the request room is not allowed for report delivery.
 - It is not marked as `duplicate_after_confirmed_success`.
 - It is not marked as a non-Room substitute proof surface such as Task,
   Workboard, PR, local note, or final `NO_REPLY` only.
@@ -63,3 +63,7 @@ The harness does not validate:
 ## Plain text is not harness proof
 
 Ordinary visible Room text by itself is not Room Text Delivery Harness proof. It must be captured as a normalized `room-text-delivery-result/v1` object with message id, numeric matching Room ids, successful transport state, destination binding for report delivery, and validator PASS.
+
+## Wrapper expected-destination rule
+
+For non-dry-run `report-delivery`, `send-room-text.mjs` must receive an explicit `--expected-room-id <number>` or `--visible-report-destination <number>`. This keeps request routing separate from proof validation and prevents a wrong request Room from becoming a false positive by copying request Room into `intended_room_id`. Omission is allowed only for `--dry-run` or explicitly labeled `--result-kind transport-smoke`.

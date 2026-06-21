@@ -60,6 +60,9 @@ export function validateRoomTextResult(input) {
     if (!isInteger(input.http_status) || input.http_status < 200 || input.http_status > 299) errors.push('http_status must be 2xx when present');
   }
   if ('raw_response_parse_ok' in input && input.raw_response_parse_ok !== true) errors.push('raw_response_parse_ok must be true when present');
+  const reportKind = input.result_kind || input.report_kind || 'report-delivery';
+  const mayOmitDestinationBound = input.dry_run === true || reportKind === 'transport-smoke';
+  if (!mayOmitDestinationBound && input.visible_report_destination_bound !== true) errors.push('visible_report_destination_bound must be present and true for report-delivery proof');
   if ('visible_report_destination_bound' in input && input.visible_report_destination_bound !== true) errors.push('visible_report_destination_bound must be true when present');
   if (input.duplicate_after_confirmed_success === true) errors.push('duplicate send after confirmed success is invalid');
   if (substituteSurfaces.has(input.proof_surface)) errors.push(`${input.proof_surface} is not visible Room text delivery proof`);

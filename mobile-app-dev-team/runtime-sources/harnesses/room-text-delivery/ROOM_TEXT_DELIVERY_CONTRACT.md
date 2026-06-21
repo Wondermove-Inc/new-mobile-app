@@ -32,6 +32,8 @@ true:
 
 - `schema` is `room-text-delivery-result/v1`.
 - `intended_room_id` and `actual_room_id` are numeric integers.
+- `intended_room_id` is the expected visible report destination, not blindly copied from the request room id.
+- `actual_room_id` is the Room id returned by the transport response.
 - `intended_room_id` equals `actual_room_id`.
 - `message_id` is a non-empty string.
 - `content_nonempty` is `true`.
@@ -40,7 +42,7 @@ true:
 - `transport_ok` is `true`.
 - `http_status`, when present, is a 2xx status.
 - `raw_response_parse_ok`, when present, is `true`.
-- `visible_report_destination_bound`, when present, is `true`.
+- For report-delivery proof, `visible_report_destination_bound` is present and `true`. Pure transport smoke or dry-run results may omit it only when explicitly labeled with `result_kind: "transport-smoke"` or `dry_run: true`.
 - It is not marked as `duplicate_after_confirmed_success`.
 - It is not marked as a non-Room substitute proof surface such as Task,
   Workboard, PR, local note, or final `NO_REPLY` only.
@@ -57,3 +59,7 @@ The harness does not validate:
 - any secret, token, or credential state.
 
 `message_id` and Room ids are delivery proof only, not work-completion proof.
+
+## Plain text is not harness proof
+
+Ordinary visible Room text by itself is not Room Text Delivery Harness proof. It must be captured as a normalized `room-text-delivery-result/v1` object with message id, numeric matching Room ids, successful transport state, destination binding for report delivery, and validator PASS.

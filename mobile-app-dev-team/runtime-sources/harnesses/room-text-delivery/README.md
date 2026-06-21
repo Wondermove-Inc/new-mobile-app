@@ -58,3 +58,11 @@ Expected exit codes:
 Do not perform a live Room smoke unless Product/Planning explicitly approves the
 smoke room. Prefer a dedicated test Room. Do not use `room-612` unless Kim/Spring
 explicitly approves. Live smoke proof must be reported as delivery proof only.
+
+## Acceptance note: plain text alone
+
+Visible Room text without a normalized delivery result and validator PASS is not harness proof. Raw curl, `send-room-text.mjs`, MCP/tool sends, and other transports remain allowed only when their response is normalized and passes the validator.
+
+## Access-boundary note
+
+A 403 from an unauthorized Room send is valid route-boundary evidence and should FAIL delivery proof. It is not by itself an implementation or validator bug.

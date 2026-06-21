@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 
 function usage() {
-  console.error(`Usage: send-room-text.mjs --room-id <number> --content <text> [--url <admin-api-url>] [--token-env <name>] [--dry-run]
+  console.error(`Usage: send-room-text.mjs --room-id <number> --content <text> [--expected-room-id <number>] [--url <admin-api-url>] [--token-env <name>] [--dry-run]
 
 Sends visible Room text through /internal/messages and prints a normalized
 room-text-delivery-result/v1 JSON object. The wrapper is a convenience transport;
@@ -14,6 +14,8 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--room-id') out.roomId = argv[++i];
+    else if (arg === '--expected-room-id') out.expectedRoomId = argv[++i];
+    else if (arg === '--visible-report-destination') out.expectedRoomId = argv[++i];
     else if (arg === '--content') out.content = argv[++i];
     else if (arg === '--url') out.url = argv[++i];
     else if (arg === '--token-env') out.tokenEnv = argv[++i];
@@ -49,8 +51,9 @@ function resultBase(roomId, content) {
 async function main() {
   const args = parseArgs(process.argv);
   const roomId = normalizeRoomId(args.roomId);
+  const expectedRoomId = args.expectedRoomId == null ? roomId : normalizeRoomId(args.expectedRoomId);
   if (!String(args.content || '').trim()) throw new Error('--content must be non-empty');
-  const result = resultBase(roomId, args.content);
+  const result = resultBase(expectedRoomId, args.content);
 
   if (args.dryRun) {
     result.actual_room_id = roomId;

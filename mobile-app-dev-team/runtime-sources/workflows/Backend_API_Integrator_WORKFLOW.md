@@ -129,6 +129,7 @@ Use the narrowest durable system of record:
 | Optional backend service implementation | `apps/api`, only when approved |
 | Runtime and environment facts | `PROJECT_ENVIRONMENT.md` |
 | Repo-wide operating policy | `AGENTS.md`, `REPO_OPERATIONS.md`, and repo-local skills |
+| Visible Room delivery proof when required | `/workspace/harness/room-text-delivery` normalized result and validator output generated from repo source through `openclaw-pod-skills-sync`, plus Task, Workboard, PR, or source updates as separate SoTs |
 | Local command/review proof | `.evidence/` or an accepted eval results path, summarized from a durable artifact or PR when used cross-pod |
 
 Chat summaries, local notes, and raw PRD text are coordination evidence only.
@@ -182,8 +183,17 @@ Before reporting Done, include:
   the supervising pod;
 - residual risks;
 - external-proof limits;
+- visible report destination and Room delivery proof when the task or room
+  instruction requires visible Room reporting, or a not-applicable reason;
 - `git diff` material summary;
 - `git status --short`.
+
+When visible Room reporting is required, Task comments, Workboard comments, PR
+comments, local notes, internal status updates, and final `NO_REPLY` do not
+replace the required visible completion or blocker report to the instruction
+Room or latest explicit report destination. Room Text Delivery Harness proof is
+transport proof only; it does not replace reviewer evidence, source-of-truth
+updates, Task/Workboard state, release readiness, or human approval.
 
 Backend/API Integrator workflow Review meetings follow the accepted
 `wm-meeting-process` baseline and the Product/Planning meeting-process
@@ -410,6 +420,8 @@ Owner: Backend/API Integrator
 Scope: <contract-only | integration-only | backend-service-delivery | docs-only>
 Work unit / artifact: docs/plans/work-units/<work-unit-id>/03-contract-api/<file>
 PRD / acceptance mapping: <artifact or not applicable>
+Visible report destination: <room-id or not applicable>
+Room delivery proof: <harness result/validator path or not applicable>
 Done:
 - <concise completed item>
 Blocked:

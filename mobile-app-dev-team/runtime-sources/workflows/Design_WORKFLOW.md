@@ -190,21 +190,37 @@ Design status reports must state:
 Before any Design progress, blocker, decision, or completion report is written,
 Design must bind the visible report destination. Use the latest explicit
 `visible_report_destination` when one exists; otherwise use the Room where the
-instruction was received. Record the chosen destination in the Task, Workboard,
-or handoff state when the work will continue beyond the current turn.
+instruction was received. When inbound text or a fixture contains the literal
+Room envelope pattern `[Room: room-N] [From ...]`, treat it as a supporting
+preflight signal named `literal_room_envelope`, extract numeric `N`, and bind
+that Room unless a newer explicit destination overrides it. Use numeric
+`room_id: N` in the Room transport payload; never send the literal `room-N`
+string as the payload `room_id`. If the literal envelope cannot be parsed,
+block and record the routing ambiguity instead of guessing.
 
 If a Room report is required, the user-visible report must be sent through the
-approved Room transport path before final output. The final webchat output is
-`NO_REPLY` only after the Room send succeeds or the transport failure has been
-recorded according to the Room transport retry rule. A webchat-final-only
-answer is forbidden when a Room report is required. Heartbeat replies, Task
-comments, Workboard comments, PR comments, local notes, and final `NO_REPLY` do
-not substitute for the required Room report.
+approved Room transport path before final output. A webchat-final-only answer
+is a failure when a Room report is required, and heartbeat or continuity context
+does not cancel that requirement. Task comments, Workboard comments, PR
+comments, local notes, heartbeat-only replies, and final `NO_REPLY` do not
+substitute for the required Room report.
 
-For Room delivery proof, use the Room Text Delivery Harness or its approved
-validated result format when proof is requested. Harness proof confirms Room
-transport delivery only; it does not complete Design work, approve scope, pass
-review, satisfy a gate, or replace the durable source of truth.
+Final webchat output may be exactly `NO_REPLY` only after successful Room
+delivery or recorded transport failure, and only when remaining work is
+complete, blocked with owner/reason/next action recorded, waiting with a
+wake/follow-up condition recorded, or delegated to a tracked worker. A Room send
+alone is not a work-completion signal.
+
+For Room routing or delivery proof, use the Room Text Delivery Harness or its
+approved validated result format when proof is requested. Routing decision
+proof is not delivery proof. Delivery proof confirms transport only; it does
+not complete Design work, approve scope, pass review, satisfy a gate, replace
+the durable source of truth, authorize release/production, provide human
+approval, or establish Product/Planning final acceptance.
+
+This workflow records required Design behavior, preflight/validator
+expectations, and failure classification. It must not claim physical runtime
+final-output blocking unless a separate runtime guard exists and is proven.
 
 Product/Planning P0/P1 approval is scope/evidence approval for PRD fit,
 non-goals, evidence readiness, human-gate routing, and scope alignment. It is

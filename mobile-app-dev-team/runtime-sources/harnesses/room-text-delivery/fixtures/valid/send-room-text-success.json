@@ -1,8 +1,8 @@
 {
   "schema": "room-text-delivery-result/v1",
   "request_id": "fixture-request",
-  "intended_room_id": 633,
-  "actual_room_id": 633,
+  "intended_room_id": 1001,
+  "actual_room_id": 1001,
   "message_id": "fixture-message-id",
   "content_nonempty": true,
   "transport": "send-room-text",

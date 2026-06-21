@@ -1,8 +1,8 @@
 {
   "schema": "room-text-delivery-result/v1",
   "request_id": "fixture-request",
-  "intended_room_id": 633,
-  "actual_room_id": 638,
+  "intended_room_id": 1001,
+  "actual_room_id": 1002,
   "message_id": "fixture-message-id",
   "content_nonempty": true,
   "transport": "raw-curl",
@@ -11,5 +11,5 @@
   "transport_ok": true,
   "raw_response_parse_ok": true,
   "visible_report_destination_bound": true,
-  "report_destination_override": "room-633"
+  "report_destination_override": "room-1001"
 }

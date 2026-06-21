@@ -648,3 +648,7 @@ clarification.
 6. Rework cap, retry budget exhaustion, or failed-gate risk acceptance goes to
    Product/Planning and the required human owner. A reviewer, LLM, pod, or
    Gatekeeper cannot accept failed-gate risk.
+
+### Reusable Room ID Hygiene
+
+Reusable Product/Planning docs, fixtures, examples, harnesses, and validator templates must not hardcode actual operating Room ids. Use synthetic test ids such as `1001` and `1002` in durable examples. Live report destinations must be resolved from current instruction metadata or the latest explicit report destination, not copied from reusable docs.

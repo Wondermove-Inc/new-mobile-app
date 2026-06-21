@@ -8,8 +8,8 @@ A Room text delivery proof is a JSON object with this minimum normalized shape:
 {
   "schema": "room-text-delivery-result/v1",
   "request_id": "optional string",
-  "intended_room_id": 633,
-  "actual_room_id": 633,
+  "intended_room_id": 1001,
+  "actual_room_id": 1001,
   "message_id": "message-id",
   "content_nonempty": true,
   "transport": "raw-curl",

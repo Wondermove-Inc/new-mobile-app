@@ -56,7 +56,7 @@ Expected exit codes:
 ## Live smoke boundary
 
 Do not perform a live Room smoke unless Product/Planning explicitly approves the
-smoke room. Prefer a dedicated test Room. Do not use `room-612` unless Kim/Spring
+smoke room. Prefer a dedicated test Room. Do not use any Kim/Spring reporting Room unless Kim/Spring
 explicitly approves. Live smoke proof must be reported as delivery proof only.
 
 ## Acceptance note: plain text alone

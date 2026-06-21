@@ -2,9 +2,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 const allowedTransports = new Set(['raw-curl', 'send-room-text', 'mcp-tool', 'other']);
 const substituteSurfaces = new Set(['task-comment', 'workboard-comment', 'pr-comment', 'local-note', 'final-no-reply']);
+const validatorDir = path.dirname(fileURLToPath(import.meta.url));
+const harnessRoot = path.resolve(validatorDir, '..');
 
 function usage() {
   console.error('Usage: validate-room-text-result.mjs <result.json> | --self-test');
@@ -85,7 +88,7 @@ function printResult(file, result) {
 }
 
 function fixtureFiles(kind) {
-  const root = path.resolve('mobile-app-dev-team/runtime-sources/harnesses/room-text-delivery/fixtures', kind);
+  const root = path.join(harnessRoot, 'fixtures', kind);
   return fs.readdirSync(root).filter((name) => name.endsWith('.json')).sort().map((name) => path.join(root, name));
 }
 

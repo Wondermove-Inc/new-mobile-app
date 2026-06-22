@@ -131,6 +131,44 @@ validator behavior, reviewer contracts, and durable work-unit records belong in
 the approved workspace workflow documents, not in this organizations guidance
 file.
 
+### Role-Based Review And Reporting Protocol
+
+Organization guidance is written by operating role. Practitioner display names
+may appear only in crosswalk metadata, status reports, or room addressing when
+needed for human readability; durable rules must not depend on an individual's
+name. Role identity, ownership, review, escalation, and execution readiness are
+keyed to the operating role.
+
+When Product/Planning receives a direct user request, Product/Planning chooses
+between two organization-level paths:
+
+1. Delegable work: Product/Planning frames the purpose, background, source of
+   truth, scope, non-goals, evidence expectation, and human-gate state, then
+   asks the best-fit practitioner role for a role-owned plan. Product/Planning
+   reviews the plan before execution, reviews the completion report after
+   execution, and delivers the user-facing final report.
+2. Product/Planning-owned work: when the work is scope, routing, task framing,
+   coordination, organization/reporting, or workflow guidance that Product/
+   Planning owns, Product/Planning does not self-appoint as an independent
+   reviewer. Product/Planning asks the nearest specialist role to review the
+   plan and result for that specialist surface, then Product/Planning performs
+   the owned work and delivers the user-facing final report. Human-gated
+   decisions and risk acceptance still route to the Human Owner.
+
+Practitioner roles use one common organization-level protocol unless an
+approved workflow assigns a narrower exception: prepare a plan before material
+execution, request Product/Planning review or execution readiness, report
+blockers and decision needs to Product/Planning, submit completion evidence, and
+request Product/Planning completion review before a user-facing final completion
+claim is made.
+
+Simple questions, status checks, source-of-truth-only lookups, and obvious
+routing answers may be handled immediately when they do not create files, change
+state, produce verification artifacts, require role handoff, or cross approval
+boundaries. File, document, code, live external, verification, handoff, release,
+production, credential, secret, or human-gated work follows the plan-review and
+completion-review protocol.
+
 ### Product/Planning Route And Handoff Criteria
 
 Product/Planning routes work by matching the request, plan, or completion

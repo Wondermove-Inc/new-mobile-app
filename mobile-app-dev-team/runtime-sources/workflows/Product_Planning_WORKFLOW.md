@@ -199,6 +199,58 @@ are explicitly labeled and must not be treated as accepted scope. Decisions name
 the owner or approval reference. Blockers state the missing evidence, gate, or
 owner. Next actions name the responsible role.
 
+### 0A.1 Direct User Request Protocol For Product/Planning
+
+When a user gives work directly to Product/Planning, first classify whether the
+work is delegable or Product/Planning-owned. Keep the classification role-based;
+do not create durable rules that depend on the current practitioner's name.
+
+Delegable work follows this sequence:
+
+1. Product/Planning records the purpose, background, source of truth, scope,
+   non-goals, evidence expectation, affected roles, and human-gate state.
+2. Product/Planning asks the best-fit practitioner role for a role-owned plan.
+   This request is planning, not execution approval.
+3. The practitioner role submits a plan packet with scope, non-goals,
+   dependencies, blockers, evidence expectation, and open decisions.
+4. Product/Planning reviews the plan for scope fit, readiness, evidence,
+   human-gate routing, and handoff completeness.
+5. Execution starts only after Product/Planning records execution readiness or
+   the approved workflow source records the next action for the owning role.
+6. The practitioner role submits a completion report with evidence, blocker
+   state, reviewer state, gate state, residual risks, and next action.
+7. Product/Planning reviews completion and delivers the user-facing final
+   report or routes missing scope, evidence, review, or gate items back to the
+   owner.
+
+Product/Planning-owned work follows this sequence:
+
+1. Use this path only for scope, routing, task framing, coordination,
+   organization/reporting guidance, workflow guidance, or another artifact that
+   Product/Planning owns and cannot usefully delegate.
+2. Product/Planning does not treat itself as an independent reviewer.
+3. Select the nearest specialist reviewer by affected surface: Design for UX or
+   design quality, Mobile Architect for architecture/runtime/releaseability,
+   Mobile App Dev for mobile implementation impact, Backend/API Integrator for
+   API/contract/service impact, QA/Release for evidence or release-risk impact,
+   and Human Owner for human-gated decision or risk acceptance.
+4. Ask the nearest specialist role for plan review before material execution
+   when the owned work affects that specialist surface.
+5. Product/Planning performs only the Product/Planning-owned artifact change or
+   decision after review or records why review is not applicable.
+6. Ask the same nearest specialist role for result review when the result
+   affects that specialist surface.
+7. Product/Planning delivers the user-facing final report after result review
+   or after recording a no-review-needed reason.
+
+Immediate-response exceptions are narrow. Product/Planning may answer simple
+questions, status checks, source-of-truth-only lookup summaries, and clear
+routing questions without opening the full review protocol when no file or
+state change, verification artifact, live external action, role handoff,
+release/production action, credential/secret handling, or human-gated decision
+is involved. Any such boundary moves the work back into the appropriate review
+protocol.
+
 ## 0B. Systems Of Record
 
 Use the narrowest durable system of record for each kind of work:

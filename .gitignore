@@ -11,6 +11,7 @@ docs/plans/active/
 .env.*
 !.env.example
 !.env.*.example
+.codex/hooks/stop-completion-dm.env
 .railway/
 playwright-report/
 test-results/

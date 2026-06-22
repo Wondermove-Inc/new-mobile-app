@@ -6,7 +6,7 @@ Upstream SoT:
 
 - `AGENTS.md`
 - `PROJECT_ENVIRONMENT.md`
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
+- `mobile-app-dev-team/runtime-sources/skills/README.md`
 - `mobile-app-dev-team/ref-organization/runtime-surfaces/README.md`
 
 Downstream consumers:
@@ -19,7 +19,6 @@ Reviewer evidence: .evidence/reviews/ref-organization-checkpoint-2-xhigh-2026061
 
 ## Purpose
 
-This consolidated section keeps the reusable reference-organization guidance in one navigable document. The former per-topic markdown files are listed below and preserved in `mobile-app-dev-team/_archive/preconsolidation/ref-organization-20260612/` for historical traceability.
 
 ## Consolidated Former Files
 
@@ -105,7 +104,7 @@ Pod-native OpenClaw skills use this runtime shape:
 Their source-only management location in this repository is:
 
 ```text
-mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/
+mobile-app-dev-team/runtime-sources/skills/<slug>/
 ```
 
 This surface is pod-native OpenClaw. It is not `.agents/skills/<skill-name>/SKILL.md`.

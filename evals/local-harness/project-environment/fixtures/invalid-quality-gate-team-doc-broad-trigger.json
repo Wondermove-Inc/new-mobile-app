@@ -11,6 +11,6 @@
   ],
   "expectedErrors": [
     "quality-gate.yml must not require local harness for mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md",
-    "quality-gate.yml must not require local harness for mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md"
+    "quality-gate.yml must not require local harness for mobile-app-dev-team/runtime-sources/skills/project-bootstrap/SKILL.md"
   ]
 }

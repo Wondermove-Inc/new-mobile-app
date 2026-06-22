@@ -16,12 +16,12 @@ import {
 } from './lib/team-doc-validation-helpers.mjs';
 
 const errors = [];
-const podNativeRoot = `${teamRoot}/runtime-sources/pod-native-openclaw-skills`;
+const podNativeRoot = `${teamRoot}/runtime-sources/skills`;
 const legacyPodNativeRoot = `${teamRoot}/09-pod-native-openclaw-skills`;
 const roleSoulRoot = `${teamRoot}/runtime-sources/role-souls`;
 const legacyRoleSoulRoot = `${teamRoot}/02-role-souls`;
 const skillMatrixPath = `${teamRoot}/runtime-sources/codex-skill-agent-matrix.md`;
-const organizationsPath = `${teamRoot}/runtime-sources/ORGANIZATIONS.md`;
+const organizationsPath = `${teamRoot}/runtime-sources/organizations/ORGANIZATIONS.md`;
 const podEnvironmentBootstrapPath = `${teamRoot}/runtime-sources/pod-environment-bootstrap.md`;
 const orbstackPodConfigValuesPath = `${teamRoot}/runtime-sources/orbstack-pod-config-values.md`;
 
@@ -79,8 +79,8 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   '## Copy-Paste Safe Setup Commands',
   'export REPO_CLONE_URL="https://github.com/Wondermove-Inc/new-mobile-app.git"',
   'bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
   'fresh pod',
   'role_slug="<canonical-role-slug>"',
@@ -88,12 +88,12 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh',
   '<current-user-language> placeholder',
   '## Role Slug Resolution Table',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/product-planning-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/design-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-architect-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/mobile-app-dev-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/backend-api-integrator-agent-runtime-spec.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/qa-release-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/product-planning-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/design-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/mobile-architect-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/mobile-app-dev-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/backend-api-integrator-agent-runtime-spec.md',
+  'mobile-app-dev-team/runtime-sources/skills/qa-release-agent-runtime-spec.md',
   '## Where To Read Runtime Specs',
   '/workspace/skills/codex-role-workflow/SKILL.md',
   'matching role runtime specification',
@@ -151,11 +151,63 @@ requireTerms(errors, organizationsPath, [
   '# ORGANIZATIONS.md - Organizations and Reporting',
   'This file is guidance only',
   'Overspec Controls',
+  'WonderMove Practitioner Crosswalk',
+  'WonderMove Mobile App Delivery Organization',
+  '| Spring | Mobile App Delivery | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | product-planning | Human Owner / Chairman for delivery status, decision requests, and human-gated decisions |',
+  'Practitioner names appear only in this crosswalk metadata section',
+  'CPO / Product Delivery Lead Planning And Orchestration Guidance',
+  'CPO / Product Delivery Lead does not perform practitioner\nimplementation work',
+  'Product/Planning Route And Handoff Criteria',
+  'Before reporting or routing current status, Product/Planning re-checks the\nrelevant source of truth',
+  'Role Operating Matrix',
+  '| Runtime role | Reports to | Escalation owner | Owns | Must not own | Handoff targets | Human-gate boundary |',
+  'Workspace Reporting Channels',
+  'assigned Chatroom',
+  'Escalation Matrix',
+  'approved workspace human-gate mechanism',
+  'Systems Of Record And Reporting Tools',
+  'Workboard',
+  'Gatekeeper Result Consumers',
+  'Failed API or contract check',
+  'Mobile Architect is a technical lead and advisory/co-review owner',
   'Role Archetypes',
   'Approval Boundaries',
   'Deterministic Gatekeeper / System Check',
-  '## 한국어',
 ], 'organizations runtime source');
+
+forbidTerms(errors, organizationsPath, [
+  '## Korean',
+  '## 한국어',
+  'Human Owner through `human-gate/v1`',
+  'Human Owner / Chairman through `human-gate/v1`',
+], 'English-only organizations runtime source');
+
+if (exists(organizationsPath) && /[가-힣]/.test(read(organizationsPath))) {
+  errors.push(`${organizationsPath} must remain English-only and must not contain Hangul content`);
+}
+
+if (exists(organizationsPath) && read(organizationsPath).includes('human-gate/v1')) {
+  errors.push(`${organizationsPath} must use approved workspace human-gate wording instead of schema-specific human-gate/v1`);
+}
+
+if (exists(organizationsPath) && /\b(?:chatroom|room)(?:[\s#:/()[\]\-]*(?:id|no|number))?[\s#:/()[\]\-]*\d+\b/i.test(read(organizationsPath))) {
+  errors.push(`${organizationsPath} must not hardcode Chatroom or room numbers`);
+}
+
+if (exists(organizationsPath)) {
+  const organizationsText = read(organizationsPath);
+  const crosswalkMatch = organizationsText.match(/### WonderMove Practitioner Crosswalk[\s\S]*?(?=\n### )/);
+  if (!crosswalkMatch) {
+    errors.push(`${organizationsPath} must contain an explicit practitioner crosswalk section`);
+  } else {
+    const textOutsideCrosswalk = organizationsText.replace(crosswalkMatch[0], '');
+    for (const practitionerName of ['Spring', 'Seulgi', 'Sohee', 'Hyunwoo', 'Jihoon', 'Sarah']) {
+      if (textOutsideCrosswalk.includes(practitionerName)) {
+        errors.push(`${organizationsPath} must keep practitioner name ${practitionerName} only in the explicit crosswalk metadata section`);
+      }
+    }
+  }
+}
 
 function requirePodNativeSkill(relativePath, slug, scriptName) {
   const skillPath = `${relativePath}/SKILL.md`;
@@ -201,9 +253,14 @@ requirePodNativeSkill(`${podNativeRoot}/codex-interactive-repo-work`, 'codex-int
 
 requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
   '/workspace/ORGANIZATIONS.md',
+  '/workspace/WORKFLOW.md',
+  '/workspace/HEARTBEAT.md',
+  '/workspace/TOOLS.md',
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
-  'workspace_organizations.status',
+  'OPENCLAW_ROLE_SLUG',
+  'openclaw-pod-skills-sync/v2',
+  'role_mismatch',
   'must not block skill sync by themselves',
   'guidance only',
 ], 'pod-native organizations sync');
@@ -211,15 +268,21 @@ requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
 requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh`, [
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'OPENCLAW_WORKSPACE_WORKFLOW_PATH',
+  'OPENCLAW_WORKSPACE_HEARTBEAT_PATH',
+  'OPENCLAW_WORKSPACE_TOOLS_PATH',
+  'OPENCLAW_ROLE_SLUG',
+  'openclaw-pod-skills-sync/v2',
+  'positive_role_identifier_scan',
+  'negative_known_other_role_residue_scan',
+  'role_mismatch',
   'workspace_organizations',
   'guidance_only',
-  'copy_failed',
-  'workspace_organizations_status="$(copy_workspace_organizations)"',
 ], 'pod-native organizations sync');
 
 requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
   '/workspace/ORGANIZATIONS.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   'guidance only',
   'must not block bootstrap or preflight by itself',
   'must not parse reporting lines, approval boundaries, or role contracts',

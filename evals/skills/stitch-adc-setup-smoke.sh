@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh"
+SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh"
 
 make_isolated_bin() {
   local bin_dir="$1"

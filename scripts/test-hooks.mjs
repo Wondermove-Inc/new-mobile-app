@@ -597,8 +597,12 @@ const cases = [
   },
 ];
 
+const completionDmCaptureFile = `/tmp/wm-stop-completion-dm-${process.pid}.json`;
+fs.rmSync(completionDmCaptureFile, { force: true });
+
 const httpServer = spawn('node', ['evals/hooks/fixtures/http-livez-server.mjs'], {
   stdio: ['ignore', 'pipe', 'inherit'],
+  env: { ...process.env, HTTP_CAPTURE_FILE: completionDmCaptureFile },
 });
 process.once('exit', () => httpServer.kill('SIGTERM'));
 
@@ -611,6 +615,86 @@ const port = await new Promise((resolve, reject) => {
   });
   httpServer.on('error', reject);
   httpServer.on('exit', (code) => reject(new Error(`http fixture server exited early with code ${code}`)));
+});
+
+cases.push({
+  name: 'stop completion dm dry-run includes task and run identifiers',
+  script: '.codex/hooks/mobile-stop-call-check.mjs',
+  env: {
+    WM_STOP_COMPLETION_DM_ENABLE: '1',
+    WM_STOP_COMPLETION_DM_DRY_RUN: '1',
+    WM_STOP_COMPLETION_DM_ROLE: 'sohee',
+    WM_STOP_COMPLETION_DM_TASK_ID: 'TASK-1',
+    WM_STOP_COMPLETION_DM_RUN_ID: 'fixture-run',
+  },
+  input: {
+    hook_event_name: 'Stop',
+    last_assistant_message: 'Done with evidence: pnpm run test:hooks passed.',
+  },
+  exitCode: 0,
+  expect: {
+    continue: true,
+    systemMessage: 'Stop call check passed: completion DM dry-run prepared for sohee task=TASK-1 run=fixture-run.',
+  },
+});
+
+cases.push({
+  name: 'stop completion dm reads local ignored env file',
+  script: '.codex/hooks/mobile-stop-call-check.mjs',
+  setupCompletionDmEnvFile: [
+    'export WM_STOP_COMPLETION_DM_ENABLE=1',
+    'export WM_STOP_COMPLETION_DM_DRY_RUN=1',
+    'export WM_STOP_COMPLETION_DM_ROLE=sohee',
+    'export WM_STOP_COMPLETION_DM_TASK_ID=TASK-1',
+    'export WM_STOP_COMPLETION_DM_RUN_ID=env-file-run',
+    '',
+  ].join('\n'),
+  input: {
+    hook_event_name: 'Stop',
+    last_assistant_message: 'Done with evidence: local env dry run.',
+  },
+  exitCode: 0,
+  expect: {
+    continue: true,
+    systemMessage: 'Stop call check passed: completion DM dry-run prepared for sohee task=TASK-1 run=env-file-run.',
+  },
+});
+
+cases.push({
+  name: 'stop completion dm posts local payload with runbook',
+  script: '.codex/hooks/mobile-stop-call-check.mjs',
+  env: {
+    WM_STOP_COMPLETION_DM_ENABLE: '1',
+    WM_STOP_COMPLETION_DM_ROLE: 'sohee',
+    WM_STOP_COMPLETION_DM_TASK_ID: 'TASK-1',
+    WM_STOP_COMPLETION_DM_RUN_ID: 'fixture-run',
+    WM_STOP_COMPLETION_DM_ENDPOINT: `http://127.0.0.1:${port}/messages`,
+    WM_STOP_COMPLETION_DM_ROOM_ID: '637',
+    WM_STOP_COMPLETION_DM_GATEWAY_TOKEN: 'fixture-token',
+    WM_STOP_COMPLETION_DM_FROM_AGENT_ID: 'sohee-fixture',
+    WM_STOP_COMPLETION_DM_RUNBOOK_JSON: JSON.stringify(['Update TASK-1.', 'Hand off TASK-2.']),
+  },
+  input: {
+    hook_event_name: 'Stop',
+    last_assistant_message: 'Implemented the hook. Verification: pnpm run test:hooks passed.',
+  },
+  exitCode: 0,
+  expect: {
+    continue: true,
+    systemMessage: 'Stop call check passed: completion DM delivered to configured sohee direct room.',
+  },
+  expectCapturedPayload: {
+    from_agent_id: 'sohee-fixture',
+    room_id: 637,
+    contentIncludes: [
+      '[Codex Stop Hook] Sohee pod 작업 완료 알림',
+      'Task/run identifier: task=TASK-1; run=fixture-run',
+      'Implemented the hook. Verification: pnpm run test:hooks passed.',
+      'Next-step runbook:',
+      '1. Update TASK-1.',
+      '2. Hand off TASK-2.',
+    ],
+  },
 });
 
 cases.push({
@@ -640,13 +724,33 @@ function exactJsonEqual(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+const defaultCompletionDmEnvFile = `/tmp/wm-stop-completion-dm-env-missing-${process.pid}.env`;
+fs.rmSync(defaultCompletionDmEnvFile, { force: true });
+
+function hookTestEnv(testCase, completionDmEnvFile) {
+  const baseEnv = Object.fromEntries(
+    ['PATH', 'HOME', 'USER', 'TMPDIR', 'TEMP', 'TMP', 'SystemRoot', 'ComSpec']
+      .map((name) => [name, process.env[name]])
+      .filter(([, value]) => typeof value === 'string'),
+  );
+
+  return {
+    ...baseEnv,
+    WM_STOP_COMPLETION_DM_CONFIG_PATH: completionDmEnvFile ?? defaultCompletionDmEnvFile,
+    ...(testCase.env ?? {}),
+  };
+}
+
 for (const testCase of cases) {
+  const testCompletionDmEnvFile = `/tmp/wm-stop-completion-dm-env-${process.pid}.env`;
+  if (testCase.setupCompletionDmEnvFile) fs.writeFileSync(testCompletionDmEnvFile, testCase.setupCompletionDmEnvFile);
   const input = testCase.input ? JSON.stringify(testCase.input) : fs.readFileSync(testCase.fixture, 'utf8');
   const result = spawnSync('node', [testCase.script], {
     input,
     encoding: 'utf8',
-    env: { ...process.env, ...(testCase.env ?? {}) },
+    env: hookTestEnv(testCase, testCase.setupCompletionDmEnvFile ? testCompletionDmEnvFile : undefined),
   });
+  if (testCase.setupCompletionDmEnvFile) fs.rmSync(testCompletionDmEnvFile, { force: true });
   if (result.status !== testCase.exitCode) {
     failures.push(`${testCase.name}: expected exit ${testCase.exitCode}, got ${result.status}`);
   }
@@ -663,9 +767,27 @@ for (const testCase of cases) {
   if (!exactJsonEqual(parsed, expected)) {
     failures.push(`${testCase.name}: stdout did not exactly match ${JSON.stringify(testCase.expect)}; got ${result.stdout}`);
   }
+  if (testCase.expectCapturedPayload) {
+    if (!fs.existsSync(completionDmCaptureFile)) {
+      failures.push(`${testCase.name}: expected captured completion DM payload file`);
+      continue;
+    }
+    const captured = JSON.parse(fs.readFileSync(completionDmCaptureFile, 'utf8'));
+    for (const [key, value] of Object.entries(testCase.expectCapturedPayload)) {
+      if (key === 'contentIncludes') continue;
+      if (captured[key] !== value) failures.push(`${testCase.name}: captured payload ${key} expected ${value}; got ${captured[key]}`);
+    }
+    for (const expectedText of testCase.expectCapturedPayload.contentIncludes ?? []) {
+      if (!String(captured.content ?? '').includes(expectedText)) {
+        failures.push(`${testCase.name}: captured payload content missing ${expectedText}`);
+      }
+    }
+    fs.rmSync(completionDmCaptureFile, { force: true });
+  }
 }
 
 httpServer.kill('SIGTERM');
+fs.rmSync(completionDmCaptureFile, { force: true });
 
 if (failures.length) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));

@@ -5,7 +5,7 @@
   "legacyCompatibility": false,
   "shouldPass": false,
   "removePrefixes": [
-    "mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/"
+    "mobile-app-dev-team/runtime-sources/skills/"
   ],
   "add": {
     "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md": "---\nname: project-bootstrap\ndescription: fixture\n---\n"

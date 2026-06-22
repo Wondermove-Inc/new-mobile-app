@@ -17,7 +17,7 @@ missing pod skill artifacts remain blockers.
 - `REPO_OPERATIONS.md` defines the Codex-only repo work policy for pods.
 - `PROJECT_ENVIRONMENT.md` defines current Codex MCP pins and runtime facts.
 - `.codex/config.toml` is the pinned MCP configuration source.
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md` is the
+- `mobile-app-dev-team/runtime-sources/skills/README.md` is the
   pod-native skill matrix.
 - `docs/TEMPLATE_VARIABLES.md` defines template variables and render timing.
 - `docs/CREDENTIALS.md` defines credential owners, injection paths, and
@@ -310,6 +310,16 @@ pod evidence, or a substitute for `human-gate/v1` approval.
    - QA/Release: `eas-robot-auth-setup` verifies EAS CLI and Expo robot auth
      readiness before any human-gated EAS/Maestro run.
 
+`project-bootstrap` inventory/status checks do not make every external surface a
+universal role blocker. Design requires Stitch/Google ADC readiness before
+approved Stitch work; QA/Release requires EAS readiness before approved
+EAS/Maestro work; Railway auth/service evidence is required for API, Railway,
+deployment, or deployed-backend verification work. Product/Planning may
+explicitly reclassify unrelated live/auth gaps as not applicable for bounded
+docs-only, review-only, or other non-live work. Install approval and secret
+safety boundaries still apply whenever a missing CLI or credential surface is
+actually in scope.
+
 ## Missing Or Blocked Criteria
 
 | Missing Condition | Required Action |
@@ -365,8 +375,8 @@ test -f PROJECT_ENVIRONMENT.md
 test -f .codex/config.toml
 test -f docs/TEMPLATE_VARIABLES.md
 test -f docs/CREDENTIALS.md
-test -f mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
-test -d mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills
+test -f mobile-app-dev-team/runtime-sources/skills/README.md
+test -d mobile-app-dev-team/runtime-sources/skills
 test -d /workspace/skills/project-bootstrap
 test -d /workspace/skills/codex-cli-auth-setup
 test -d /workspace/skills/pod-role-bootstrap

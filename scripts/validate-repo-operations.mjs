@@ -124,7 +124,7 @@ function requireConfluenceDependencyBoundary() {
 
 requireTerms('AGENTS.md', [
   'REPO_OPERATIONS.md',
-  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.',
+  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/skills` into `/workspace/skills`, then run `project-bootstrap`.',
 ]);
 
 requireTerms('REPO_OPERATIONS.md', [
@@ -208,14 +208,14 @@ requireTerms('DESIGN.md', [
   'runtime and skills do not consume this corpus',
 ]);
 
-requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 
-requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/skills/project-bootstrap/SKILL.md', [
   'name: project-bootstrap',
   '/workspace/skills/project-bootstrap/SKILL.md',
   'openclaw-pod-skills-sync',
@@ -243,7 +243,7 @@ requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/pro
   'status only',
 ]);
 
-requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/SKILL.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/SKILL.md', [
   'name: openclaw-pod-skills-sync',
   '/workspace/skills/openclaw-pod-skills-sync/SKILL.md',
   '/workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
@@ -257,7 +257,7 @@ requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/ope
   'status only',
 ]);
 
-requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md', [
+requireTerms('mobile-app-dev-team/runtime-sources/skills/project-bootstrap/references/blocker-resolution-guide.md', [
   'Project Bootstrap Blocker Resolution Guide',
   'Blocker Classification',
   'missing role identity',
@@ -274,7 +274,7 @@ requireTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/pro
   'Do not print token values',
 ]);
 
-forbidTerms('mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+forbidTerms('mobile-app-dev-team/runtime-sources/skills/codex-cli-auth-setup/SKILL.md', [
   'Recommended AGENTS.md policy wording:',
   'Allowed direct actions by this agent:',
   'This agent MUST NOT directly use read/edit/write for Codex-managed repo/path content',
@@ -289,7 +289,7 @@ requireTerms('mobile-app-dev-team/source-map.md', [
   'REPO_OPERATIONS.md',
   'repo-wide operating policy',
   'ORGANIZATIONS.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
 ]);
 

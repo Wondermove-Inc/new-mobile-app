@@ -3,8 +3,40 @@ import { exists, finish, requireTerms, teamRoot } from './lib/team-doc-validatio
 
 const errors = [];
 
-requireTerms(errors, `${teamRoot}/workflows/work-processes.md`, [
-  '# Work Processes',
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/Product_Planning_WORKFLOW.md`, [
+  '# Product Planning Workflow',
+  'agent-consumed Product/Planning workflow',
+  'not the workspace-neutral `/workspace/WORKFLOW.md`',
+  'CPO Planning And Feedback Loop',
+  'Practitioner plan request',
+  'CPO completion feedback loop',
+  'goal, owner, scope, deadline, expected output, and approval boundary',
+  'facts, assumptions, decisions, blockers, and next actions',
+  'Intake -> Plan -> Gather evidence -> Produce -> Review -> Deliver -> Follow through',
+  'Jira/tasks',
+  'Confluence/wiki',
+  'GitHub/repository',
+  'workspace files',
+  'Status reports must state:',
+  'wake-guard',
+  'user-visible status update',
+  'Secret safety',
+  'destructive, production, financial, legal, security-sensitive, or externally visible actions',
+  'Workboard',
+  'Tasks for agent-executable work packages',
+  'Before reporting status, re-check the current source of truth',
+  'Reviewer evidence should include reviewer identity',
+  'READY_FOR_EXECUTION must be recorded in durable SoT',
+  'repo-local skills and workflow documents must be followed when in scope',
+  'Failed check remains failed',
+  'Role-Centered Operation Check',
+  'exact runtime role',
+  'reports-to role',
+  'escalation owner',
+  'owns / must not own',
+  'handoff targets',
+  'human-gate boundary',
+  'deterministic Gatekeeper is a system role',
   '$wm',
   'docs/plans/work-units/<work-unit-id>/',
   'human gates',
@@ -12,7 +44,33 @@ requireTerms(errors, `${teamRoot}/workflows/work-processes.md`, [
   'API Readiness',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/github-artifact-workflow.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/QA_Release_WORKFLOW.md`, [
+  '# QA/Release Workflow',
+  'agent-consumed QA/Release workflow',
+  'not the workspace-neutral `/workspace/WORKFLOW.md`',
+  'Product_Planning_WORKFLOW.md',
+  'e2e-test',
+  'qa-railway-workflow',
+  'wm-implementation-reviewer',
+  '05-qa-release',
+  'Cross-Pod Evidence And Local Path Boundaries',
+  'Systems Of Record',
+  'Workboard is not a replacement',
+  'Secret safety',
+  'readiness/status-only',
+  'human-gate/v1',
+  'Evidence Ladder',
+  'Reset Record',
+  'RN Web Boundary',
+  'Native, EAS, Maestro, Mobile-MCP, And Device Boundary',
+  'Railway And API Evidence Boundary',
+  'Failure Classification',
+  'Release-Risk Summary',
+  'Done Criteria',
+  'Failure Loop',
+], 'workflow doc');
+
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/github-artifact-workflow.md`, [
   '# GitHub Artifact Workflow',
   'pod-isolated',
   'No shared storage',
@@ -21,7 +79,7 @@ requireTerms(errors, `${teamRoot}/workflows/github-artifact-workflow.md`, [
   'status: required | not-applicable | deferred/non-goal',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/native-e2e-strategy.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/native-e2e-strategy.md`, [
   '# Native E2E Strategy',
   'Evidence Ladder',
   'L0',
@@ -32,7 +90,7 @@ requireTerms(errors, `${teamRoot}/workflows/native-e2e-strategy.md`, [
   'mobile-mcp',
 ], 'workflow doc');
 
-requireTerms(errors, `${teamRoot}/workflows/entry-case-routing.md`, [
+requireTerms(errors, `${teamRoot}/runtime-sources/workflows/entry-case-routing.md`, [
   '# Entry Case Routing',
   'Common Entry Point',
   'SoT-Named Input Categories',

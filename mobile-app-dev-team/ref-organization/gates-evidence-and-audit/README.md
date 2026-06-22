@@ -5,8 +5,7 @@ Source class: index
 Upstream SoT:
 
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
-- `mobile-app-dev-team/workflows/github-artifact-workflow.md`
-- `mobile-app-dev-team/_archive/completed-plans/ref-organization-goal-plan.md`
+- `mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md`
 
 Downstream consumers:
 
@@ -17,7 +16,6 @@ Reviewer evidence: .evidence/reviews/ref-organization-checkpoint-2-xhigh-2026061
 
 ## Purpose
 
-This consolidated section keeps the reusable reference-organization guidance in one navigable document. The former per-topic markdown files are listed below and preserved in `mobile-app-dev-team/_archive/preconsolidation/ref-organization-20260612/` for historical traceability.
 
 ## Consolidated Former Files
 
@@ -99,6 +97,9 @@ No LLM role, reviewer, QA role, or Gatekeeper can replace these decisions.
 Former file: `required-gates.md`
 
 ### Core Gates
+
+Run gates as applicable by touched scope and PR policy, not universally for
+every reference wording edit.
 
 - `pnpm run validate:team-doc`
 - `pnpm run test:runtime`

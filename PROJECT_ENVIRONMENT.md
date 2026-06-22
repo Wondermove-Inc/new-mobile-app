@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-14
+Last updated: 2026-06-19
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -18,6 +18,7 @@ This file is the root source for the current project environment and runtime set
   - `pnpm run validate:work-unit-next` is composed into `test:runtime` for the work-unit next-action resolver.
   - `pnpm run validate:project-environment` is composed into `test:runtime` for offline SoT drift detection.
   - `pnpm run validate:evidence-hygiene` is composed into `test:runtime` for durable evidence path and secret hygiene.
+  - `pnpm run validate:codex-run` is composed into `test:runtime` for the minimal Codex PTY launch-gate wrapper smoke fixtures.
 
 ## Mobile Runtime
 
@@ -87,7 +88,7 @@ This file is the root source for the current project environment and runtime set
 
 ## Mobile Native Evidence Ladder
 
-- Strategy doc: `mobile-app-dev-team/workflows/native-e2e-strategy.md`.
+- Strategy doc: `mobile-app-dev-team/runtime-sources/workflows/native-e2e-strategy.md`.
 - Work-unit field: `status.json.evidence_ladder`.
 - L0 `jest`: unit/component/contract/runtime checks.
 - L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.
@@ -261,11 +262,11 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - MCP config: `.codex/config.toml`.
 - Codex MCP/CLI setup guide: `docs/CODEX_MCP_ENVIRONMENT.md`.
 - Pod-native project bootstrap:
-  - Sync source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/`.
+  - Sync source: `mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/`.
   - Sync runtime shape: `/workspace/skills/openclaw-pod-skills-sync/SKILL.md`.
   - Sync report: `/workspace/state/openclaw-pod-skills-sync-report.json`.
   - After clone or pull, run `openclaw-pod-skills-sync` before `project-bootstrap`.
-  - Source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/`.
+  - Source: `mobile-app-dev-team/runtime-sources/skills/project-bootstrap/`.
   - Runtime shape: `/workspace/skills/project-bootstrap/SKILL.md`.
   - Required routing bridge: `/workspace/skills/codex-role-workflow/SKILL.md`.
   - Required managed-repo execution contract:
@@ -349,13 +350,19 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/validate-runtime-artifacts.mjs`
     - The root `validate` package script removes transient `.claude-state/` before running this validator, while the validator itself requires only `.claude-state/` to remain covered by `.gitignore`. Tracked Claude Code helper artifacts such as `CLAUDE.md`, `.claude/skills/`, and the `.claude/agents/reviewer.md` bridge are documentation/helper files, not active Codex runtime inputs.
   - `scripts/codex-headless-review.mjs`
-    - Codex-only read-only helper: `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
+    - Codex-only read-only helper: runs the selected Codex binary with `-a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
+    - Codex binary selection uses the shared resolver in `scripts/lib/codex-binary-resolver.mjs`: prefer `CODEX_BIN`, then platform-specific absolute candidates such as `/opt/homebrew/bin/codex`, `/usr/local/bin/codex`, `/usr/bin/codex`, and `/home/linuxbrew/.linuxbrew/bin/codex`, then PATH candidates. Candidates are checked for executable status, architecture compatibility where detectable, `--version`, and `exec --help` before use.
+    - On Windows, resolver validation uses executable/PATHEXT candidates and command validation instead of POSIX `file` output; `.cmd` and `.bat` wrappers are executed through the Windows command processor descriptor.
     - no Claude, `--engine auto`, or `review_engine_preference` fallback path.
     - optional machine-readable reviewer verdict validation: `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>`.
     - verdict-producing reviewers are `wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, and `design-reviewer`.
     - the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; `GO` requires no Critical/High/Medium findings and required checks `PASS` or source-backed `NOT_APPLICABLE`, failed required checks map to `NO_GO`, missing required checks map to `BLOCKED`, and human-gate blockers map to `NEEDS_HUMAN`.
     - researcher/advisor agents are advisory and are not valid `--json-envelope` targets.
   - `scripts/test-hooks.mjs`
+  - `evals/skills/codex-run-smoke.sh`
+    - self-test fixture suite for the repo-tracked source of the `/workspace/codex-hooks/codex-run` compatible launch-gate wrapper:
+      `mobile-app-dev-team/runtime-sources/skills/codex-interactive-repo-work/scripts/codex-run`.
+    - validates dry-run launch evidence, blocked preflight evidence, missing input handling, active human-gate blocker handling, required `$wm` prompt wording, reviewer wording, numeric room id checking, missing Codex CLI handling, and secret-safe output.
   - `scripts/validate-team-doc.mjs`
     - active managed runtime composition wrapper; runs only runtime-source docs
       and focused `codex-role-workflow` routing-support docs. It intentionally
@@ -477,7 +484,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   runtime or harness path also changes. They do not trigger active
   `validate:team-doc` unless a directly managed runtime source or
   routing-support dependency also changes.
-- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` changes
+- `mobile-app-dev-team/runtime-sources/skills/**` changes
   use targeted pod-native smoke plus `test:runtime`; local harness is not
   required unless a Codex runtime or harness path also changes.
 - `evals/skills/**`, `evals/team-doc-structure/**`, and durable

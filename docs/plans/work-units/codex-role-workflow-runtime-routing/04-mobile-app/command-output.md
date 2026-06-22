@@ -25,7 +25,7 @@ Expected failure after adding validator requirements and before updating `codex-
 Representative missing terms included:
 
 - `Codex Substrate`
-- `mobile-app-dev-team/workflows/entry-case-routing.md`
+- `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`
 - `Common Intake Rule`
 - `project requirement`
 - `project specification`

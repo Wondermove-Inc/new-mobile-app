@@ -212,7 +212,7 @@ function validateEvidence(errors, source, status) {
   }
 }
 
-// Managed-doc guidance P-1 (mobile-app-dev-team/workflows/entry-case-routing.md): marking the
+// Managed-doc guidance P-1 (mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md): marking the
 // 01-design stage not-applicable requires durable non-goal justification evidence. The
 // semantic relevance judgment stays process-owned; this only enforces that a not-applicable
 // Design stage carries a durable non-goal evidence reference (the existing `non-goal` kind).
@@ -221,7 +221,7 @@ function validateDesignNotApplicableNonGoal(errors, source, status) {
   const hasNonGoalEvidence = Array.isArray(status.evidence)
     && status.evidence.some((item) => isPlainObject(item) && item.kind === 'non-goal');
   if (!hasNonGoalEvidence) {
-    fail(errors, source, "01-design in not-applicable state must carry durable 'non-goal' evidence (mobile-app-dev-team/workflows/entry-case-routing.md P-1)");
+    fail(errors, source, "01-design in not-applicable state must carry durable 'non-goal' evidence (mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md P-1)");
   }
 }
 

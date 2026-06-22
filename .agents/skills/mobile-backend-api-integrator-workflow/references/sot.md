@@ -16,9 +16,9 @@ refetch/audit anchors only, not runtime inputs.
 
 ## Operational references (read when task context is incomplete)
 
-- Entry case routing: `mobile-app-dev-team/workflows/entry-case-routing.md`
+- Entry case routing: `mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md`
 - Gates & evidence: `mobile-app-dev-team/governance/gates-and-evidence.md`
-- Work processes: `mobile-app-dev-team/workflows/work-processes.md`
+- Work processes: `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`
 - Role capability matrix: `mobile-app-dev-team/organization/role-capability-matrix.md`
 
 - Runtime path decision: native Codex CLI skills use `.agents/skills`; custom agents and hooks use `.codex`.

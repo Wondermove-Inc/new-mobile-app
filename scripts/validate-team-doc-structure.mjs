@@ -15,16 +15,16 @@ const registry = [
   { legacyPath: `${teamRoot}/02-role-souls/`, targetPath: `${teamRoot}/runtime-sources/role-souls/`, kind: 'dir', surfaceClass: 'R2', strength: 'strong' },
   { legacyPath: `${teamRoot}/03-role-capability-matrix.md`, targetPath: `${teamRoot}/organization/role-capability-matrix.md`, kind: 'file', surfaceClass: 'O1', strength: 'medium' },
   { legacyPath: `${teamRoot}/04-skills-and-agents-matrix.md`, targetPath: `${teamRoot}/runtime-sources/codex-skill-agent-matrix.md`, kind: 'file', surfaceClass: 'C1', strength: 'strong' },
-  { legacyPath: `${teamRoot}/05-work-processes.md`, targetPath: `${teamRoot}/workflows/work-processes.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
+  { legacyPath: `${teamRoot}/05-work-processes.md`, targetPath: `${teamRoot}/runtime-sources/workflows/Product_Planning_WORKFLOW.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
   { legacyPath: `${teamRoot}/06-gates-and-evidence.md`, targetPath: `${teamRoot}/governance/gates-and-evidence.md`, kind: 'file', surfaceClass: 'G1', strength: 'medium' },
   { legacyPath: `${teamRoot}/07-new-team-template-guide.md`, targetPath: `${teamRoot}/organization/new-team-template-guide.md`, kind: 'file', surfaceClass: 'O1', strength: 'low/medium' },
-  { legacyPath: `${teamRoot}/09-pod-native-openclaw-skills/`, targetPath: `${teamRoot}/runtime-sources/pod-native-openclaw-skills/`, kind: 'dir', surfaceClass: 'R1', strength: 'strong' },
-  { legacyPath: `${teamRoot}/10-github-artifact-workflow.md`, targetPath: `${teamRoot}/workflows/github-artifact-workflow.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
-  { legacyPath: `${teamRoot}/14-native-e2e-strategy.md`, targetPath: `${teamRoot}/workflows/native-e2e-strategy.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
+  { legacyPath: `${teamRoot}/09-pod-native-openclaw-skills/`, targetPath: `${teamRoot}/runtime-sources/skills/`, kind: 'dir', surfaceClass: 'R1', strength: 'strong' },
+  { legacyPath: `${teamRoot}/10-github-artifact-workflow.md`, targetPath: `${teamRoot}/runtime-sources/workflows/github-artifact-workflow.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
+  { legacyPath: `${teamRoot}/14-native-e2e-strategy.md`, targetPath: `${teamRoot}/runtime-sources/workflows/native-e2e-strategy.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
   { legacyPath: `${teamRoot}/15-human-ops-live-readiness-annex.md`, targetPath: `${teamRoot}/governance/human-ops-live-readiness-annex.md`, kind: 'file', surfaceClass: 'G1', strength: 'medium' },
   { legacyPath: `${teamRoot}/16-pod-environment-bootstrap.md`, targetPath: `${teamRoot}/runtime-sources/pod-environment-bootstrap.md`, kind: 'file', surfaceClass: 'R1', strength: 'strong' },
   { legacyPath: `${teamRoot}/17-orbstack-pod-config-values.md`, targetPath: `${teamRoot}/runtime-sources/orbstack-pod-config-values.md`, kind: 'file', surfaceClass: 'R1', strength: 'medium' },
-  { legacyPath: `${teamRoot}/19-entry-case-routing.md`, targetPath: `${teamRoot}/workflows/entry-case-routing.md`, kind: 'file', surfaceClass: 'W1', strength: 'strong/medium' },
+  { legacyPath: `${teamRoot}/19-entry-case-routing.md`, targetPath: `${teamRoot}/runtime-sources/workflows/entry-case-routing.md`, kind: 'file', surfaceClass: 'W1', strength: 'strong/medium' },
   { legacyPath: `${teamRoot}/20-app-eas-ota-rollback-runbook.md`, targetPath: `${teamRoot}/governance/app-eas-ota-rollback-runbook.md`, kind: 'file', surfaceClass: 'G1', strength: 'medium' },
   { legacyPath: `${teamRoot}/21-team-doc-validator-and-soul-runtime-explainer.md`, targetPath: `${teamRoot}/reports/team-doc-validator-and-soul-runtime-explainer.md`, kind: 'file', surfaceClass: 'P1', strength: 'low' },
   { legacyPath: `${teamRoot}/22-runtime-surface-classification-improvement-report.md`, targetPath: `${teamRoot}/reports/runtime-surface-classification-improvement-report.md`, kind: 'file', surfaceClass: 'P1', strength: 'low' },
@@ -66,11 +66,11 @@ const sourceMapRequiredTerms = [
   'evals/team-doc-structure/fixtures/',
   'mobile-app-dev-team/governance/',
   'mobile-app-dev-team/organization/',
-  'mobile-app-dev-team/workflows/',
+  'mobile-app-dev-team/runtime-sources/workflows/',
   'mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md',
   'mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md',
   'mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/',
+  'mobile-app-dev-team/runtime-sources/skills/',
   'mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md',
 ];
 
@@ -135,11 +135,11 @@ function buildSourceMapBody() {
     '- `source-map.md` is the target source map name after numeric-prefix removal.',
     '- `mobile-app-dev-team/governance/` is the target governance document family.',
     '- `mobile-app-dev-team/organization/` is the target organization document family.',
-    '- `mobile-app-dev-team/workflows/` is the target workflow document family.',
+    '- `mobile-app-dev-team/runtime-sources/workflows/` is the target workflow document family.',
     '- `mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md` is the target Codex skill and agent matrix path.',
     '- `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md` is the target pod environment bootstrap path.',
     '- `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` is the target OrbStack pod config values path.',
-    '- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/` is the target pod-native runtime-source path.',
+    '- `mobile-app-dev-team/runtime-sources/skills/` is the target pod-native runtime-source path.',
     '- `mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md` is the target report path for the approved goal plan.',
     '',
     '## Validator Responsibility Crosswalk',
@@ -203,6 +203,7 @@ function applyFixture(baseFiles, fixture) {
 function validateStructure(files, options = {}) {
   const legacyCompatibility = options.legacyCompatibility ?? true;
   const finalSourceMap = options.finalSourceMap ?? false;
+  const enforceHistoricalPaths = options.enforceHistoricalPaths ?? true;
   const errors = [];
   const allowedNumericTopLevel = legacyCompatibility
     ? new Set(
@@ -241,22 +242,26 @@ function validateStructure(files, options = {}) {
     }
   }
 
-  for (const archive of completedPlanArchives) {
-    if (pathExists(files, archive.stalePath)) {
-      errors.push(`completed plan must not be current top-level doc: ${archive.stalePath}`);
-    }
-    const hasTargetArchive = pathExists(files, archive.targetArchivePath);
-    const hasLegacyArchive = legacyCompatibility && pathExists(files, archive.legacyArchivePath);
-    if (!hasTargetArchive && !hasLegacyArchive) {
-      errors.push(`missing completed-plan archive path: ${archive.targetArchivePath}${legacyCompatibility ? ` or ${archive.legacyArchivePath}` : ''}`);
+  if (enforceHistoricalPaths) {
+    for (const archive of completedPlanArchives) {
+      if (pathExists(files, archive.stalePath)) {
+        errors.push(`completed plan must not be current top-level doc: ${archive.stalePath}`);
+      }
+      const hasTargetArchive = pathExists(files, archive.targetArchivePath);
+      const hasLegacyArchive = legacyCompatibility && pathExists(files, archive.legacyArchivePath);
+      if (!hasTargetArchive && !hasLegacyArchive) {
+        errors.push(`missing completed-plan archive path: ${archive.targetArchivePath}${legacyCompatibility ? ` or ${archive.legacyArchivePath}` : ''}`);
+      }
     }
   }
 
   for (const entry of registry) {
     const hasTarget = pathExists(files, entry.targetPath, entry.kind);
     const hasLegacy = pathExists(files, entry.legacyPath, entry.kind);
-    if (!hasTarget && !(legacyCompatibility && hasLegacy)) {
+    if (enforceHistoricalPaths || entry.surfaceClass !== 'P1') {
+      if (!hasTarget && !(legacyCompatibility && hasLegacy)) {
       errors.push(`missing structure registry path for ${entry.surfaceClass}: ${entry.targetPath}${legacyCompatibility ? ` or ${entry.legacyPath}` : ''}`);
+      }
     }
     if (!legacyCompatibility && runtimeSurfaceClasses.has(entry.surfaceClass) && hasLegacy && !hasTarget) {
       errors.push(`runtime source exists only at legacy path while target is missing: ${entry.legacyPath} -> ${entry.targetPath}`);
@@ -318,7 +323,11 @@ if (process.argv.includes('--self-test')) {
   process.exit(0);
 }
 
-const errors = validateStructure(listRepoFiles(teamRoot), { legacyCompatibility: false, finalSourceMap: true });
+const errors = validateStructure(listRepoFiles(teamRoot), {
+  legacyCompatibility: false,
+  finalSourceMap: true,
+  enforceHistoricalPaths: false,
+});
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join('\n'));
   process.exit(1);

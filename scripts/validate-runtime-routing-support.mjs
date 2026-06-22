@@ -4,19 +4,34 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const codexRoleWorkflowPath = 'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md';
-const managedRepoEntryCasePath = '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md';
-const forbiddenRuntimeRelativePath = '/workspace/skills/codex-role-workflow/mobile-app-dev-team/workflows/entry-case-routing.md';
+const readmePath = 'mobile-app-dev-team/README.md';
+const codexRoleWorkflowPath = 'mobile-app-dev-team/runtime-sources/skills/codex-role-workflow/SKILL.md';
+const managedRepoEntryCasePath = '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
+const forbiddenRuntimeRelativePath = '/workspace/skills/codex-role-workflow/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md';
+
+const readmeRequiredTerms = [
+  '# Mobile App Dev Team',
+  '## Pod Role Runtime Entrypoint',
+  'openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specification -> codex-role-workflow',
+  'If project-bootstrap is blocked, role work is forbidden',
+  '/workspace/skills/<slug>/SKILL.md',
+  'runtime snapshot',
+  'PRD acceptance line or explicit non-goal reference',
+  'human-gate/v1',
+  'Gatekeeper, reviewer, pod, or LLM role cannot replace human approval',
+  'production-submit',
+  'failed-gate-risk',
+];
 
 const supportSotRequiredTerms = {
-  'mobile-app-dev-team/workflows/entry-case-routing.md': [
+  'mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md': [
     '# Entry Case Routing',
     'human-gate/v1',
     'SoT-Named Input Categories',
     'not-applicable',
   ],
-  'mobile-app-dev-team/workflows/work-processes.md': [
-    '# Work Processes',
+  'mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md': [
+    '# Product Planning Workflow',
     'Design Readiness',
     'API Readiness',
     'human gates',
@@ -27,7 +42,7 @@ const supportSotRequiredTerms = {
     'Durable GitHub Handoff',
     'Railway Boundary',
   ],
-  'mobile-app-dev-team/workflows/github-artifact-workflow.md': [
+  'mobile-app-dev-team/runtime-sources/workflows/github-artifact-workflow.md': [
     '# GitHub Artifact Workflow',
     'docs/plans/work-units/<work-unit-id>/',
     'role artifact',
@@ -37,6 +52,10 @@ const supportSotRequiredTerms = {
     'rollback_owner',
     'production-submit',
   ],
+};
+const runtimeRoutingRequiredTerms = {
+  [readmePath]: readmeRequiredTerms,
+  ...supportSotRequiredTerms,
 };
 
 const codexRoleWorkflowRequiredTerms = [
@@ -49,7 +68,7 @@ const codexRoleWorkflowRequiredTerms = [
 ];
 
 function loadRepoFiles() {
-  const relativePaths = [codexRoleWorkflowPath, ...Object.keys(supportSotRequiredTerms)];
+  const relativePaths = [readmePath, codexRoleWorkflowPath, ...Object.keys(supportSotRequiredTerms)];
   const files = {};
   const errors = [];
 
@@ -82,6 +101,7 @@ function requireTerms(files, relativePath, terms, errors) {
 function validateRoutingSupport(files) {
   const errors = [];
 
+  requireTerms(files, readmePath, readmeRequiredTerms, errors);
   requireTerms(files, codexRoleWorkflowPath, codexRoleWorkflowRequiredTerms, errors);
 
   const codexRoleWorkflowBody = files[codexRoleWorkflowPath] ?? '';
@@ -98,6 +118,7 @@ function validateRoutingSupport(files) {
 
 function runSelfTest() {
   const validFiles = {
+    [readmePath]: readmeRequiredTerms.join('\n'),
     [codexRoleWorkflowPath]: codexRoleWorkflowRequiredTerms.join('\n'),
   };
   for (const [supportPath, terms] of Object.entries(supportSotRequiredTerms)) {
@@ -108,13 +129,7 @@ function runSelfTest() {
     [codexRoleWorkflowPath]: validFiles[codexRoleWorkflowPath]
       .replace(managedRepoEntryCasePath, forbiddenRuntimeRelativePath),
   };
-  const requiredSupportSotPaths = [
-    'mobile-app-dev-team/workflows/entry-case-routing.md',
-    'mobile-app-dev-team/workflows/work-processes.md',
-    'mobile-app-dev-team/governance/gates-and-evidence.md',
-    'mobile-app-dev-team/workflows/github-artifact-workflow.md',
-    'mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md',
-  ];
+  const requiredSupportSotPaths = Object.keys(runtimeRoutingRequiredTerms);
 
   const cases = [
     ['valid routing support fixture', validFiles, true],
@@ -126,7 +141,7 @@ function runSelfTest() {
     }),
     ...requiredSupportSotPaths.map((supportPath) => {
       const files = { ...validFiles };
-      const staleTerm = supportSotRequiredTerms[supportPath][1];
+      const staleTerm = runtimeRoutingRequiredTerms[supportPath][1];
       files[supportPath] = files[supportPath].replace(staleTerm, '');
       return [`stale support SoT fixture: ${supportPath} missing ${staleTerm}`, files, false];
     }),

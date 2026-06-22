@@ -4,14 +4,13 @@ Status: reusable template guidance
 Source class: index
 Upstream SoT:
 
-- `mobile-app-dev-team/_archive/completed-plans/ref-organization-goal-plan.md`
 - `mobile-app-dev-team/governance/sot-and-principles.md`
 - `mobile-app-dev-team/source-map.md`
 
 Downstream consumers:
 
 - Future team and organization design work.
-- `scripts/validate-team-doc.mjs` ref-organization checks.
+- `scripts/validate-reference-docs.mjs` ref-organization checks.
 
 Last reviewed date: 2026-06-10
 Reviewer evidence: .evidence/reviews/ref-organization-checkpoint-2-xhigh-20260610.md
@@ -34,5 +33,3 @@ This tree is the reusable reference-organization layer for future agent teams. I
 - [Source Map And Migration](./source-map-and-migration/README.md)
 
 ## Consolidation Boundary
-
-This tree is intentionally consolidated to root README plus one README per section. Pre-consolidation files are preserved under `mobile-app-dev-team/_archive/preconsolidation/ref-organization-20260612/`.

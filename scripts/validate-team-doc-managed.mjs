@@ -176,20 +176,20 @@ const roleSoulRuntimeHeadings = [
 const managedTeamDocRoot = 'mobile-app-dev-team';
 const governanceRoot = `${managedTeamDocRoot}/governance`;
 const organizationRoot = `${managedTeamDocRoot}/organization`;
-const workflowRoot = `${managedTeamDocRoot}/workflows`;
+const workflowRoot = `${managedTeamDocRoot}/runtime-sources/workflows`;
 const sotAndPrinciplesDoc = `${governanceRoot}/sot-and-principles.md`;
 const teamCompositionDoc = `${organizationRoot}/team-composition.md`;
 const roleCapabilityMatrixDoc = `${organizationRoot}/role-capability-matrix.md`;
 const newTeamTemplateGuideDoc = `${organizationRoot}/new-team-template-guide.md`;
-const workProcessesDoc = `${workflowRoot}/work-processes.md`;
+const workProcessesDoc = `${workflowRoot}/Product_Planning_WORKFLOW.md`;
 const gatesAndEvidenceDoc = `${governanceRoot}/gates-and-evidence.md`;
 const humanOpsLiveReadinessAnnexDoc = `${governanceRoot}/human-ops-live-readiness-annex.md`;
 const appEasOtaRollbackRunbookDoc = `${governanceRoot}/app-eas-ota-rollback-runbook.md`;
 const entryCaseRoutingDoc = `${workflowRoot}/entry-case-routing.md`;
 const githubArtifactWorkflowDoc = `${workflowRoot}/github-artifact-workflow.md`;
 const nativeE2eStrategyDoc = `${workflowRoot}/native-e2e-strategy.md`;
-const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/runtime-sources/pod-native-openclaw-skills`;
-const organizationsRuntimeSource = `${managedTeamDocRoot}/runtime-sources/ORGANIZATIONS.md`;
+const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/runtime-sources/skills`;
+const organizationsRuntimeSource = `${managedTeamDocRoot}/runtime-sources/organizations/ORGANIZATIONS.md`;
 const legacyPodNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
@@ -430,15 +430,15 @@ for (const { staleArchivePath, archivePath, replacement } of archiveReclassifica
 requireRootTerms('AGENTS.md', [
   '## OpenClaw And Codex Skill Routing',
   'Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/',
-  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.',
+  'mobile-app-dev-team/runtime-sources/skills/<slug>/',
+  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/skills` into `/workspace/skills`, then run `project-bootstrap`.',
   'Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts',
   'required validators, evals, scripts, and evidence may still be added when the change needs them',
 ]);
 
 requireRootTerms('ORGANIZATIONS.md', [
   'Canonical source:',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   'discoverability stub only',
   '/workspace/ORGANIZATIONS.md',
 ]);
@@ -456,7 +456,7 @@ requireDocTerms(organizationsRuntimeSource, [
 requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
-  'mobile-app-dev-team/runtime-sources/ORGANIZATIONS.md',
+  'mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md',
   '/workspace/ORGANIZATIONS.md',
   'Normal user-facing setup after clone or pull starts from `openclaw-pod-skills-sync`, then `project-bootstrap`',
   'user-understandable result',
@@ -854,12 +854,20 @@ requirePodNativeSkill(openclawPodSkillsSyncSkillRoot, 'openclaw-pod-skills-sync'
   '/workspace/skills/openclaw-pod-skills-sync/SKILL.md',
   '/workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills',
+  'mobile-app-dev-team/runtime-sources/skills',
   '/workspace/skills',
   '/workspace/AGENTS.md',
+  '/workspace/WORKFLOW.md',
+  '/workspace/HEARTBEAT.md',
+  '/workspace/TOOLS.md',
   '/workspace/ORGANIZATIONS.md',
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'OPENCLAW_ROLE_SLUG',
+  'openclaw-pod-skills-sync/v2',
+  'role_mismatch',
+  'positive_role_identifier_scan',
+  'negative_known_other_role_residue_scan',
   'workspace_organizations',
   'guidance_only',
   '/workspace/state/openclaw-pod-skills-sync-report.json',
@@ -887,7 +895,7 @@ requireDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
   'Process Routing Sources',
   'Runtime Repo Path Resolution',
   '/workspace/skills/codex-role-workflow/SKILL.md',
-  '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/workflows/entry-case-routing.md',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md',
   'Do not resolve repo SoT paths relative to `/workspace/skills/codex-role-workflow`',
   'workflows/entry-case-routing.md',
   'operational routing overlay',
@@ -1241,7 +1249,7 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'case_system_installer_requires_explicit_approval',
   'case_failed_npm_install_is_not_reported_as_installed',
   'case_failed_system_installer_is_not_reported_as_installed',
-  'case_default_clone_runtime_skill_registration_workspace_agents_defaults',
+  'case_default_clone_runtime_skill_registration_workspace_operating_files',
   'openclaw-pod-skills-sync',
   "r.workspace_skills.sync.status === 'completed'",
   "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'",
@@ -1287,26 +1295,34 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
 ]);
 
 requireDocTerms('evals/skills/openclaw-pod-skills-sync-smoke.sh', [
-  'case_copy_sync_all_pod_skills',
+  'case_copy_sync_product_planning_role',
+  'case_copy_sync_qa_release_role',
   'case_missing_source_root_blocks',
-  'case_unreadable_source_root_blocks',
   'case_empty_source_root_blocks',
   'case_missing_skill_entrypoint_blocks',
   'case_missing_organizations_source_is_status_only',
-  'case_unreadable_organizations_source_is_status_only',
   'case_report_is_secret_safe',
   'case_no_symlink_runtime_snapshot',
+  'case_missing_role_file_blocks',
+  'case_unknown_role_blocks',
+  'case_role_mismatch_blocks',
+  'case_candidate_path_ambiguity_blocks',
+  'case_legacy_path_detection_blocks',
   'openclaw-pod-skills-sync smoke passed',
   'OPENCLAW_POD_SKILLS_SOURCE_ROOT',
+  'OPENCLAW_POD_SKILLS_CANDIDATE_ROOT',
   'OPENCLAW_POD_SKILLS_ROOT',
   'OPENCLAW_WORKSPACE_AGENTS_PATH',
+  'OPENCLAW_WORKSPACE_WORKFLOW_PATH',
+  'OPENCLAW_WORKSPACE_HEARTBEAT_PATH',
+  'OPENCLAW_WORKSPACE_TOOLS_PATH',
   'OPENCLAW_ORGANIZATIONS_SOURCE_PATH',
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
+  'OPENCLAW_ROLE_SLUG',
+  'OPENCLAW_EXPECTED_ROLE_SLUG',
   'workspace_organizations',
   'OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH',
-  'git clone',
-  'git pull',
-  'project-bootstrap',
+  'openclaw-pod-skills-sync/v2',
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [
@@ -1584,7 +1600,7 @@ requireDocTerms(`${refOrganizationRoot}/orientation-and-sot/README.md`, [
 
 requireDocTerms(`${refOrganizationRoot}/runtime-surfaces/README.md`, [
   '/workspace/skills/<slug>/SKILL.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/',
+  'mobile-app-dev-team/runtime-sources/skills/<slug>/',
   'pod-native OpenClaw',
   'not `.agents/skills/<skill-name>/SKILL.md`',
   'source-only',
@@ -1938,7 +1954,7 @@ requireDocTerms(`${managedTeamDocRoot}/runtime-sources/codex-skill-agent-matrix.
   '$wm routing',
   'legacy mobile-* agents',
   'Pod-native OpenClaw skills',
-  'runtime-sources/pod-native-openclaw-skills/README.md',
+  'runtime-sources/skills/README.md',
   '| `mobile-architect-workflow` | Mobile Architect / Technical Lead | Mobile Architect | Architecture planning, ADR, route/state impact, API co-sign, releaseability, and role-boundary handoff |',
   '`codex-role-workflow`',
 ]);
@@ -1951,7 +1967,7 @@ forbidDocTerms(`${managedTeamDocRoot}/runtime-sources/codex-skill-agent-matrix.m
 requireDocTerms(productPlanningRuntimeSpec, [
   'Product/Planning Agent Runtime Specification',
   'mobile-app-dev-team/runtime-sources/role-souls/product-planning-soul.md',
-  'mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md',
+  'mobile-app-dev-team/runtime-sources/skills/README.md',
   'openclaw-pod-skills-sync',
   'project-bootstrap',
   'Repo-local Codex skills must remain under `.agents/skills/`',
@@ -1962,7 +1978,7 @@ requireDocTerms(productPlanningRuntimeSpec, [
   '/workspace/IDENTITY',
   'role mismatch',
   'managed project repository root',
-  'mobile-app-dev-team/workflows/entry-case-routing.md',
+  'mobile-app-dev-team/runtime-sources/workflows/entry-case-routing.md',
   '`codex-cli-auth-setup`, `pod-role-bootstrap`, and `codex-role-workflow`',
   'po-requirement-office-hours',
   'po-work-unit-planning-and-agent-sprint',

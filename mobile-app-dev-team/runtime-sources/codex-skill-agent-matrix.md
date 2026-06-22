@@ -56,9 +56,9 @@ These legacy mobile-* agents remain available for other runtime/eval surfaces. F
 ## Pod-native OpenClaw skills
 
 Pod-native OpenClaw skills are source-managed under
-`runtime-sources/pod-native-openclaw-skills/` and run in pods as
+`runtime-sources/skills/` and run in pods as
 `/workspace/skills/<slug>/SKILL.md`. The canonical per-role pod skill matrix is
-`runtime-sources/pod-native-openclaw-skills/README.md`.
+`runtime-sources/skills/README.md`.
 
 The role-aware pod bridge is `codex-role-workflow`; it resolves a bootstrapped
 pod role to allowed repo-local Codex skills, reviewers, durable artifact stage,

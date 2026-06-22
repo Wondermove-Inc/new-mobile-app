@@ -6,9 +6,11 @@ import readline from 'node:readline';
 import { readStdinJson, writeJson } from './shared.mjs';
 
 const input = await readStdinJson();
-const enabled = process.env.WM_STOP_CALL_CHECK_ENABLE === '1';
+loadLocalCompletionDmEnv();
+const callCheckEnabled = process.env.WM_STOP_CALL_CHECK_ENABLE === '1';
+const completionDmEnabled = process.env.WM_STOP_COMPLETION_DM_ENABLE === '1';
 
-if (!enabled) {
+if (!callCheckEnabled && !completionDmEnabled) {
   writeJson({ continue: true });
   process.exit(0);
 }
@@ -18,7 +20,7 @@ const timeoutMs = Number.isFinite(timeoutSeconds) && timeoutSeconds > 0 ? timeou
 const httpUrl = process.env.WM_STOP_CALL_CHECK_HTTP_URL ?? '';
 const mcpTool = process.env.WM_STOP_CALL_CHECK_MCP_TOOL ?? '';
 
-if (!httpUrl && !mcpTool) {
+if (callCheckEnabled && !completionDmEnabled && !httpUrl && !mcpTool) {
   writeJson({
     continue: true,
     systemMessage: 'Stop call check skipped: no WM_STOP_CALL_CHECK_HTTP_URL or WM_STOP_CALL_CHECK_MCP_TOOL configured.',
@@ -29,8 +31,11 @@ if (!httpUrl && !mcpTool) {
 const checks = [];
 
 try {
-  if (httpUrl) checks.push(await runCurlCheck(httpUrl, timeoutSeconds));
-  if (mcpTool) checks.push(await runMcpToolCall(mcpTool, timeoutMs));
+  if (callCheckEnabled) {
+    if (httpUrl) checks.push(await runCurlCheck(httpUrl, timeoutSeconds));
+    if (mcpTool) checks.push(await runMcpToolCall(mcpTool, timeoutMs));
+  }
+  if (completionDmEnabled) checks.push(await sendCompletionDm(input, timeoutMs));
 
   writeJson({
     continue: true,
@@ -41,6 +46,42 @@ try {
     decision: 'block',
     reason: `Stop call check failed: ${error instanceof Error ? error.message : String(error)}`,
   });
+}
+
+async function sendCompletionDm(hookInput, timeout) {
+  const role = completionDmRole();
+  const allowedRoles = new Set(['spring', 'sohee', 'jihoon', 'seulgi', 'hyunwoo', 'sarah']);
+  if (!allowedRoles.has(role)) {
+    throw new Error(`completion DM role must be one of ${[...allowedRoles].join(', ')}`);
+  }
+
+  const taskId = firstNonEmpty(process.env.WM_STOP_COMPLETION_DM_TASK_ID, process.env.WM_TASK_ID, hookInput.task_id);
+  const runId = firstNonEmpty(process.env.WM_STOP_COMPLETION_DM_RUN_ID, process.env.CODEX_RUN_ID, hookInput.run_id, hookInput.session_id);
+  if (!taskId && !runId) throw new Error('completion DM requires WM_STOP_COMPLETION_DM_TASK_ID or WM_STOP_COMPLETION_DM_RUN_ID');
+
+  const content = completionDmContent({
+    role,
+    taskId: taskId || 'not-set',
+    runId: runId || 'not-set',
+    completion: String(hookInput.last_assistant_message ?? '').trim(),
+    runbook: completionRunbook(),
+  });
+
+  if (process.env.WM_STOP_COMPLETION_DM_DRY_RUN === '1') {
+    return `completion DM dry-run prepared for ${role} task=${taskId || 'not-set'} run=${runId || 'not-set'}`;
+  }
+
+  const endpoint = process.env.WM_STOP_COMPLETION_DM_ENDPOINT ?? 'http://admin-api:3000/internal/messages';
+  const roomId = process.env.WM_STOP_COMPLETION_DM_ROOM_ID ?? '';
+  const gatewayToken = process.env.WM_STOP_COMPLETION_DM_GATEWAY_TOKEN ?? process.env.GATEWAY_TOKEN ?? '';
+  const fromAgentId = process.env.WM_STOP_COMPLETION_DM_FROM_AGENT_ID ?? process.env.AGENT_ID ?? '';
+
+  if (!roomId || !/^\d+$/.test(roomId)) throw new Error('completion DM requires numeric WM_STOP_COMPLETION_DM_ROOM_ID');
+  if (!gatewayToken) throw new Error('completion DM requires gateway token in inherited hook environment');
+  if (!fromAgentId) throw new Error('completion DM requires WM_STOP_COMPLETION_DM_FROM_AGENT_ID or AGENT_ID');
+
+  await postCompletionDm(endpoint, gatewayToken, { from_agent_id: fromAgentId, room_id: Number(roomId), content }, timeout);
+  return `completion DM delivered to configured ${role} direct room`;
 }
 
 function runCurlCheck(url, timeout) {
@@ -74,6 +115,76 @@ function runCurlCheck(url, timeout) {
       }
     });
   });
+}
+
+async function postCompletionDm(endpoint, gatewayToken, payload, timeout) {
+  let parsed;
+  try {
+    parsed = new URL(endpoint);
+  } catch {
+    throw new Error(`invalid WM_STOP_COMPLETION_DM_ENDPOINT: ${endpoint}`);
+  }
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error('WM_STOP_COMPLETION_DM_ENDPOINT must use http or https');
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Gateway-Token': gatewayToken,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`completion DM POST ${safeUrlForLog(endpoint)} returned HTTP ${response.status}`);
+    }
+  } catch (error) {
+    if (error?.name === 'AbortError') throw new Error(`completion DM POST ${safeUrlForLog(endpoint)} timed out`);
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function completionDmRole() {
+  const explicit = firstNonEmpty(process.env.WM_STOP_COMPLETION_DM_ROLE, process.env.WM_ROLE);
+  if (explicit) return explicit.toLowerCase();
+  const agentId = firstNonEmpty(process.env.AGENT_ID, '');
+  return String(agentId).split('-')[0].toLowerCase();
+}
+
+function displayRoleName(role) {
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
+function completionDmContent({ role, taskId, runId, completion, runbook }) {
+  const safeCompletion = completion ? completion.slice(0, 1200) : 'No final assistant message was provided by the Stop hook input.';
+  return [
+    `[Codex Stop Hook] ${displayRoleName(role)} pod 작업 완료 알림`,
+    '',
+    `Task/run identifier: task=${taskId}; run=${runId}`,
+    '',
+    'Completion summary:',
+    safeCompletion,
+    '',
+    'Next-step runbook:',
+    ...runbook.map((step, index) => `${index + 1}. ${step}`),
+  ].join('\n');
+}
+
+function completionRunbook() {
+  const configured = parseJsonArrayEnv('WM_STOP_COMPLETION_DM_RUNBOOK_JSON');
+  if (configured?.length) return configured;
+  return [
+    'Record command evidence and changed paths in the owning Task or Workboard card.',
+    'Hand off to the next responsible role only after local validation evidence is attached.',
+    'Keep human-gated, live, external, production, and secret-bearing actions blocked until explicitly approved.',
+  ];
 }
 
 async function runMcpToolCall(toolName, timeout) {
@@ -192,6 +303,34 @@ function parseJsonObjectEnv(name) {
     throw new Error(`${name} must be a JSON object`);
   }
   return parsed;
+}
+
+function loadLocalCompletionDmEnv() {
+  const envPath = process.env.WM_STOP_COMPLETION_DM_CONFIG_PATH ?? path.join(process.cwd(), '.codex/hooks/stop-completion-dm.env');
+  if (!fs.existsSync(envPath)) return;
+
+  const allowedName = /^WM_STOP_COMPLETION_DM_[A-Z0-9_]+$/;
+  for (const rawLine of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const match = line.match(/^(?:export\s+)?([A-Z0-9_]+)=(.*)$/);
+    if (!match) continue;
+    const [, name, rawValue] = match;
+    if (!allowedName.test(name) || process.env[name] !== undefined) continue;
+    process.env[name] = parseLocalEnvValue(rawValue);
+  }
+}
+
+function parseLocalEnvValue(rawValue) {
+  const value = rawValue.trim();
+  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
+function firstNonEmpty(...values) {
+  return values.find((value) => typeof value === 'string' && value.trim())?.trim() ?? '';
 }
 
 function mcpChildEnv() {

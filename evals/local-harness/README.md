@@ -81,6 +81,6 @@ changes when no Codex runtime path changes. Reference organization changes use
 `validate:team-doc` unless they also change a managed runtime source or
 `codex-role-workflow` routing-support dependency.
 
-Changes under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`
+Changes under `mobile-app-dev-team/runtime-sources/skills/**`
 use targeted pod-native smoke plus `test:runtime` unless the same change also
 touches Codex runtime or harness paths.
